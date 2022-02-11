@@ -559,8 +559,8 @@ int initialise(const char* paramfile, const char* obstaclefile,
   // *tmp_cells_ptr = (t_speed*)malloc(sizeof(t_speed) * (params->ny * params->nx));
 
   for(int i = 0; i < NSPEEDS; i++){
-    (*cells_ptr)[i] = (float*)malloc(sizeof(float) * (params->ny * params->nx));
-    (*tmp_cells_ptr)[i] = (float*)malloc(sizeof(float) * (params->ny * params->nx));
+    (*cells_ptr).speeds[i] = (float*)malloc(sizeof(float) * (params->ny * params->nx));
+    (*tmp_cells_ptr).speeds[i] = (float*)malloc(sizeof(float) * (params->ny * params->nx));
   }
 
   /* the map of obstacles */
@@ -644,11 +644,11 @@ int finalise(const t_param* params, t_speed* cells_ptr, t_speed* tmp_cells_ptr,
   /*
   ** free up allocated memory
   */
-  free(*cells_ptr);
-  *cells_ptr = NULL;
 
-  free(*tmp_cells_ptr);
-  *tmp_cells_ptr = NULL;
+  for(int i = 0; i < NSPEEDS; i++){
+    free(cells_ptr->speeds[i]);
+    free(tmp_cells_ptr->speeds[i]);
+  }
 
   free(*obstacles_ptr);
   *obstacles_ptr = NULL;
