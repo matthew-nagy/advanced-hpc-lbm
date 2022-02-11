@@ -227,7 +227,9 @@ int accelerate_flow(const t_param params, t_speed* cells, int* obstacles)
   /* modify the 2nd row of the grid */
   int jj = params.ny - 2;
 
-  for (int ii = 0; ii < params.nx; ii++)
+  const len = params.nx;
+
+  for (int ii = 0; ii < len; ii++)
   {
     /* if the cell is not occupied and
     ** we don't send a negative density */
@@ -270,7 +272,7 @@ inline void innerPropLoop(const t_param params, t_speed* const restrict cells, t
   int x_w = iiLimit;
 
   propagateSwap(params, cells, tmp_cells, 0, jj, y_n, x_e, y_s, x_w);
-  for (int ii = 1; ii < iiLimit; ii++)
+  for (int ii = 1; ii < iiLimit; ii+=4)
   {
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
@@ -278,6 +280,21 @@ inline void innerPropLoop(const t_param params, t_speed* const restrict cells, t
     x_w = ii - 1;
 
     propagateSwap(params, cells, tmp_cells, ii, jj, y_n, x_e, y_s, x_w);
+    
+    x_e += 1;
+    x_w += 1;
+
+    propagateSwap(params, cells, tmp_cells, ii + 1, jj, y_n, x_e, y_s, x_w);
+    
+    x_e += 1;
+    x_w += 1;;
+
+    propagateSwap(params, cells, tmp_cells, ii + 2, jj, y_n, x_e, y_s, x_w);
+    
+    x_e += 1;
+    x_w += 1;
+
+    propagateSwap(params, cells, tmp_cells, ii + 3, jj, y_n, x_e, y_s, x_w);
   }
   x_e = 0;
   x_w = iiLimit - 1;
