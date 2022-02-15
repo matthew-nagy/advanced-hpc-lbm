@@ -273,7 +273,7 @@ inline void innerPropLoop(const t_param params, t_speed* const restrict cells, t
   int x_e = 1;
   int x_w = iiLimit;
 
-  #pragma omp simd aligned(cells:64, tmp_cells:64)
+
   propagateSwap(params, cells, tmp_cells, 0, jj, y_n, x_e, y_s, x_w);
   
   #pragma omp simd aligned(cells:64, tmp_cells:64)
