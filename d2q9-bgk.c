@@ -588,12 +588,12 @@ int initialise(const char* paramfile, const char* obstaclefile,
   // *tmp_cells_ptr = (t_speed*)malloc(sizeof(t_speed) * (params->ny * params->nx));
 
   for(int i = 0; i < NSPEEDS; i++){
-    (*cells_ptr).speeds[i] = (float*)aligned_alloc(sizeof(float) * (params->ny * params->nx), 64);
-    (*tmp_cells_ptr).speeds[i] = (float*)aligned_alloc(sizeof(float) * (params->ny * params->nx), 64);
+    (*cells_ptr).speeds[i] = (float*)aligned_alloc(64, sizeof(float) * (params->ny * params->nx));
+    (*tmp_cells_ptr).speeds[i] = (float*)aligned_alloc(64, sizeof(float) * (params->ny * params->nx));
   }
 
   /* the map of obstacles */
-  *obstacles_ptr = aligned_alloc(sizeof(int) * (params->ny * params->nx), 64);
+  *obstacles_ptr = aligned_alloc(64, sizeof(int) * (params->ny * params->nx));
 
   if (*obstacles_ptr == NULL) die("cannot allocate column memory for obstacles", __LINE__, __FILE__);
 
