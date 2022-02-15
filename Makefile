@@ -2,9 +2,9 @@
 
 EXE=d2q9-bgk
 
-CC=gcc
-CFLAGS= -std=c99 -Wall -Ofast -mtune=native -march=native -fopt-info-all=optRep.out
-//CFLAGS = -std=c99 -Wall -fast -xHOST
+CC=icc
+//CFLAGS= -std=c11 -Wall -Ofast -mtune=native -march=native -fopt-info-all=optRep.out -openmp
+CFLAGS = -std=c11 -Wall -fast -xHOST -qopt-report=1 -qopt-report-phase=vec -qopenmp
 LIBS = -lm
 
 FINAL_STATE_FILE=./final_state.dat
