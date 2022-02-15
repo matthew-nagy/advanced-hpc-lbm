@@ -92,12 +92,12 @@ int initialise(const char* paramfile, const char* obstaclefile,
 ** timestep calls, in order, the functions:
 ** accelerate_flow(), propagate(), rebound() & collision()
 */
-float timestep(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles);
-int accelerate_flow(const t_param params, t_speed* cells, int* obstacles);
-int propagate(const t_param params, t_speed* cells, t_speed* tmp_cells);
-int rebound(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles);
-float collision(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles);
-int write_values(const t_param params, t_speed* cells, int* obstacles, float* av_vels);
+float timestep(const t_param params, t_speed*const restrict cells, t_speed*const restrict tmp_cells, int const*const restrict obstacles);
+int accelerate_flow(const t_param params, t_speed*const restrict cells, int const*const restrict obstacles);
+int propagate(const t_param params, t_speed*const restrict cells, t_speed*const restrict tmp_cells);
+int rebound(const t_param params, t_speed*const restrict cells, t_speed*const restrict tmp_cells, int const*const restrict obstacles);
+float collision(const t_param params, t_speed*const restrict cells, t_speed*const restrict tmp_cells, int const*const restrict obstacles);
+int write_values(const t_param params, t_speed*const restrict cells, int const*const restrict obstacles, float*const restrict av_vels);
 
 /* finalise, including freeing up allocated memory */
 int finalise(const t_param* params, t_speed* cells_ptr, t_speed* tmp_cells_ptr,
@@ -209,7 +209,7 @@ int main(int argc, char* argv[])
   return EXIT_SUCCESS;
 }
 
-float timestep(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles)
+float timestep(const t_param params, t_speed*const restrict cells, t_speed*const restrict tmp_cells, int const*const restrict obstacles)
 {
   accelerate_flow(params, cells, obstacles);
   propagate(params, cells, tmp_cells);
@@ -310,7 +310,7 @@ inline void innerPropLoop(const t_param params, t_speed* const restrict cells, t
 }
 
 
-int propagate(const t_param params, t_speed* cells, t_speed* tmp_cells)
+int propagate(const t_param params, t_speed*const restrict cells, t_speed*const restrict tmp_cells)
 {
   /* loop over _all_ cells */
   const int iiLimit = params.nx - 1;
@@ -321,6 +321,7 @@ int propagate(const t_param params, t_speed* cells, t_speed* tmp_cells)
   
   innerPropLoop(params, cells, tmp_cells, iiLimit , 0, y_n, y_s);
   #pragma omp simd aligned(cells, tmp_cells :64)
+  #pragma omp parallel for num_threads(4)
   for (int jj = 1; jj < jjLimit; jj++)
   {  
     y_n += 1;
@@ -337,8 +338,9 @@ int propagate(const t_param params, t_speed* cells, t_speed* tmp_cells)
 }
 
 
-int rebound(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles)
+int rebound(const t_param params, t_speed*const restrict cells, t_speed*const restrict tmp_cells, int const*const restrict obstacles)
 {
+  #pragma omp parallel for num_threads(4)
   for(oi i = 0; i < obsSize; i++){
     int index = obstacleIndices[i];
     cells->speeds[1][index] = tmp_cells->speeds[3][index];
@@ -354,7 +356,7 @@ int rebound(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obsta
   return EXIT_SUCCESS;
 }
 
-float collision(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles)
+float collision(const t_param params, t_speed*const restrict cells, t_speed*const restrict tmp_cells, int const*const restrict obstacles)
 {
 
   int    tot_cells = 0;  /* no. of cells used in calculation */
@@ -461,7 +463,7 @@ float collision(const t_param params, t_speed* cells, t_speed* tmp_cells, int* o
   return tot_u / (float)tot_cells;
 }
 
-float av_velocity(const t_param params, t_speed* cells, int* obstacles)
+float av_velocity(const t_param params, t_speed*const restrict cells, int const*const restrict obstacles)
 {
   int    tot_cells = 0;  /* no. of cells used in calculation */
   float tot_u;          /* accumulated magnitudes of velocity for each cell */
