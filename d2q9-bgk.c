@@ -227,7 +227,7 @@ int accelerate_flow(const t_param params, t_speed* cells, int* obstacles)
   /* modify the 2nd row of the grid */
   int jj = params.ny - 2;
 
-  const len = params.nx;
+  const int len = params.nx;
 
   for (int ii = 0; ii < len; ii++)
   {
