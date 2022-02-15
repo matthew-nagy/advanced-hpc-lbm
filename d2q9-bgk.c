@@ -276,7 +276,7 @@ inline void innerPropLoop(const t_param params, t_speed* const restrict cells, t
 
   propagateSwap(params, cells, tmp_cells, 0, jj, y_n, x_e, y_s, x_w);
   
-  #pragma omp simd aligned({cells:64, tmp_cells:64})
+  #pragma omp simd aligned(cells, tmp_cells :64)
   for (int ii = 1; ii < iiLimit; ii+=4)
   {
     /* determine indices of axis-direction neighbours
@@ -320,7 +320,7 @@ int propagate(const t_param params, t_speed* cells, t_speed* tmp_cells)
   int y_s = jjLimit;
   
   innerPropLoop(params, cells, tmp_cells, iiLimit , 0, y_n, y_s);
-  #pragma omp simd aligned({cells:64, tmp_cells:64})
+  #pragma omp simd aligned(cells, tmp_cells :64)
   for (int jj = 1; jj < jjLimit; jj++)
   {  
     y_n += 1;
