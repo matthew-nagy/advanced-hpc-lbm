@@ -463,7 +463,7 @@ float collision(const t_param params, t_speed*const restrict cells, t_speed*cons
   return tot_u / (float)tot_cells;
 }
 
-float av_velocity(const t_param params, t_speed*const restrict cells, int const*const restrict obstacles)
+float av_velocity(const t_param params, t_speed* cells, int* obstacles)
 {
   int    tot_cells = 0;  /* no. of cells used in calculation */
   float tot_u;          /* accumulated magnitudes of velocity for each cell */
