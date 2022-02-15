@@ -218,7 +218,7 @@ float timestep(const t_param params, t_speed*const restrict cells, t_speed*const
   //return EXIT_SUCCESS;
 }
 
-int accelerate_flow(const t_param params, t_speed* cells, int* obstacles)
+int accelerate_flow(const t_param params, t_speed*const restrict cells, int const*const restrict obstacles)
 {
   /* compute weighting factors */
   float w1 = params.density * params.accel / 9.f;
@@ -321,7 +321,7 @@ int propagate(const t_param params, t_speed*const restrict cells, t_speed*const 
   
   innerPropLoop(params, cells, tmp_cells, iiLimit , 0, y_n, y_s);
   #pragma omp simd aligned(cells, tmp_cells :64)
-  #pragma omp parallel for num_threads(4)
+  //#pragma omp parallel for num_threads(4)
   for (int jj = 1; jj < jjLimit; jj++)
   {  
     y_n += 1;
@@ -716,7 +716,7 @@ float total_density(const t_param params, t_speed* cells)
   return total;
 }
 
-int write_values(const t_param params, t_speed* cells, int* obstacles, float* av_vels)
+int write_values(const t_param params, t_speed*const restrict cells, int const*const restrict obstacles, float*const restrict av_vels)
 {
   FILE* fp;                     /* file pointer */
   const float c_sq = 1.f / 3.f; /* sq. of speed of sound */
