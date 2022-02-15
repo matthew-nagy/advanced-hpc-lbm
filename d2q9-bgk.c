@@ -252,7 +252,7 @@ int accelerate_flow(const t_param params, t_speed* cells, int* obstacles)
   return EXIT_SUCCESS;
 }
 
-#pragma omp simd aligned
+#pragma omp simd aligned(64)
 inline void propagateSwap(const t_param params, t_speed*const restrict cells, t_speed*const restrict tmp_cells, const int ii, const int jj, const int y_n, const int x_e, int const y_s, int const x_w){
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
@@ -268,15 +268,15 @@ inline void propagateSwap(const t_param params, t_speed*const restrict cells, t_
   tmp_cells->speeds[8][ii + jj*params.nx] = cells->speeds[8][x_w + y_n*params.nx]; /* south-east */
 }
 
-#pragma omp simd aligned
+#pragma omp simd aligned(64)
 inline void innerPropLoop(const t_param params, t_speed* const restrict cells, t_speed*const restrict tmp_cells, const int iiLimit, const int jj, const int y_n, const int y_s){
   int x_e = 1;
   int x_w = iiLimit;
 
-  #pragma omp simd aligned
+  #pragma omp simd aligned(64)
   propagateSwap(params, cells, tmp_cells, 0, jj, y_n, x_e, y_s, x_w);
   
-  #pragma omp simd aligned
+  #pragma omp simd aligned(64)
   for (int ii = 1; ii < iiLimit; ii+=4)
   {
     /* determine indices of axis-direction neighbours
@@ -284,32 +284,32 @@ inline void innerPropLoop(const t_param params, t_speed* const restrict cells, t
     x_e += 1;
     x_w = ii - 1;
 
-    #pragma omp simd aligned
+    #pragma omp simd aligned(64)
     propagateSwap(params, cells, tmp_cells, ii, jj, y_n, x_e, y_s, x_w);
     
     x_e += 1;
     x_w += 1;
 
-    #pragma omp simd aligned
+    #pragma omp simd aligned(64)
     propagateSwap(params, cells, tmp_cells, ii + 1, jj, y_n, x_e, y_s, x_w);
     
     x_e += 1;
     x_w += 1;;
-    #pragma omp simd aligned
+    #pragma omp simd aligned(64)
     propagateSwap(params, cells, tmp_cells, ii + 2, jj, y_n, x_e, y_s, x_w);
     
     x_e += 1;
     x_w += 1;
-    #pragma omp simd aligned
+    #pragma omp simd aligned(64)
     propagateSwap(params, cells, tmp_cells, ii + 3, jj, y_n, x_e, y_s, x_w);
   }
   x_e = 0;
   x_w = iiLimit - 1;
-  #pragma omp simd aligned
+  #pragma omp simd aligned(64)
   propagateSwap(params, cells, tmp_cells, iiLimit, jj, y_n, x_e, y_s, x_w);
 }
 
-#pragma omp simd aligned
+#pragma omp simd aligned(64)
 int propagate(const t_param params, t_speed* cells, t_speed* tmp_cells)
 {
   /* loop over _all_ cells */
@@ -318,19 +318,19 @@ int propagate(const t_param params, t_speed* cells, t_speed* tmp_cells)
   
   int y_n = 1;
   int y_s = jjLimit;
-  #pragma omp simd aligned
+  #pragma omp simd aligned(64)
   innerPropLoop(params, cells, tmp_cells, iiLimit , 0, y_n, y_s);
-  #pragma omp simd aligned
+  #pragma omp simd aligned(64)
   for (int jj = 1; jj < jjLimit; jj++)
   {  
     y_n += 1;
     y_s = jj - 1;
-    #pragma omp simd aligned
+    #pragma omp simd aligned(64)
     innerPropLoop(params, cells, tmp_cells, iiLimit, jj, y_n, y_s);
   }
   y_n = 0;
   y_s = jjLimit - 1;
-  #pragma omp simd aligned
+  #pragma omp simd aligned(64)
   innerPropLoop(params, cells, tmp_cells, iiLimit, jjLimit , y_n, y_s);
 
   return EXIT_SUCCESS;
