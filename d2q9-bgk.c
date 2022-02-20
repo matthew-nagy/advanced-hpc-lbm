@@ -406,7 +406,7 @@ float av_velocity(const t_param params, float** cells, int* obstacles)
   {
     for (int ii = 0; ii < params.nx; ii++)
     {
-      /* ignore occupied cells */
+      /* don't consider occupied cells */
       if (!obstacles[ii + jj*params.nx])
       {
         /* compute local density total */
