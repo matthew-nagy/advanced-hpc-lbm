@@ -273,12 +273,16 @@ int rebound(const t_param params, float** cells, float** tmp_cells, int* obstacl
       /* if the cell contains an obstacle */
       if (obstacles[jj*params.nx + ii])
       {
-        int conv[] = {3, 4, 1, 2, 7, 8, 5, 6};
         /* called after propagate, so taking values from scratch space
         ** mirroring, and writing into main grid */
-        for(int i = 1; i < 9; i ++){
-          cells[i][ii + jj * params.nx] = tmp_cells[conv[i-1]][ii + jj * params.nx];
-        }
+        cells[1][ii + jj * params.nx] = tmp_cells[3][ii + jj * params.nx];
+        cells[2][ii + jj * params.nx] = tmp_cells[4][ii + jj * params.nx];
+        cells[3][ii + jj * params.nx] = tmp_cells[1][ii + jj * params.nx];
+        cells[4][ii + jj * params.nx] = tmp_cells[2][ii + jj * params.nx];
+        cells[5][ii + jj * params.nx] = tmp_cells[7][ii + jj * params.nx];
+        cells[6][ii + jj * params.nx] = tmp_cells[8][ii + jj * params.nx];
+        cells[7][ii + jj * params.nx] = tmp_cells[5][ii + jj * params.nx];
+        cells[8][ii + jj * params.nx] = tmp_cells[6][ii + jj * params.nx];
       }
     }
   }
