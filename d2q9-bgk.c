@@ -149,7 +149,7 @@ int main(int argc, char* argv[])
   gettimeofday(&timstr, NULL);
   init_toc = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
   comp_tic=init_toc;
-
+  printf("ABout to init\n");
   for (int tt = 0; tt < params.maxIters; tt++)
   {
     timestep(params, cells, tmp_cells, obstacles);
@@ -188,10 +188,15 @@ int main(int argc, char* argv[])
 
 int timestep(const t_param params, float** cells, float** tmp_cells, int* obstacles)
 {
+  printf("->acc\n");
   accelerate_flow(params, cells, obstacles);
+  printf("->prop\n");
   propagate(params, cells, tmp_cells);
+  printf("->reb\n");
   rebound(params, cells, tmp_cells, obstacles);
+  printf("->obs\n");
   collision(params, cells, tmp_cells, obstacles);
+  printf("->av\n");
   return EXIT_SUCCESS;
 }
 
