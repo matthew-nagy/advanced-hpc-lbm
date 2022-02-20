@@ -277,7 +277,7 @@ int rebound(const t_param params, float** cells, float** tmp_cells, int* obstacl
         /* called after propagate, so taking values from scratch space
         ** mirroring, and writing into main grid */
         for(int i = 1; i < 9; i ++){
-          cells[i][ii + jj * params.nx] = tmp_cells[conv[i]][ii + jj * params.nx];
+          cells[i][ii + jj * params.nx] = tmp_cells[conv[i-1]][ii + jj * params.nx];
         }
       }
     }
