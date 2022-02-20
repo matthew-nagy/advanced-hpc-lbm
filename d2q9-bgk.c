@@ -417,6 +417,8 @@ float av_velocity(const t_param params, float** cells, int* obstacles)
           local_density += cells[kk][ii + jj * params.nx];
         }
 
+        printf("h\n");
+
         /* x-component of velocity */
         /* compute x velocity component */
         int u_x = (cells[1][ii + jj*params.nx]
