@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
   gettimeofday(&timstr, NULL);
   tot_tic = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
   init_tic=tot_tic;
-  initialise(paramfile, obstaclefile, &params, &cells, &tmp_cells, &obstacles, &av_vels);
+  initialise(paramfile, obstaclefile, &params, cells, tmp_cells, &obstacles, &av_vels);
 
   /* Init time stops here, compute time starts*/
   gettimeofday(&timstr, NULL);
@@ -181,7 +181,7 @@ int main(int argc, char* argv[])
   printf("Elapsed Collate time:\t\t\t%.6lf (s)\n", col_toc  - col_tic);
   printf("Elapsed Total time:\t\t\t%.6lf (s)\n",   tot_toc  - tot_tic);
   write_values(params, cells, obstacles, av_vels);
-  finalise(&params, &cells, &tmp_cells, &obstacles, &av_vels);
+  finalise(&params, cells, tmp_cells, &obstacles, &av_vels);
 
   return EXIT_SUCCESS;
 }
@@ -268,7 +268,7 @@ int rebound(const t_param params, float** cells, float** tmp_cells, int* obstacl
       /* if the cell contains an obstacle */
       if (obstacles[jj*params.nx + ii])
       {
-        int* conv = {3, 4, 1, 2, 7, 8, 5, 6};
+        int* conv = [3, 4, 1, 2, 7, 8, 5, 6];
         /* called after propagate, so taking values from scratch space
         ** mirroring, and writing into main grid */
         for(int i = 1; i < 9; i ++){
@@ -308,7 +308,7 @@ int collision(const t_param params, float** cells, float** tmp_cells, int* obsta
         }
 
         /* compute x velocity component */
-        u_x = (cells[1][ii + jj*params.nx]
+        int u_x = (cells[1][ii + jj*params.nx]
                + cells[5][ii + jj*params.nx]
                + cells[8][ii + jj*params.nx]
                - (cells[3][ii + jj*params.nx]
@@ -316,7 +316,7 @@ int collision(const t_param params, float** cells, float** tmp_cells, int* obsta
                   + cells[7][ii + jj*params.nx]))
               / local_density;
         /* compute y velocity component */
-        u_y = (cells[2][ii + jj*params.nx]
+        int u_y = (cells[2][ii + jj*params.nx]
                + cells[5][ii + jj*params.nx]
                + cells[6][ii + jj*params.nx]
                - (cells[4][ii + jj*params.nx]
@@ -410,7 +410,7 @@ float av_velocity(const t_param params, float** cells, int* obstacles)
 
         /* x-component of velocity */
         /* compute x velocity component */
-        u_x = (cells[1][ii + jj*params.nx]
+        int u_x = (cells[1][ii + jj*params.nx]
                + cells[5][ii + jj*params.nx]
                + cells[8][ii + jj*params.nx]
                - (cells[3][ii + jj*params.nx]
@@ -418,7 +418,7 @@ float av_velocity(const t_param params, float** cells, int* obstacles)
                   + cells[7][ii + jj*params.nx]))
               / local_density;
         /* compute y velocity component */
-        u_y = (cells[2][ii + jj*params.nx]
+        int u_y = (cells[2][ii + jj*params.nx]
                + cells[5][ii + jj*params.nx]
                + cells[6][ii + jj*params.nx]
                - (cells[4][ii + jj*params.nx]
@@ -506,8 +506,8 @@ int initialise(const char* paramfile, const char* obstaclefile,
   ** a 1D array of these structs.
   */
 
-  cells_ptr = (float**)malloc(sizeof(float*) ( NSPEEDS));
-  tmp_cells_ptr = (float**)malloc(sizeof(float*) ( NSPEEDS));
+  cells_ptr = (float**)malloc(sizeof(float*) * NSPEEDS);
+  tmp_cells_ptr = (float**)malloc(sizeof(float*) * NSPEEDS);
   for(int i = 0; i < NSPEEDS; i++){
     cells_ptr[i] = (float*)malloc(sizeof(float) * params->nx);
     tmp_cells_ptr[i] = (float*)malloc(sizeof(float) * params->nx);
