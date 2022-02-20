@@ -268,7 +268,7 @@ int rebound(const t_param params, float** cells, float** tmp_cells, int* obstacl
       /* if the cell contains an obstacle */
       if (obstacles[jj*params.nx + ii])
       {
-        int* conv = [3, 4, 1, 2, 7, 8, 5, 6];
+        int conv[] = {3, 4, 1, 2, 7, 8, 5, 6};
         /* called after propagate, so taking values from scratch space
         ** mirroring, and writing into main grid */
         for(int i = 1; i < 9; i ++){
