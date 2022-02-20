@@ -414,7 +414,7 @@ float av_velocity(const t_param params, float** cells, int* obstacles)
 
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
-          local_density += tmp_cells[kk][ii + jj * params.nx];
+          local_density += cells[kk][ii + jj * params.nx];
         }
 
         printf("h\n");
