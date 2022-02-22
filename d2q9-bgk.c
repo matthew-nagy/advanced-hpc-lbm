@@ -154,7 +154,6 @@ int main(int argc, char* argv[])
   gettimeofday(&timstr, NULL);
   init_toc = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
   comp_tic=init_toc;
-  #define DEBUG
 
   for (int tt = 0; tt < params.maxIters; tt++)
   {
