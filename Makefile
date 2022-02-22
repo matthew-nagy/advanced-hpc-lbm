@@ -4,7 +4,7 @@ EXE=d2q9-bgk
 
 CC=gcc
 //CFLAGS= -std=c11 -Wall -g -O0
-CFLAGS= -std=c11 -Wall -Ofast -mtune=native -march=native -fopt-info-all=optRep.out -fopenmp
+CFLAGS= -std=c11 -Wall -Ofast -mtune=native -march=native -fopt-info-all=optRep.out -fopenmp -fopenmp-simd
 //CFLAGS = -std=c11 -Wall -fast -xHOST -qopt-report=1 -qopt-report-phase=vec -qopenmp
 LIBS = -lm
 
@@ -25,3 +25,4 @@ check:
 
 clean:
 	rm -f $(EXE)
+	rm optRep.out

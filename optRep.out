@@ -1,0 +1,503 @@
+d2q9-bgk.c:200:10: note: Considering inline candidate collision/30.
+d2q9-bgk.c:200:10: missed:   not inlinable: timestep/27 -> collision/30, --param large-stack-frame-growth limit reached
+d2q9-bgk.c:197:3: note: Considering inline candidate accelerate_flow/28.
+d2q9-bgk.c:197:3: missed:   will not early inline: timestep/27->accelerate_flow/28, growth 48 exceeds --param early-inlining-insns
+d2q9-bgk.c:662:10: note: Considering inline candidate av_velocity/31.
+d2q9-bgk.c:662:10: missed:   will not early inline: calc_reynolds/34->av_velocity/31, growth 58 exceeds --param early-inlining-insns
+d2q9-bgk.c:769:3: optimized:   Inlining fprintf/10 into die/37 (always_inline).
+d2q9-bgk.c:768:3: optimized:   Inlining fprintf/10 into die/37 (always_inline).
+d2q9-bgk.c:603:5: optimized:   Inlining sprintf/6 into initialise/32 (always_inline).
+d2q9-bgk.c:494:5: optimized:   Inlining sprintf/6 into initialise/32 (always_inline).
+d2q9-bgk.c:617:23: note: Considering inline candidate die/37.
+d2q9-bgk.c:617:23: missed:   will not early inline: initialise/32->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:615:40: note: Considering inline candidate die/37.
+d2q9-bgk.c:615:40: missed:   will not early inline: initialise/32->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:613:40: note: Considering inline candidate die/37.
+d2q9-bgk.c:613:40: missed:   will not early inline: initialise/32->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:611:22: note: Considering inline candidate die/37.
+d2q9-bgk.c:611:22: missed:   will not early inline: initialise/32->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:604:5: note: Considering inline candidate die/37.
+d2q9-bgk.c:604:5: missed:   will not early inline: initialise/32->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:563:31: note: Considering inline candidate die/37.
+d2q9-bgk.c:563:31: missed:   will not early inline: initialise/32->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:525:20: note: Considering inline candidate die/37.
+d2q9-bgk.c:525:20: missed:   will not early inline: initialise/32->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:521:20: note: Considering inline candidate die/37.
+d2q9-bgk.c:521:20: missed:   will not early inline: initialise/32->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:517:20: note: Considering inline candidate die/37.
+d2q9-bgk.c:517:20: missed:   will not early inline: initialise/32->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:513:20: note: Considering inline candidate die/37.
+d2q9-bgk.c:513:20: missed:   will not early inline: initialise/32->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:509:20: note: Considering inline candidate die/37.
+d2q9-bgk.c:509:20: missed:   will not early inline: initialise/32->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:505:20: note: Considering inline candidate die/37.
+d2q9-bgk.c:505:20: missed:   will not early inline: initialise/32->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:501:20: note: Considering inline candidate die/37.
+d2q9-bgk.c:501:20: missed:   will not early inline: initialise/32->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:495:5: note: Considering inline candidate die/37.
+d2q9-bgk.c:495:5: missed:   will not early inline: initialise/32->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:758:5: optimized:   Inlining fprintf/10 into write_values/36 (always_inline).
+d2q9-bgk.c:743:7: optimized:   Inlining fprintf/10 into write_values/36 (always_inline).
+d2q9-bgk.c:753:5: note: Considering inline candidate die/37.
+d2q9-bgk.c:753:5: missed:   will not early inline: write_values/36->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:697:5: note: Considering inline candidate die/37.
+d2q9-bgk.c:697:5: missed:   will not early inline: write_values/36->die/37, call is cold and code would grow by 14
+d2q9-bgk.c:776:3: optimized:   Inlining fprintf/10 into usage/38 (always_inline).
+d2q9-bgk.c:188:3: optimized:   Inlining printf/11 into main/26 (always_inline).
+d2q9-bgk.c:187:3: optimized:   Inlining printf/11 into main/26 (always_inline).
+d2q9-bgk.c:186:3: optimized:   Inlining printf/11 into main/26 (always_inline).
+d2q9-bgk.c:185:3: optimized:   Inlining printf/11 into main/26 (always_inline).
+d2q9-bgk.c:184:3: optimized:   Inlining printf/11 into main/26 (always_inline).
+d2q9-bgk.c:183:3: optimized:   Inlining printf/11 into main/26 (always_inline).
+d2q9-bgk.c:166:5: optimized:   Inlining printf/11 into main/26 (always_inline).
+d2q9-bgk.c:165:5: optimized:   Inlining printf/11 into main/26 (always_inline).
+d2q9-bgk.c:164:5: optimized:   Inlining printf/11 into main/26 (always_inline).
+d2q9-bgk.c:190:3: note: Considering inline candidate finalise/33.
+d2q9-bgk.c:190:3: missed:   will not early inline: main/26->finalise/33, growth 18 exceeds --param early-inlining-insns
+d2q9-bgk.c:189:3: note: Considering inline candidate write_values/36.
+d2q9-bgk.c:189:3: missed:   will not early inline: main/26->write_values/36, growth 108 exceeds --param early-inlining-insns
+d2q9-bgk.c:184:41: note: Considering inline candidate calc_reynolds/34.
+d2q9-bgk.c:184:41: optimized:  Inlining calc_reynolds/34 into main/26.
+d2q9-bgk.c:166:36: note: Considering inline candidate total_density/35.
+d2q9-bgk.c:166:36: optimized:  Inlining total_density/35 into main/26.
+d2q9-bgk.c:159:19: note: Considering inline candidate timestep/27.
+d2q9-bgk.c:159:19: missed:   will not early inline: main/26->timestep/27, growth 5 exceeds --param early-inlining-insns divided by number of calls
+d2q9-bgk.c:149:3: note: Considering inline candidate initialise/32.
+d2q9-bgk.c:149:3: missed:   not inlinable: main/26 -> initialise/32, --param large-stack-frame-growth limit reached
+d2q9-bgk.c:137:5: note: Considering inline candidate usage/38.
+d2q9-bgk.c:137:5: missed:   will not early inline: main/26->usage/38, call is cold and code would grow by 6
+d2q9-bgk.c:777:3: missed:   not inlinable: usage/38 -> exit/54, function body not available
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed:   not inlinable: usage/38 -> __fprintf_chk/51, function body not available
+d2q9-bgk.c:771:3: missed:   not inlinable: die/37 -> exit/54, function body not available
+d2q9-bgk.c:770:3: missed:   not inlinable: die/37 -> fflush/53, function body not available
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed:   not inlinable: die/37 -> __fprintf_chk/51, function body not available
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed:   not inlinable: die/37 -> __fprintf_chk/51, function body not available
+d2q9-bgk.c:761:3: missed:   not inlinable: write_values/36 -> fclose/47, function body not available
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed:   not inlinable: write_values/36 -> __fprintf_chk/51, function body not available
+d2q9-bgk.c:753:5: missed:   not inlinable: write_values/36 -> die/37, call is unlikely and code size would grow
+d2q9-bgk.c:749:8: missed:   not inlinable: write_values/36 -> fopen/45, function body not available
+d2q9-bgk.c:747:3: missed:   not inlinable: write_values/36 -> fclose/47, function body not available
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed:   not inlinable: write_values/36 -> __fprintf_chk/51, function body not available
+d2q9-bgk.c:737:13: missed:   not inlinable: write_values/36 -> sqrtf/43, function body not available
+d2q9-bgk.c:697:5: missed:   not inlinable: write_values/36 -> die/37, call is unlikely and code size would grow
+d2q9-bgk.c:693:8: missed:   not inlinable: write_values/36 -> fopen/45, function body not available
+d2q9-bgk.c:662:10: missed:   not inlinable: calc_reynolds/34 -> av_velocity/31, --param max-inline-insns-auto limit reached
+d2q9-bgk.c:651:3: missed:   not inlinable: finalise/33 -> free/44, function body not available
+d2q9-bgk.c:648:3: missed:   not inlinable: finalise/33 -> free/44, function body not available
+d2q9-bgk.c:646:3: missed:   not inlinable: finalise/33 -> free/44, function body not available
+d2q9-bgk.c:645:3: missed:   not inlinable: finalise/33 -> free/44, function body not available
+d2q9-bgk.c:643:5: missed:   not inlinable: finalise/33 -> free/44, function body not available
+d2q9-bgk.c:642:5: missed:   not inlinable: finalise/33 -> free/44, function body not available
+d2q9-bgk.c:630:26: missed:   not inlinable: initialise/32 -> malloc/48, function body not available
+d2q9-bgk.c:624:3: missed:   not inlinable: initialise/32 -> fclose/47, function body not available
+d2q9-bgk.c:608:20: missed:   not inlinable: initialise/32 -> fscanf/46, function body not available
+d2q9-bgk.c:617:23: missed:   not inlinable: initialise/32 -> die/37, call is unlikely and code size would grow
+d2q9-bgk.c:615:40: missed:   not inlinable: initialise/32 -> die/37, call is unlikely and code size would grow
+d2q9-bgk.c:613:40: missed:   not inlinable: initialise/32 -> die/37, call is unlikely and code size would grow
+d2q9-bgk.c:611:22: missed:   not inlinable: initialise/32 -> die/37, call is unlikely and code size would grow
+d2q9-bgk.c:604:5: missed:   not inlinable: initialise/32 -> die/37, call is unlikely and code size would grow
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:36:10: missed:   not inlinable: initialise/32 -> __builtin___sprintf_chk/50, function body not available
+d2q9-bgk.c:599:8: missed:   not inlinable: initialise/32 -> fopen/45, function body not available
+d2q9-bgk.c:563:31: missed:   not inlinable: initialise/32 -> die/37, call is unlikely and code size would grow
+d2q9-bgk.c:561:20: missed:   not inlinable: initialise/32 -> malloc/48, function body not available
+d2q9-bgk.c:556:35: missed:   not inlinable: initialise/32 -> aligned_alloc/41, function body not available
+d2q9-bgk.c:555:31: missed:   not inlinable: initialise/32 -> aligned_alloc/41, function body not available
+d2q9-bgk.c:551:29: missed:   not inlinable: initialise/32 -> malloc/48, function body not available
+d2q9-bgk.c:550:25: missed:   not inlinable: initialise/32 -> malloc/48, function body not available
+d2q9-bgk.c:528:3: missed:   not inlinable: initialise/32 -> fclose/47, function body not available
+d2q9-bgk.c:525:20: missed:   not inlinable: initialise/32 -> die/37, call is unlikely and code size would grow
+d2q9-bgk.c:523:12: missed:   not inlinable: initialise/32 -> fscanf/46, function body not available
+d2q9-bgk.c:521:20: missed:   not inlinable: initialise/32 -> die/37, call is unlikely and code size would grow
+d2q9-bgk.c:519:12: missed:   not inlinable: initialise/32 -> fscanf/46, function body not available
+d2q9-bgk.c:517:20: missed:   not inlinable: initialise/32 -> die/37, call is unlikely and code size would grow
+d2q9-bgk.c:515:12: missed:   not inlinable: initialise/32 -> fscanf/46, function body not available
+d2q9-bgk.c:513:20: missed:   not inlinable: initialise/32 -> die/37, call is unlikely and code size would grow
+d2q9-bgk.c:511:12: missed:   not inlinable: initialise/32 -> fscanf/46, function body not available
+d2q9-bgk.c:509:20: missed:   not inlinable: initialise/32 -> die/37, call is unlikely and code size would grow
+d2q9-bgk.c:507:12: missed:   not inlinable: initialise/32 -> fscanf/46, function body not available
+d2q9-bgk.c:505:20: missed:   not inlinable: initialise/32 -> die/37, call is unlikely and code size would grow
+d2q9-bgk.c:503:12: missed:   not inlinable: initialise/32 -> fscanf/46, function body not available
+d2q9-bgk.c:501:20: missed:   not inlinable: initialise/32 -> die/37, call is unlikely and code size would grow
+d2q9-bgk.c:499:12: missed:   not inlinable: initialise/32 -> fscanf/46, function body not available
+d2q9-bgk.c:495:5: missed:   not inlinable: initialise/32 -> die/37, call is unlikely and code size would grow
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:36:10: missed:   not inlinable: initialise/32 -> __builtin___sprintf_chk/50, function body not available
+d2q9-bgk.c:490:8: missed:   not inlinable: initialise/32 -> fopen/45, function body not available
+d2q9-bgk.c:469:18: missed:   not inlinable: av_velocity/31 -> sqrtf/43, function body not available
+d2q9-bgk.c:424:3: missed:   not inlinable: collision/30 -> free/44, function body not available
+d2q9-bgk.c:418:18: missed:   not inlinable: collision/30 -> sqrtf/43, function body not available
+d2q9-bgk.c:297:29: missed:   not inlinable: collision/30 -> __builtin_assume_aligned/42, function body not available
+d2q9-bgk.c:297:48: missed:   not inlinable: collision/30 -> __builtin_assume_aligned/42, function body not available
+d2q9-bgk.c:297:71: missed:   not inlinable: collision/30 -> __builtin_assume_aligned/42, function body not available
+d2q9-bgk.c:281:33: missed:   not inlinable: collision/30 -> aligned_alloc/41, function body not available
+d2q9-bgk.c:200:10: missed:   not inlinable: timestep/27 -> collision/30, --param max-inline-insns-auto limit reached
+d2q9-bgk.c:197:3: missed:   not inlinable: timestep/27 -> accelerate_flow/28, --param max-inline-insns-auto limit reached
+d2q9-bgk.c:190:3: missed:   not inlinable: main/26 -> finalise/33, call is unlikely and code size would grow
+d2q9-bgk.c:189:3: missed:   not inlinable: main/26 -> write_values/36, --param max-inline-insns-auto limit reached
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed:   not inlinable: main/26 -> __printf_chk/40, function body not available
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed:   not inlinable: main/26 -> __printf_chk/40, function body not available
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed:   not inlinable: main/26 -> __printf_chk/40, function body not available
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed:   not inlinable: main/26 -> __printf_chk/40, function body not available
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed:   not inlinable: main/26 -> __printf_chk/40, function body not available
+d2q9-bgk.c:662:10: missed:   not inlinable: main/26 -> av_velocity/31, --param max-inline-insns-auto limit reached
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed:   not inlinable: main/26 -> __printf_chk/40, function body not available
+d2q9-bgk.c:178:3: missed:   not inlinable: main/26 -> gettimeofday/39, function body not available
+d2q9-bgk.c:171:3: missed:   not inlinable: main/26 -> gettimeofday/39, function body not available
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed:   not inlinable: main/26 -> __printf_chk/40, function body not available
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed:   not inlinable: main/26 -> __printf_chk/40, function body not available
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed:   not inlinable: main/26 -> __printf_chk/40, function body not available
+d2q9-bgk.c:152:3: missed:   not inlinable: main/26 -> gettimeofday/39, function body not available
+d2q9-bgk.c:149:3: missed:   not inlinable: main/26 -> initialise/32, --param max-inline-insns-auto limit reached
+d2q9-bgk.c:146:3: missed:   not inlinable: main/26 -> gettimeofday/39, function body not available
+d2q9-bgk.c:137:5: missed:   not inlinable: main/26 -> usage/38, call is unlikely and code size would grow
+d2q9-bgk.c:159:19: optimized:  Inlined timestep/70 into main/26 which now has time 61163.191895 and size 185, net change of +5.
+Unit growth for small function inlining: 1176->1181 (0%)
+
+Inlined 19 calls, eliminated 0 functions
+
+d2q9-bgk.c:218:21: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:219:21: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:220:21: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:223:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:223:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:224:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:224:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:225:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:225:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:227:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:227:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:228:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:228:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:229:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:229:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:213:3: missed: couldn't vectorize loop
+d2q9-bgk.c:213:3: missed: not vectorized: control flow in loop.
+d2q9-bgk.c:203:5: note: vectorized 0 loops in function.
+d2q9-bgk.c:218:21: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:219:21: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:220:21: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:223:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:223:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:224:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:224:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:225:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:225:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:227:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:227:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:228:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:228:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:229:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:229:35: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:213:3: note: considering unrolling loop 1 at BB 4
+considering unrolling loop with constant number of iterations
+considering unrolling loop with runtime-computable number of iterations
+d2q9-bgk.c:213:3: optimized: loop unrolled 127 times
+d2q9-bgk.c:253:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:255:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:257:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:258:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:259:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:260:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:253:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:255:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:257:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:258:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:259:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:260:49: missed: failed: evolution of base is not affine.
+consider run-time aliasing test between *cells_96(D) and *_12
+consider run-time aliasing test between *tmp_cells_97(D) and *_12
+consider run-time aliasing test between *_10 and *_12
+consider run-time aliasing test between MEM[(float * *)cells_96(D) + 16B] and *_29
+consider run-time aliasing test between MEM[(float * *)tmp_cells_97(D) + 16B] and *_29
+consider run-time aliasing test between *_27 and *_29
+consider run-time aliasing test between MEM[(float * *)cells_96(D) + 32B] and *_46
+consider run-time aliasing test between MEM[(float * *)tmp_cells_97(D) + 32B] and *_46
+consider run-time aliasing test between *_44 and *_46
+d2q9-bgk.c:253:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:255:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:257:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:258:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:259:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:260:49: missed: failed: evolution of base is not affine.
+consider run-time aliasing test between *_10 and *_12
+consider run-time aliasing test between *_27 and *_29
+consider run-time aliasing test between *_44 and *_46
+d2q9-bgk.c:253:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:255:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:257:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:258:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:259:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:260:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:253:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:255:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:257:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:258:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:259:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:260:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:239:3: missed: couldn't vectorize loop
+d2q9-bgk.c:252:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:241:5: missed: couldn't vectorize loop
+d2q9-bgk.c:252:39: missed: versioning for alias not supported for: can't determine dependence between *_148 and *_142
+d2q9-bgk.c:236:5: note: vectorized 0 loops in function.
+d2q9-bgk.c:253:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:255:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:257:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:258:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:259:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:260:49: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:409:9: optimized: loop with 9 iterations completely unrolled (header execution count 107374184)
+d2q9-bgk.c:340:9: optimized: loop with 9 iterations completely unrolled (header execution count 107374184)
+d2q9-bgk.c:297:13: optimized: Loop 2 distributed: split to 0 loops and 2 library calls.
+d2q9-bgk.c:309:28: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:311:28: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:313:28: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:314:28: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:315:28: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:316:28: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:379:18: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:382:18: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:385:18: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:388:18: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:391:18: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:395:18: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:398:18: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:401:18: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:404:18: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:413:59: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:411:44: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:413:59: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:413:59: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:413:59: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:413:59: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:413:59: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:413:59: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:413:59: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:418:15: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:268:7: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:420:19: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:268:7: missed: failed: evolution of offset is not affine.
+d2q9-bgk.c:289:3: missed: couldn't vectorize loop
+d2q9-bgk.c:289:3: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
+d2q9-bgk.c:297:13: optimized: loop vectorized using 32 byte vectors
+d2q9-bgk.c:303:21: missed: couldn't vectorize loop
+d2q9-bgk.c:379:18: missed: not vectorized: not suitable for scatter store .MASK_STORE (_572, 32B, _571, _111);
+d2q9-bgk.c:268:7: note: vectorized 1 loops in function.
+d2q9-bgk.c:309:28: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:311:28: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:313:28: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:314:28: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:315:28: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:316:28: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:411:44: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:268:7: optimized: loop turned into non-loop; it never loops
+d2q9-bgk.c:268:7: optimized: loop turned into non-loop; it never loops
+d2q9-bgk.c:281:33: missed: statement clobbers memory: scratch_212 = aligned_alloc (64, 36);
+d2q9-bgk.c:268:7: missed: statement clobbers memory: __builtin_memset (&D.4535, 0, 4);
+d2q9-bgk.c:321:10: note: ***** Re-trying analysis with vector size 16
+d2q9-bgk.c:268:7: note: ***** Re-trying analysis with vector size 16
+d2q9-bgk.c:424:3: missed: statement clobbers memory: free (scratch_358);
+d2q9-bgk.c:312:37: note: considering unrolling loop 7 at BB 8
+d2q9-bgk.c:289:3: note: considering unrolling loop 1 at BB 4
+d2q9-bgk.c:197:3: missed: statement clobbers memory: accelerate_flow (params, cells_2(D), obstacles_3(D));
+d2q9-bgk.c:200:10: missed: statement clobbers memory: _7 = collision (params, cells_2(D), tmp_cells_5(D), obstacles_3(D));
+d2q9-bgk.c:447:9: optimized: loop with 9 iterations completely unrolled (header execution count 107374184)
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:437:3: missed: couldn't vectorize loop
+d2q9-bgk.c:437:3: missed: not vectorized: loop nest containing two or more consecutive inner loops cannot be vectorized
+d2q9-bgk.c:439:5: missed: couldn't vectorize loop
+d2q9-bgk.c:428:7: missed: not vectorized: relevant stmt not supported: patt_181 = .MASK_LOAD (cells_73(D), 64B, patt_180);
+d2q9-bgk.c:428:7: note: vectorized 0 loops in function.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:449:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:641:3: missed: couldn't vectorize loop
+d2q9-bgk.c:642:5: missed: statement clobbers memory: free (_5);
+d2q9-bgk.c:635:5: note: vectorized 0 loops in function.
+d2q9-bgk.c:642:5: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:642:5: missed: statement clobbers memory: free (_5);
+d2q9-bgk.c:642:5: missed: statement clobbers memory: free (_5);
+d2q9-bgk.c:643:5: missed: statement clobbers memory: free (_8);
+d2q9-bgk.c:645:3: missed: statement clobbers memory: free (_9);
+d2q9-bgk.c:646:3: missed: statement clobbers memory: free (_10);
+d2q9-bgk.c:648:3: missed: statement clobbers memory: free (_11);
+d2q9-bgk.c:651:3: missed: statement clobbers memory: free (_12);
+d2q9-bgk.c:662:10: missed: statement clobbers memory: _4 = av_velocity (params, cells_9(D), obstacles_10(D));
+d2q9-bgk.c:673:7: optimized: loop with 9 iterations completely unrolled (header execution count 107374184)
+d2q9-bgk.c:669:3: missed: couldn't vectorize loop
+d2q9-bgk.c:669:3: missed: not vectorized: control flow in loop.
+d2q9-bgk.c:671:5: optimized: loop vectorized using 32 byte vectors
+d2q9-bgk.c:665:7: note: vectorized 1 loops in function.
+d2q9-bgk.c:671:5: optimized: loop with 6 iterations completely unrolled (header execution count 5209558)
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed: statement clobbers memory: __fprintf_chk (stderr.25_1, 1, "Error at line %d of file %s:\n", line_5(D), file_6(D));
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed: statement clobbers memory: __fprintf_chk (stderr.26_2, 1, "%s\n", message_7(D));
+d2q9-bgk.c:770:3: missed: statement clobbers memory: fflush (stderr.27_3);
+d2q9-bgk.c:771:3: missed: statement clobbers memory: exit (1);
+d2q9-bgk.c:592:5: optimized: Loop 5 distributed: split to 0 loops and 1 library calls.
+consider run-time aliasing test between *pretmp_170 and *_36
+consider run-time aliasing test between MEM[(float * *)pretmp_170 + 8B] and *_38
+consider run-time aliasing test between MEM[(float * *)pretmp_170 + 16B] and *_40
+consider run-time aliasing test between MEM[(float * *)pretmp_170 + 24B] and *_42
+consider run-time aliasing test between MEM[(float * *)pretmp_170 + 32B] and *_44
+consider run-time aliasing test between MEM[(float * *)pretmp_170 + 40B] and *_46
+consider run-time aliasing test between MEM[(float * *)pretmp_170 + 48B] and *_48
+consider run-time aliasing test between MEM[(float * *)pretmp_170 + 56B] and *_50
+consider run-time aliasing test between MEM[(float * *)pretmp_170 + 64B] and *_52
+d2q9-bgk.c:608:20: missed: couldn't vectorize loop
+d2q9-bgk.c:608:20: missed: not vectorized: control flow in loop.
+d2q9-bgk.c:590:3: missed: couldn't vectorize loop
+d2q9-bgk.c:479:5: missed: statement clobbers memory: __builtin_memset (_186, 0, _190);
+d2q9-bgk.c:570:3: missed: couldn't vectorize loop
+d2q9-bgk.c:575:43: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:572:5: missed: couldn't vectorize loop
+d2q9-bgk.c:572:5: missed: number of versioning for alias run-time tests exceeds 10 (--param vect-max-version-for-alias-checks)
+d2q9-bgk.c:552:3: missed: couldn't vectorize loop
+d2q9-bgk.c:555:31: missed: statement clobbers memory: _20 = aligned_alloc (64, _80);
+d2q9-bgk.c:479:5: note: vectorized 0 loops in function.
+d2q9-bgk.c:555:31: missed: statement clobbers memory: _20 = aligned_alloc (64, _80);
+d2q9-bgk.c:479:5: missed: statement clobbers memory: __builtin_memset (_186, 0, _190);
+d2q9-bgk.c:608:20: missed: statement clobbers memory: retval_132 = fscanf (fp_129, "%d %d %d\n", &xx, &yy, &blocked);
+d2q9-bgk.c:490:8: missed: statement clobbers memory: fp_89 = fopen (paramfile_87(D), "r");
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:36:10: missed: statement clobbers memory: __builtin___sprintf_chk (&message, 1, 1024, "could not open input parameter file: %s", paramfile_87(D));
+d2q9-bgk.c:495:5: missed: statement clobbers memory: die (&message, 495, "d2q9-bgk.c");
+d2q9-bgk.c:499:12: missed: statement clobbers memory: retval_93 = fscanf (fp_89, "%d\n", _1);
+d2q9-bgk.c:501:20: missed: statement clobbers memory: die ("could not read param file: nx", 501, "d2q9-bgk.c");
+d2q9-bgk.c:503:12: missed: statement clobbers memory: retval_96 = fscanf (fp_89, "%d\n", _2);
+d2q9-bgk.c:505:20: missed: statement clobbers memory: die ("could not read param file: ny", 505, "d2q9-bgk.c");
+d2q9-bgk.c:507:12: missed: statement clobbers memory: retval_99 = fscanf (fp_89, "%d\n", _3);
+d2q9-bgk.c:509:20: missed: statement clobbers memory: die ("could not read param file: maxIters", 509, "d2q9-bgk.c");
+d2q9-bgk.c:511:12: missed: statement clobbers memory: retval_102 = fscanf (fp_89, "%d\n", _4);
+d2q9-bgk.c:513:20: missed: statement clobbers memory: die ("could not read param file: reynolds_dim", 513, "d2q9-bgk.c");
+d2q9-bgk.c:515:12: missed: statement clobbers memory: retval_105 = fscanf (fp_89, "%f\n", _5);
+d2q9-bgk.c:517:20: missed: statement clobbers memory: die ("could not read param file: density", 517, "d2q9-bgk.c");
+d2q9-bgk.c:519:12: missed: statement clobbers memory: retval_108 = fscanf (fp_89, "%f\n", _6);
+d2q9-bgk.c:521:20: missed: statement clobbers memory: die ("could not read param file: accel", 521, "d2q9-bgk.c");
+d2q9-bgk.c:523:12: missed: statement clobbers memory: retval_111 = fscanf (fp_89, "%f\n", _7);
+d2q9-bgk.c:525:20: missed: statement clobbers memory: die ("could not read param file: omega", 525, "d2q9-bgk.c");
+d2q9-bgk.c:528:3: missed: statement clobbers memory: fclose (fp_89);
+d2q9-bgk.c:550:25: missed: statement clobbers memory: _8 = malloc (72);
+d2q9-bgk.c:551:29: missed: statement clobbers memory: _9 = malloc (72);
+d2q9-bgk.c:555:31: missed: statement clobbers memory: _20 = aligned_alloc (64, _80);
+d2q9-bgk.c:556:35: missed: statement clobbers memory: _22 = aligned_alloc (64, _80);
+d2q9-bgk.c:561:20: missed: statement clobbers memory: _28 = malloc (_27);
+d2q9-bgk.c:563:31: missed: statement clobbers memory: die ("cannot allocate column memory for obstacles", 563, "d2q9-bgk.c");
+d2q9-bgk.c:479:5: missed: statement clobbers memory: __builtin_memset (_186, 0, _190);
+d2q9-bgk.c:599:8: missed: statement clobbers memory: fp_129 = fopen (obstaclefile_127(D), "r");
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:36:10: missed: statement clobbers memory: __builtin___sprintf_chk (&message, 1, 1024, "could not open input obstacles file: %s", obstaclefile_127(D));
+d2q9-bgk.c:604:5: missed: statement clobbers memory: die (&message, 604, "d2q9-bgk.c");
+d2q9-bgk.c:611:22: missed: statement clobbers memory: die ("expected 3 values per line in obstacle file", 611, "d2q9-bgk.c");
+d2q9-bgk.c:613:40: missed: statement clobbers memory: die ("obstacle x-coord out of range", 613, "d2q9-bgk.c");
+d2q9-bgk.c:615:40: missed: statement clobbers memory: die ("obstacle y-coord out of range", 615, "d2q9-bgk.c");
+d2q9-bgk.c:617:23: missed: statement clobbers memory: die ("obstacle blocked value should be 1", 617, "d2q9-bgk.c");
+d2q9-bgk.c:608:20: missed: statement clobbers memory: retval_132 = fscanf (fp_129, "%d %d %d\n", &xx, &yy, &blocked);
+d2q9-bgk.c:624:3: missed: statement clobbers memory: fclose (fp_129);
+d2q9-bgk.c:630:26: missed: statement clobbers memory: _74 = malloc (_73);
+d2q9-bgk.c:715:9: optimized: loop with 9 iterations completely unrolled (header execution count 107374184)
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed: statement clobbers memory: __fprintf_chk (fp_84, 1, "%d %d %.12E %.12E %.12E %.12E %d\n", ii_117, jj_127, prephitmp_196, prephitmp_194, prephitmp_44, _58, _57);
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed: statement clobbers memory: __fprintf_chk (fp_84, 1, "%d %d %.12E %.12E %.12E %.12E %d\n", ii_117, jj_127, prephitmp_196, prephitmp_194, prephitmp_44, _58, _57);
+d2q9-bgk.c:756:3: missed: couldn't vectorize loop
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed: statement clobbers memory: __fprintf_chk (fp_88, 1, "%d:\t%.12E\n", ii_8, _68);
+d2q9-bgk.c:700:3: missed: couldn't vectorize loop
+d2q9-bgk.c:700:3: missed: not vectorized: control flow in loop.
+d2q9-bgk.c:702:5: missed: couldn't vectorize loop
+d2q9-bgk.c:702:5: missed: not vectorized: control flow in loop.
+d2q9-bgk.c:683:5: note: vectorized 0 loops in function.
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed: statement clobbers memory: __fprintf_chk (fp_88, 1, "%d:\t%.12E\n", ii_8, _68);
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+d2q9-bgk.c:717:37: missed: failed: evolution of base is not affine.
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed: statement clobbers memory: __fprintf_chk (fp_84, 1, "%d %d %.12E %.12E %.12E %.12E %d\n", ii_117, jj_127, prephitmp_196, prephitmp_194, prephitmp_44, _58, _57);
+d2q9-bgk.c:693:8: missed: statement clobbers memory: fp_84 = fopen ("final_state.dat", "w");
+d2q9-bgk.c:697:5: missed: statement clobbers memory: die ("could not open file output file", 697, "d2q9-bgk.c");
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed: statement clobbers memory: __fprintf_chk (fp_84, 1, "%d %d %.12E %.12E %.12E %.12E %d\n", ii_117, jj_127, prephitmp_196, prephitmp_194, prephitmp_44, _58, _57);
+d2q9-bgk.c:747:3: missed: statement clobbers memory: fclose (fp_84);
+d2q9-bgk.c:749:8: missed: statement clobbers memory: fp_88 = fopen ("av_vels.dat", "w");
+d2q9-bgk.c:761:3: missed: statement clobbers memory: fclose (fp_88);
+d2q9-bgk.c:753:5: missed: statement clobbers memory: die ("could not open file output file", 753, "d2q9-bgk.c");
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed: statement clobbers memory: __fprintf_chk (fp_88, 1, "%d:\t%.12E\n", ii_8, _68);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:100:10: missed: statement clobbers memory: __fprintf_chk (stderr.28_1, 1, "Usage: %s <paramfile> <obstaclefile>\n", exe_3(D));
+d2q9-bgk.c:777:3: missed: statement clobbers memory: exit (1);
+d2q9-bgk.c:673:7: optimized: loop with 9 iterations completely unrolled (header execution count 107374184)
+d2q9-bgk.c:157:3: missed: couldn't vectorize loop
+d2q9-bgk.c:157:3: missed: not vectorized: multiple nested loops.
+d2q9-bgk.c:669:3: missed: couldn't vectorize loop
+d2q9-bgk.c:669:3: missed: not vectorized: control flow in loop.
+d2q9-bgk.c:671:5: optimized: loop vectorized using 32 byte vectors
+d2q9-bgk.c:122:5: note: vectorized 1 loops in function.
+d2q9-bgk.c:671:5: optimized: loop with 6 iterations completely unrolled (header execution count 5209558)
+d2q9-bgk.c:137:5: missed: statement clobbers memory: usage (_1);
+d2q9-bgk.c:146:3: missed: statement clobbers memory: gettimeofday (&timstr, 0B);
+d2q9-bgk.c:149:3: missed: statement clobbers memory: initialise (paramfile_61, obstaclefile_62, &params, &cells, &tmp_cells, &obstacles, &av_vels);
+d2q9-bgk.c:152:3: missed: statement clobbers memory: gettimeofday (&timstr, 0B);
+d2q9-bgk.c:171:3: missed: statement clobbers memory: gettimeofday (&timstr, 0B);
+d2q9-bgk.c:178:3: missed: statement clobbers memory: gettimeofday (&timstr, 0B);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed: statement clobbers memory: __printf_chk (1, "==done==\n");
+d2q9-bgk.c:122:5: missed: not vectorized: more than one data ref in stmt: params = params;
+d2q9-bgk.c:662:10: missed: statement clobbers memory: _115 = av_velocity (params, cells.8_40, obstacles.7_39);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed: statement clobbers memory: __printf_chk (1, "Reynolds number:\t\t%.12E\n", _42);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed: statement clobbers memory: __printf_chk (1, "Elapsed Init time:\t\t\t%.6lf (s)\n", _43);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed: statement clobbers memory: __printf_chk (1, "Elapsed Compute time:\t\t\t%.6lf (s)\n", _44);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed: statement clobbers memory: __printf_chk (1, "Elapsed Collate time:\t\t\t%.6lf (s)\n", _45);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed: statement clobbers memory: __printf_chk (1, "Elapsed Total time:\t\t\t%.6lf (s)\n", _46);
+d2q9-bgk.c:189:3: missed: statement clobbers memory: write_values (params, cells.11_49, obstacles.10_48, av_vels.9_47);
+d2q9-bgk.c:190:3: missed: statement clobbers memory: finalise (&params, &cells, &tmp_cells, &obstacles, &av_vels);
+d2q9-bgk.c:122:5: missed: not vectorized: more than one data ref in stmt: params = params;
+d2q9-bgk.c:197:3: missed: statement clobbers memory: accelerate_flow (params, cells.2_14, obstacles.0_12);
+d2q9-bgk.c:200:10: missed: statement clobbers memory: _134 = collision (params, cells.2_14, tmp_cells.1_13, obstacles.0_12);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed: statement clobbers memory: __printf_chk (1, "==timestep: %d==\n", tt_92);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed: statement clobbers memory: __printf_chk (1, "av velocity: %.12E\n", _25);
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:107:10: missed: statement clobbers memory: __printf_chk (1, "tot density: %.12E\n", prephitmp_291);
