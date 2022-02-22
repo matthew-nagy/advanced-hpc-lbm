@@ -78,14 +78,15 @@ typedef struct
 ** function prototypes
 */
 
+typedef struct{
+  float *s0, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8;
+}CellList;
+
 /* load params, allocate memory, load obstacles & initialise fluid particle densities */
 int initialise(const char* paramfile, const char* obstaclefile,
                t_param* params, CellList* cells_ptr, CellList* tmp_cells_ptr,
                int** obstacles_ptr, float** av_vels_ptr);
 
-typedef struct{
-  float *s0, *s1, *s2, *s3, *s4, *s5, *s6, *s7, *s8;
-}CellList;
 
 /*
 ** The main calculation methods.
@@ -159,7 +160,7 @@ int main(int argc, char* argv[])
   for (int tt = 0; tt < params.maxIters; tt++)
   {
     av_vels[tt] = timestep(params, cells, tmp_cells, obstacles);
-    float** tmp = tmp_cells;
+    CellList tmp = tmp_cells;
     tmp_cells = cells;
     cells = tmp;
 #ifdef DEBUG
