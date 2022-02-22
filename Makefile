@@ -25,4 +25,3 @@ check:
 
 clean:
 	rm -f $(EXE)
-	rm optRep.out

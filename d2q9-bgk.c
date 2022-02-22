@@ -98,7 +98,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
 int propagate(const t_param params, float** cells, float** tmp_cells);
 int rebound(const t_param params, float** cells, float** tmp_cells, int* obstacles);
 float collision(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles);
-int write_values(const t_param params, float** cells, int* obstacles, float* av_vels);
+int write_values(const t_param params, CellList cells, CellList obstacles, float* av_vels);
 
 /* finalise, including freeing up allocated memory */
 int finalise(const t_param* params, CellList* cells_ptr, CellList* tmp_cells_ptr,
