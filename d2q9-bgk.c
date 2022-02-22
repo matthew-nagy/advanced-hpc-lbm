@@ -98,7 +98,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
 int propagate(const t_param params, float** cells, float** tmp_cells);
 int rebound(const t_param params, float** cells, float** tmp_cells, int* obstacles);
 float collision(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles);
-int write_values(const t_param params, CellList cells, CellList obstacles, float* av_vels);
+int write_values(const t_param params, CellList cells, int* obstacles, float* av_vels);
 
 /* finalise, including freeing up allocated memory */
 int finalise(const t_param* params, CellList* cells_ptr, CellList* tmp_cells_ptr,
@@ -106,7 +106,7 @@ int finalise(const t_param* params, CellList* cells_ptr, CellList* tmp_cells_ptr
 
 /* Sum all the densities in the grid.
 ** The total should remain constant from one timestep to the next. */
-float total_density(const t_param params, CellList* cells);
+float total_density(const t_param params, CellList cells);
 
 /* compute average velocity */
 float av_velocity(const t_param params, CellList* cells, int* obstacles);
@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
   gettimeofday(&timstr, NULL);
   init_toc = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
   comp_tic=init_toc;
-  #define DEBUG
+  //#define DEBUG
 
   for (int tt = 0; tt < params.maxIters; tt++)
   {
