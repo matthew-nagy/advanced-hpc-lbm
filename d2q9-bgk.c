@@ -109,10 +109,10 @@ int finalise(const t_param* params, CellList* cells_ptr, CellList* tmp_cells_ptr
 float total_density(const t_param params, CellList cells);
 
 /* compute average velocity */
-float av_velocity(const t_param params, CellList* cells, int* obstacles);
+float av_velocity(const t_param params, CellList cells, int* obstacles);
 
 /* calculate Reynolds number */
-float calc_reynolds(const t_param params, CellList* cells, int* obstacles);
+float calc_reynolds(const t_param params, CellList cells, int* obstacles);
 
 /* utility functions */
 void die(const char* message, const int line, const char* file);
