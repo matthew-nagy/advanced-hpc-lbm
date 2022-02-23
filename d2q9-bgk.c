@@ -270,18 +270,27 @@ inline void innerPropLoop(const t_param params, t_speed* const restrict cells, t
   int x_w = iiLimit;
 
   propagateSwap(params, cells, tmp_cells, 0, jj, y_n, x_e, y_s, x_w);
-  for (int ii = 1; ii < iiLimit; ii++)
+
+  x_e += 1;
+  x_w = 0;
+  propagateSwap(params, cells, tmp_cells, 1, jj, y_n, x_e, y_s, x_w);
+
+  for (int ii = 2; ii < iiLimit - 1; ii++)
   {
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
     x_e += 1;
-    x_w = ii - 1;
+    x_w +=1;
 
     propagateSwap(params, cells, tmp_cells, ii, jj, y_n, x_e, y_s, x_w);
   }
-  x_e = 0;
-  x_w = iiLimit - 1;
+  
+  x_e += 1;
+  x_w += 1;
+  propagateSwap(params, cells, tmp_cells, iiLimit - 1, jj, y_n, x_e, y_s, x_w);
 
+  x_e = 0;
+  x_w += 1;
   propagateSwap(params, cells, tmp_cells, iiLimit, jj, y_n, x_e, y_s, x_w);
 }
 
