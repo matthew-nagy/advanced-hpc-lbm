@@ -210,7 +210,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   /* modify the 2nd row of the grid */
   int jj = params.ny - 2;
 
-  
+
   for (int ii = 0; ii < params.nx; ii++)
   {
     /* if the cell is not occupied and
@@ -253,7 +253,7 @@ float collision(const t_param params, CellList cells, CellList tmp_cells, int co
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
       
-  #pragma unroll(128);
+  #pragma unroll(128)
   for (int jj = 0; jj < params.ny; jj++)
   {
     int y_n = (jj + 1) % params.ny;
