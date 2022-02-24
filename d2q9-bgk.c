@@ -296,7 +296,7 @@ float collision(const t_param params, CellList cells, CellList tmp_cells, int co
     for (int ii = 0; ii < params.nx; ii++)
     {
 
-      float*const scratch = (float*)aligned_alloc(64, sizeof(float) * 9);
+      float scratch[9];
       /* determine indices of axis-direction neighbours
       ** respecting periodic boundary conditions (wrap around) */
       int x_e = (ii + 1) % params.nx;
@@ -418,7 +418,6 @@ float collision(const t_param params, CellList cells, CellList tmp_cells, int co
         /* increase counter of inspected cells */
         tot_cells += (1 - obstacles[jj*params.nx + ii]);
       }
-      free(scratch);
     }
   }
   return tot_u / (float)tot_cells;
