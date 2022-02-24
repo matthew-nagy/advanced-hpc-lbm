@@ -236,6 +236,11 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
 
 
 inline void innerCollision(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int* tot_cells, float* tot_u, int jj){
+  const float c_sq = 1.f / 3.f; /* square of speed of sound */
+  const float w0 = 4.f / 9.f;  /* weighting factor */
+  const float w1 = 1.f / 9.f;  /* weighting factor */
+  const float w2 = 1.f / 36.f; /* weighting factor */
+  
   int y_n = (jj + 1) % params.ny;
   int y_s = (jj == 0) ? (jj + params.ny - 1) : (jj - 1);
 
@@ -373,11 +378,6 @@ inline void innerCollision(const t_param params, CellList cells, CellList tmp_ce
 
 float collision(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles)
 {
-  const float c_sq = 1.f / 3.f; /* square of speed of sound */
-  const float w0 = 4.f / 9.f;  /* weighting factor */
-  const float w1 = 1.f / 9.f;  /* weighting factor */
-  const float w2 = 1.f / 36.f; /* weighting factor */
-
   int    tot_cells = 0;  /* no. of cells used in calculation */
   float tot_u;          /* accumulated magnitudes of velocity for each cell */
 
