@@ -210,6 +210,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   /* modify the 2nd row of the grid */
   int jj = params.ny - 2;
 
+  
   for (int ii = 0; ii < params.nx; ii++)
   {
     /* if the cell is not occupied and
@@ -227,37 +228,6 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
       cells[3][ii + jj*params.nx] -= w1;
       cells[6][ii + jj*params.nx] -= w2;
       cells[7][ii + jj*params.nx] -= w2;
-    }
-  }
-
-  return EXIT_SUCCESS;
-}
-
-int propagate(const t_param params, float** cells, float** tmp_cells)
-{
-  /* loop over _all_ cells */
-  for (int jj = 0; jj < params.ny; jj++)
-  {
-    for (int ii = 0; ii < params.nx; ii++)
-    {
-      /* determine indices of axis-direction neighbours
-      ** respecting periodic boundary conditions (wrap around) */
-      int y_n = (jj + 1) % params.ny;
-      int x_e = (ii + 1) % params.nx;
-      int y_s = (jj == 0) ? (jj + params.ny - 1) : (jj - 1);
-      int x_w = (ii == 0) ? (ii + params.nx - 1) : (ii - 1);
-      /* propagate densities from neighbouring cells, following
-      ** appropriate directions of travel and writing into
-      ** scratch space grid */
-      tmp_cells[0][ii + jj*params.nx] = cells[0][ii + jj*params.nx]; /* central cell, no movement */
-      tmp_cells[1][ii + jj*params.nx] = cells[1][x_w + jj*params.nx]; /* east */
-      tmp_cells[2][ii + jj*params.nx] = cells[2][ii + y_s*params.nx]; /* north */
-      tmp_cells[3][ii + jj*params.nx] = cells[3][x_e + jj*params.nx]; /* west */
-      tmp_cells[4][ii + jj*params.nx] = cells[4][ii + y_n*params.nx]; /* south */
-      tmp_cells[5][ii + jj*params.nx] = cells[5][x_w + y_s*params.nx]; /* north-east */
-      tmp_cells[6][ii + jj*params.nx] = cells[6][x_e + y_s*params.nx]; /* north-west */
-      tmp_cells[7][ii + jj*params.nx] = cells[7][x_e + y_n*params.nx]; /* south-west */
-      tmp_cells[8][ii + jj*params.nx] = cells[8][x_w + y_n*params.nx]; /* south-east */
     }
   }
 
@@ -283,7 +253,7 @@ float collision(const t_param params, CellList cells, CellList tmp_cells, int co
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
       
-  
+  #pragma unroll(128);
   for (int jj = 0; jj < params.ny; jj++)
   {
     int y_n = (jj + 1) % params.ny;
