@@ -417,8 +417,8 @@ float collision(const t_param params, CellList cells, CellList tmp_cells, int co
         tot_u += sqrtf(u_sq);
         /* increase counter of inspected cells */
         tot_cells += (1 - obstacles[jj*params.nx + ii]);
-        free(scratch);
       }
+      free(scratch);
     }
   }
   return tot_u / (float)tot_cells;
