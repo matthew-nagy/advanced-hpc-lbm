@@ -278,8 +278,6 @@ float collision(const t_param params, CellList cells, CellList tmp_cells, int co
   /* initialise */
   tot_u = 0.f;
 
-  float*const scratch = (float*)aligned_alloc(64, sizeof(float) * 9);
-
   /* loop over the cells in the grid
   ** NB the collision step is called after
   ** the propagate step and so values of interest
@@ -294,10 +292,11 @@ float collision(const t_param params, CellList cells, CellList tmp_cells, int co
     // //Cheese to force an assume
     // do { if (!((params.nx % 4) == 0)) __builtin_unreachable(); } while (0);
 
-    #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), aligned(scratch:64), reduction(+:tot_u), reduction(+:tot_cells)
+    #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tot_u), reduction(+:tot_cells)
     for (int ii = 0; ii < params.nx; ii++)
     {
 
+      float*const scratch = (float*)aligned_alloc(64, sizeof(float) * 9);
       /* determine indices of axis-direction neighbours
       ** respecting periodic boundary conditions (wrap around) */
       int x_e = (ii + 1) % params.nx;
@@ -418,10 +417,10 @@ float collision(const t_param params, CellList cells, CellList tmp_cells, int co
         tot_u += sqrtf(u_sq);
         /* increase counter of inspected cells */
         tot_cells += (1 - obstacles[jj*params.nx + ii]);
+        free(scratch);
       }
     }
   }
-  free(scratch);
   return tot_u / (float)tot_cells;
 }
 
