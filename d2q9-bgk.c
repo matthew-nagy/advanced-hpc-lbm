@@ -253,7 +253,7 @@ float collision(const t_param params, CellList cells, CellList tmp_cells, int co
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
       
-  #pragma unroll(128)
+  #pragma unroll_and_jam (128)
   for (int jj = 0; jj < params.ny; jj++)
   {
     int y_n = (jj + 1) % params.ny;
