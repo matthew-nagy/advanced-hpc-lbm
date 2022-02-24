@@ -247,7 +247,7 @@ inline void innerCollision(const t_param params, CellList cells, CellList tmp_ce
   // //Cheese to force an assume
   // do { if (!((params.nx % 4) == 0)) __builtin_unreachable(); } while (0);
 
-  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tot_u), reduction(+:tot_cells)
+  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:*tot_u), reduction(+:*tot_cells)
   for (int ii = 0; ii < params.nx; ii++)
   {
 
