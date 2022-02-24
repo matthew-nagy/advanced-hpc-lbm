@@ -235,7 +235,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
 }
 
 
-inline void innerCollision(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int jj){
+inline void innerCollision(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int* tot_cells, float* tot_u, int jj){
   int y_n = (jj + 1) % params.ny;
   int y_s = (jj == 0) ? (jj + params.ny - 1) : (jj - 1);
 
@@ -364,9 +364,9 @@ inline void innerCollision(const t_param params, CellList cells, CellList tmp_ce
 
       //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
       /* accumulate the norm of x- and y- velocity components */
-      tot_u += sqrtf(u_sq);
+      *tot_u += sqrtf(u_sq);
       /* increase counter of inspected cells */
-      tot_cells += (1 - obstacles[jj*params.nx + ii]);
+      *tot_cells += (1 - obstacles[jj*params.nx + ii]);
     }
   }
 }
@@ -391,38 +391,38 @@ float collision(const t_param params, CellList cells, CellList tmp_cells, int co
       
   for (int jj = 0; jj < params.ny; jj += 32)
   {
-    innerCollision(params, cells, tmp_cells, obstacles, jj);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+1);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+2);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+3);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+4);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+5);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+6);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+7);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+8);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+9);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+10);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+11);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+12);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+13);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+14);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+15);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+16);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+17);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+18);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+19);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+20);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+21);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+22);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+23);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+24);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+25);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+26);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+27);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+28);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+29);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+30);
-    innerCollision(params, cells, tmp_cells, obstacles, jj+31);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u, jj);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+1);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+2);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+3);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+4);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+5);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+6);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+7);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+8);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+9);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+10);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+11);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+12);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+13);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+14);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+15);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+16);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+17);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+18);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+19);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+20);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+21);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+22);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+23);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+24);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+25);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+26);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+27);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+28);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+29);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+30);
+    innerCollision(params, cells, tmp_cells, obstacles, &tot_cells, &tot_u,  jj+31);
   }
   return tot_u / (float)tot_cells;
 }
