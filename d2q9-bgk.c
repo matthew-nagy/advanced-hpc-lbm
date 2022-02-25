@@ -373,7 +373,7 @@ inline void outerCollide(t_param*const restrict params, CellList cells, CellList
 
   float datOut[2];
   int x_e = 1;
-  int x_w = params->nx - 1);
+  int x_w = params->nx - 1;
   innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, 0, datOut);
   tmp_vel += datOut[0];
   tmp_cell += datOut[1];
