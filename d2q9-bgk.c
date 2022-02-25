@@ -373,9 +373,9 @@ inline void outerCollide(t_param*const restrict params, CellList cells, CellList
 
   
   float datOut1[2];
-  int x_e = 1;
-  int x_w = ii + params->nx - 1;
-  innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, 0, datOut1);
+  int x_eo = 1;
+  int x_wo = ii + params->nx - 1;
+  innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_eo, x_wo, jj, 0, datOut1);
   tmp_vel += datOut1[0];
   tmp_cell += datOut1[1];
 
@@ -393,9 +393,9 @@ inline void outerCollide(t_param*const restrict params, CellList cells, CellList
   }
 
   float datOut2[2];
-  int x_e = 0;
-  int x_w = params->nx - 2;
-  innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, params->nx - 1, datOut2);
+  x_eo = 0;
+  x_wo = params->nx - 2;
+  innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_eo, x_wo, jj, params->nx - 1, datOut2);
   tmp_vel += datOut2[0];
   tmp_cell += datOut2[1];
 
