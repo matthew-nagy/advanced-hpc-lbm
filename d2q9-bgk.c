@@ -240,7 +240,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
 }
 
 
-inline void innerCollide(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int* tot_cells, float*tot_u){
+inline void innerCollide(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int* tot_cells, float*tot_u, int jj){
   int temp_tot_cells = 0;
   float temp_tot_u = 0.0f;
 
@@ -395,7 +395,7 @@ float collision(const t_param params, CellList cells, CellList tmp_cells, int co
     int y_n = (jj + 1) % params.ny;
     int y_s = (jj == 0) ? (jj + params.ny - 1) : (jj - 1);
   
-    innerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, &tot_cells, &tot_u);
+    innerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, &tot_cells, &tot_u, jj);
   }
   
   return tot_u / (float)tot_cells;
