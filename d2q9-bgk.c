@@ -65,24 +65,6 @@ const float w0 = 4.f / 9.f;  /* weighting factor */
 const float w1 = 1.f / 9.f;  /* weighting factor */
 const float w2 = 1.f / 36.f; /* weighting factor */
 
-//Quake fast square root
-//Source https://en.wikipedia.org/wiki/Fast_inverse_square_root
-float Q_rsqrt( float number )
-{
-	long i;
-	float x2, y;
-	const float threehalfs = 1.5F;
-
-	x2 = number * 0.5F;
-	y  = number;
-	i  = * ( long * ) &y;                       // evil floating point bit level hacking
-	i  = 0x5f3759df - ( i >> 1 );               // what the fuck? 
-	y  = * ( float * ) &i;
-	y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
-//	y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
-
-	return y;
-}
 
 /* struct to hold the parameter values */
 typedef struct
@@ -379,7 +361,7 @@ inline void innerCollider(t_param*const restrict params, CellList cells, CellLis
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
-    dat[0] += Q_rsqrt(u_sq);
+    dat[0] += sqrtf(u_sq);
     /* increase counter of inspected cells */
     dat[1] += (1 - obstacles[jj*params->nx + ii]);
   }
