@@ -372,14 +372,21 @@ inline void outerCollide(t_param*const restrict params, CellList cells, CellList
   float tmp_vel = 0.0f;
 
   
+  float datOut1[2];
+  int x_e = 1;
+  int x_w = ii + params->nx - 1;
+  innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, 0, datOut1);
+  tmp_vel += datOut1[0];
+  tmp_cell += datOut1[1];
+
   #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
-  for (int ii = 0; ii < params->nx - 1; ii++)
+  for (int ii = 1; ii < params->nx - 1; ii++)
   {
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
     float dat[2];
     int x_e = ii + 1;
-    int x_w = (ii == 0) ? (ii + params->nx - 1) : (ii - 1);
+    int x_w = ii - 1;
     innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, dat);
     tmp_vel += dat[0];
     tmp_cell += dat[1];
