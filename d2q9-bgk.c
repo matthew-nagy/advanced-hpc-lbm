@@ -371,19 +371,34 @@ inline void outerCollide(t_param*const restrict params, CellList cells, CellList
   float tmp_cell = 0.0f;
   float tmp_vel = 0.0f;
 
+  float datOut[2];
+  int x_e = 1;
+  int x_w = params->nx - 1);
+  innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, 0, datOut);
+  tmp_vel += dat[0];
+  tmp_cell += dat[1];
+
+  x_w = -1;
+  int maxItter = params->nx - 1;
   #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
-  for (int ii = 0; ii < params->nx; ii++)
+  for (int ii = 1; ii < maxItter; ii++)
   {
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
     float dat[2];
-    int x_e = (ii + 1) % params->nx;
-    int x_w = (ii == 0) ? (ii + params->nx - 1) : (ii - 1);
+    x_e += 1;
+    x_w += 1;
     innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, dat);
-
     tmp_vel += dat[0];
     tmp_cell += dat[1];
   }
+
+  float dat[2];
+  x_e = 0;
+  x_w += 1;
+  innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, x_w + 1, datOut);
+  tmp_vel += dat[0];
+  tmp_cell += dat[1];
 
   params->totCells += tmp_cell;
   params->totVel += tmp_vel;
