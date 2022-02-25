@@ -262,24 +262,18 @@ inline void innerCollider(t_param*const restrict params, CellList cells, CellLis
   scratch[8] = cells[8][x_w + y_n*params->nx]; /* south-east */
 
   float u_sq = 0.0f;
+  /* called after propagate, so taking values from scratch space
+  ** mirroring, and writing into main grid */
+  tmp_cells[1][ii + jj*params->nx] = scratch[3];
+  tmp_cells[2][ii + jj*params->nx] = scratch[4];
+  tmp_cells[3][ii + jj*params->nx] = scratch[1];
+  tmp_cells[4][ii + jj*params->nx] = scratch[2];
+  tmp_cells[5][ii + jj*params->nx] = scratch[7];
+  tmp_cells[6][ii + jj*params->nx] = scratch[8];
+  tmp_cells[7][ii + jj*params->nx] = scratch[5];
+  tmp_cells[8][ii + jj*params->nx] = scratch[6];
 
-  /* if the cell contains an obstacle */
-  if (obstacles[jj*params->nx + ii])
-  {
-    /* called after propagate, so taking values from scratch space
-    ** mirroring, and writing into main grid */
-    tmp_cells[1][ii + jj*params->nx] = scratch[3];
-    tmp_cells[2][ii + jj*params->nx] = scratch[4];
-    tmp_cells[3][ii + jj*params->nx] = scratch[1];
-    tmp_cells[4][ii + jj*params->nx] = scratch[2];
-    tmp_cells[5][ii + jj*params->nx] = scratch[7];
-    tmp_cells[6][ii + jj*params->nx] = scratch[8];
-    tmp_cells[7][ii + jj*params->nx] = scratch[5];
-    tmp_cells[8][ii + jj*params->nx] = scratch[6];
-  }
-  /* don't consider occupied cells */
-  else
-  {
+
     /* compute local density total */
     float local_density = 0.f;
 
@@ -351,20 +345,21 @@ inline void innerCollider(t_param*const restrict params, CellList cells, CellLis
                                       + (u[8] * u[8]) / (2.f * c_sq * c_sq)
                                       - u_sq / (2.f * c_sq));
 
-    /* relaxation step */
-    for (int kk = 0; kk < NSPEEDS; kk++)
-    {
-      tmp_cells[kk][ii + jj*params->nx] = scratch[kk]
-                                              + params->omega
-                                              * (d_equ[kk] - scratch[kk]);
-    }
+    if(!obstacles[jj*params->nx + ii]){
+      /* relaxation step */
+      for (int kk = 0; kk < NSPEEDS; kk++)
+      {
+        tmp_cells[kk][ii + jj*params->nx] = scratch[kk]
+                                                + params->omega
+                                                * (d_equ[kk] - scratch[kk]);
+      }
 
-    //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
-    /* accumulate the norm of x- and y- velocity components */
-    dat[0] += sqrtf(u_sq);
-    /* increase counter of inspected cells */
-    dat[1] += (1 - obstacles[jj*params->nx + ii]);
-  }
+      //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
+      /* accumulate the norm of x- and y- velocity components */
+      dat[0] += sqrtf(u_sq);
+      /* increase counter of inspected cells */
+      dat[1] += (1 - obstacles[jj*params->nx + ii]);
+    }
 }
 
 inline void outerCollide(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int jj){
