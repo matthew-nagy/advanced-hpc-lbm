@@ -75,6 +75,9 @@ typedef struct
   float density;       /* density per link */
   float accel;         /* density redistribution */
   float omega;         /* relaxation parameter */
+
+  int totCells;
+  float totVel;
 } t_param;
 
 /* struct to hold the 'speed' values */
@@ -97,11 +100,11 @@ typedef float* const restrict*const restrict CellList;
 ** timestep calls, in order, the functions:
 ** accelerate_flow(), propagate(), rebound() & collision()
 */
-float timestep(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles);
+float timestep(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles);
 int accelerate_flow(const t_param params, CellList cells, int const*const restrict obstacles);
 int propagate(const t_param params, float** cells, float** tmp_cells);
 int rebound(const t_param params, float** cells, float** tmp_cells, int* obstacles);
-float collision(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles);
+float collision(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles);
 int write_values(const t_param params, float** cells, int* obstacles, float* av_vels);
 
 /* finalise, including freeing up allocated memory */
@@ -162,7 +165,7 @@ int main(int argc, char* argv[])
 
   for (int tt = 0; tt < params.maxIters; tt++)
   {
-    av_vels[tt] = timestep(params, cells, tmp_cells, obstacles);
+    av_vels[tt] = timestep(&params, cells, tmp_cells, obstacles);
     float** tmp = tmp_cells;
     tmp_cells = cells;
     cells = tmp;
@@ -198,7 +201,7 @@ int main(int argc, char* argv[])
   return EXIT_SUCCESS;
 }
 
-float timestep(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles)
+float timestep(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles)
 {
   accelerate_flow(params, cells, obstacles);
   //propagate(params, cells, tmp_cells);
@@ -239,46 +242,38 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   return EXIT_SUCCESS;
 }
 
-typedef struct{
-  int numOfCells;
-  float totvel;
-} vel_dat;
-
-inline vel_dat innerCollider(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii){
+inline void innerCollider(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii){
   float scratch[9];
 
-  vel_dat ret;
-  ret.numOfCells = 0;
-  ret.totvel = 0;
 
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
   ** scratch space grid */
-  scratch[0] = cells[0][ii + jj*params.nx]; /* central cell, no movement */
-  scratch[1] = cells[1][x_w + jj*params.nx]; /* east */
-  scratch[2] = cells[2][ii + y_s*params.nx]; /* north */
-  scratch[3] = cells[3][x_e + jj*params.nx]; /* west */
-  scratch[4] = cells[4][ii + y_n*params.nx]; /* south */
-  scratch[5] = cells[5][x_w + y_s*params.nx]; /* north-east */
-  scratch[6] = cells[6][x_e + y_s*params.nx]; /* north-west */
-  scratch[7] = cells[7][x_e + y_n*params.nx]; /* south-west */
-  scratch[8] = cells[8][x_w + y_n*params.nx]; /* south-east */
+  scratch[0] = cells[0][ii + jj*params->nx]; /* central cell, no movement */
+  scratch[1] = cells[1][x_w + jj*params->nx]; /* east */
+  scratch[2] = cells[2][ii + y_s*params->nx]; /* north */
+  scratch[3] = cells[3][x_e + jj*params->nx]; /* west */
+  scratch[4] = cells[4][ii + y_n*params->nx]; /* south */
+  scratch[5] = cells[5][x_w + y_s*params->nx]; /* north-east */
+  scratch[6] = cells[6][x_e + y_s*params->nx]; /* north-west */
+  scratch[7] = cells[7][x_e + y_n*params->nx]; /* south-west */
+  scratch[8] = cells[8][x_w + y_n*params->nx]; /* south-east */
 
   float u_sq = 0.0f;
 
   /* if the cell contains an obstacle */
-  if (obstacles[jj*params.nx + ii])
+  if (obstacles[jj*params->nx + ii])
   {
     /* called after propagate, so taking values from scratch space
     ** mirroring, and writing into main grid */
-    tmp_cells[1][ii + jj*params.nx] = scratch[3];
-    tmp_cells[2][ii + jj*params.nx] = scratch[4];
-    tmp_cells[3][ii + jj*params.nx] = scratch[1];
-    tmp_cells[4][ii + jj*params.nx] = scratch[2];
-    tmp_cells[5][ii + jj*params.nx] = scratch[7];
-    tmp_cells[6][ii + jj*params.nx] = scratch[8];
-    tmp_cells[7][ii + jj*params.nx] = scratch[5];
-    tmp_cells[8][ii + jj*params.nx] = scratch[6];
+    tmp_cells[1][ii + jj*params->nx] = scratch[3];
+    tmp_cells[2][ii + jj*params->nx] = scratch[4];
+    tmp_cells[3][ii + jj*params->nx] = scratch[1];
+    tmp_cells[4][ii + jj*params->nx] = scratch[2];
+    tmp_cells[5][ii + jj*params->nx] = scratch[7];
+    tmp_cells[6][ii + jj*params->nx] = scratch[8];
+    tmp_cells[7][ii + jj*params->nx] = scratch[5];
+    tmp_cells[8][ii + jj*params->nx] = scratch[6];
   }
   /* don't consider occupied cells */
   else
@@ -357,50 +352,39 @@ inline vel_dat innerCollider(const t_param params, CellList cells, CellList tmp_
     /* relaxation step */
     for (int kk = 0; kk < NSPEEDS; kk++)
     {
-      tmp_cells[kk][ii + jj*params.nx] = scratch[kk]
-                                              + params.omega
+      tmp_cells[kk][ii + jj*params->nx] = scratch[kk]
+                                              + params->omega
                                               * (d_equ[kk] - scratch[kk]);
     }
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
-    ret.totvel += sqrtf(u_sq);
+    params->totVel += sqrtf(u_sq);
     /* increase counter of inspected cells */
-    ret.numOfCells += (1 - obstacles[jj*params.nx + ii]);
+    params->totCells += (1 - obstacles[jj*params.nx + ii]);
   }
 
   return ret;
 }
 
-inline void outerCollide(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int* tot_cells, float*tot_u, int jj){
-  int temp_tot_cells = 0;
-  float temp_tot_u = 0.0f;
+inline void outerCollide(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int jj){
 
-
-  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:temp_tot_u), reduction(+:temp_tot_cells)
-  for (int ii = 0; ii < params.nx; ii++)
+  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64)
+  for (int ii = 0; ii < params->nx; ii++)
   {
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
     int x_e = (ii + 1) % params.nx;
     int x_w = (ii == 0) ? (ii + params.nx - 1) : (ii - 1);
-    vel_dat vd = innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);
-    temp_tot_cells = vd.numOfCells;
-    temp_tot_u = vd.totvel;
+    innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);
   }
-
-  *tot_cells += temp_tot_cells;
-  *tot_u += temp_tot_u;
 }
 
-float collision(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles)
+float collision(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles)
 {
 
-  int    tot_cells = 0;  /* no. of cells used in calculation */
-  float tot_u;          /* accumulated magnitudes of velocity for each cell */
-
-  /* initialise */
-  tot_u = 0.f;
+  params->totCells = 0;
+  params->totVel = 0.0f;
 
   /* loop over the cells in the grid
   ** NB the collision step is called after
@@ -408,21 +392,21 @@ float collision(const t_param params, CellList cells, CellList tmp_cells, int co
   ** are in the scratch-space grid */
   
   int y_n = 1;
-  int y_s = params.ny;
-  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, &tot_cells, &tot_u, 0);
+  int y_s = params->ny;
+  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, 0);
   y_s = -1;
-  for (int jj = 1; jj < params.ny - 1; jj++)
+  for (int jj = 1; jj < params->ny - 1; jj++)
   {
     y_n += 1;
     y_s += 1;
-    outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, &tot_cells, &tot_u, jj);
+    outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj);
   }
 
   y_n = 0;
   y_s += 1;
-  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, &tot_cells, &tot_u, y_s + 1);
+  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, y_s + 1);
   
-  return tot_u / (float)tot_cells;
+  return params->totVel / (float)params->totCells;
 }
 
 float av_velocity(const t_param params, float** cells, int* obstacles)
