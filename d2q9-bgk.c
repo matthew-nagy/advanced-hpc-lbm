@@ -379,7 +379,7 @@ inline void innerCollider(t_param*const restrict params, CellList cells, CellLis
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
-    dat[0] += sqrtf(u_sq);
+    dat[0] += Q_rsqrt(u_sq);
     /* increase counter of inspected cells */
     dat[1] += (1 - obstacles[jj*params->nx + ii]);
   }
