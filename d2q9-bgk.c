@@ -385,6 +385,8 @@ inline void outerCollide(const t_param params, CellList cells, CellList tmp_cell
     int x_e = (ii + 1) % params.nx;
     int x_w = (ii == 0) ? (ii + params.nx - 1) : (ii - 1);
     vel_dat vd = innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);
+    temp_tot_cells = vd.numOfCells;
+    temp_tot_u = vd.totvel;
   }
 
   *tot_cells += temp_tot_cells;
