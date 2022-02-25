@@ -242,9 +242,10 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   return EXIT_SUCCESS;
 }
 
-inline void innerCollider(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii){
+inline void innerCollider(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii, float* dat){
   float scratch[9];
-
+  dat[0] = 0.0f;
+  dat[1] = 0.0f;
 
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
@@ -359,23 +360,33 @@ inline void innerCollider(t_param*const restrict params, CellList cells, CellLis
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
-    params->totVel += sqrtf(u_sq);
+    dat[0] += sqrtf(u_sq);
     /* increase counter of inspected cells */
-    params->totCells += (1 - obstacles[jj*params->nx + ii]);
+    dat[1] += (1 - obstacles[jj*params->nx + ii]);
   }
 }
 
 inline void outerCollide(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int jj){
 
-  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:params)
+  float tmp_cell = 0.0f;
+  float tmp_vel = 0.0f;
+
+  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
   for (int ii = 0; ii < params->nx; ii++)
   {
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
+    float dat[2];
     int x_e = (ii + 1) % params->nx;
     int x_w = (ii == 0) ? (ii + params->nx - 1) : (ii - 1);
-    innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);
+    innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, dat);
+
+    tmp_vel += dat[0];
+    tmp_cell += dat[1];
   }
+
+  params->totCells += tmp_cell;
+  params->totVel += tmp_vel;
 }
 
 float collision(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles)
