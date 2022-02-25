@@ -60,6 +60,11 @@
 #define FINALSTATEFILE  "final_state.dat"
 #define AVVELSFILE      "av_vels.dat"
 
+const float c_sq = 1.f / 3.f; /* square of speed of sound */
+const float w0 = 4.f / 9.f;  /* weighting factor */
+const float w1 = 1.f / 9.f;  /* weighting factor */
+const float w2 = 1.f / 36.f; /* weighting factor */
+
 /* struct to hold the parameter values */
 typedef struct
 {
@@ -234,6 +239,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   return EXIT_SUCCESS;
 }
 
+
 inline void innerCollide(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int* tot_cells, float*tot_u){
   int temp_tot_cells = 0;
   float temp_tot_u = 0.0f;
@@ -372,10 +378,6 @@ inline void innerCollide(const t_param params, CellList cells, CellList tmp_cell
 
 float collision(const t_param params, CellList cells, CellList tmp_cells, int const*const restrict obstacles)
 {
-  const float c_sq = 1.f / 3.f; /* square of speed of sound */
-  const float w0 = 4.f / 9.f;  /* weighting factor */
-  const float w1 = 1.f / 9.f;  /* weighting factor */
-  const float w2 = 1.f / 36.f; /* weighting factor */
 
   int    tot_cells = 0;  /* no. of cells used in calculation */
   float tot_u;          /* accumulated magnitudes of velocity for each cell */
@@ -388,13 +390,12 @@ float collision(const t_param params, CellList cells, CellList tmp_cells, int co
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
       
-  #pragma unroll_and_jam (16)
   for (int jj = 0; jj < params.ny; jj++)
   {
     int y_n = (jj + 1) % params.ny;
     int y_s = (jj == 0) ? (jj + params.ny - 1) : (jj - 1);
   
-    innerCollide(params, cells, tmp_cells, obstacles, t_n, y_s, &tot_cells, &tot_u);
+    innerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, &tot_cells, &tot_u);
   }
   
   return tot_u / (float)tot_cells;
