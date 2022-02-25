@@ -367,7 +367,7 @@ inline void innerCollider(t_param*const restrict params, CellList cells, CellLis
 
 inline void outerCollide(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int jj){
 
-  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64)
+  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:params)
   for (int ii = 0; ii < params->nx; ii++)
   {
     /* determine indices of axis-direction neighbours
