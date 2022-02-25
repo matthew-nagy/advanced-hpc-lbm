@@ -389,14 +389,21 @@ float collision(const t_param params, CellList cells, CellList tmp_cells, int co
   ** NB the collision step is called after
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
-      
-  for (int jj = 0; jj < params.ny; jj++)
-  {
-    int y_n = (jj + 1) % params.ny;
-    int y_s = (jj == 0) ? (jj + params.ny - 1) : (jj - 1);
   
+  int y_n = 1;
+  int y_s = params.ny;
+  innerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, &tot_cells, &tot_u, 0);
+  y_s = -1;
+  for (int jj = 1; jj < params.ny - 1; jj++)
+  {
+    y_n += 1;
+    y_s += 1;
     innerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, &tot_cells, &tot_u, jj);
   }
+
+  y_n = 0;
+  y_s += 1;
+  innerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, &tot_cells, &tot_u, y_s + 1);
   
   return tot_u / (float)tot_cells;
 }
