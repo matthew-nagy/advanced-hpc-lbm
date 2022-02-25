@@ -203,7 +203,7 @@ int main(int argc, char* argv[])
 
 float timestep(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles)
 {
-  accelerate_flow(params, cells, obstacles);
+  accelerate_flow(*params, cells, obstacles);
   //propagate(params, cells, tmp_cells);
   //rebound(params, cells, tmp_cells, obstacles);
   return collision(params, cells, tmp_cells, obstacles);
@@ -361,10 +361,8 @@ inline void innerCollider(t_param*const restrict params, CellList cells, CellLis
     /* accumulate the norm of x- and y- velocity components */
     params->totVel += sqrtf(u_sq);
     /* increase counter of inspected cells */
-    params->totCells += (1 - obstacles[jj*params.nx + ii]);
+    params->totCells += (1 - obstacles[jj*params->nx + ii]);
   }
-
-  return ret;
 }
 
 inline void outerCollide(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int jj){
@@ -374,8 +372,8 @@ inline void outerCollide(t_param*const restrict params, CellList cells, CellList
   {
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
-    int x_e = (ii + 1) % params.nx;
-    int x_w = (ii == 0) ? (ii + params.nx - 1) : (ii - 1);
+    int x_e = (ii + 1) % params->nx;
+    int x_w = (ii == 0) ? (ii + params->nx - 1) : (ii - 1);
     innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);
   }
 }
