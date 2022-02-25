@@ -375,8 +375,8 @@ inline void outerCollide(t_param*const restrict params, CellList cells, CellList
   int x_e = 1;
   int x_w = params->nx - 1);
   innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, 0, datOut);
-  tmp_vel += dat[0];
-  tmp_cell += dat[1];
+  tmp_vel += datOut[0];
+  tmp_cell += datOut[1];
 
   x_w = -1;
   int maxItter = params->nx - 1;
@@ -393,12 +393,11 @@ inline void outerCollide(t_param*const restrict params, CellList cells, CellList
     tmp_cell += dat[1];
   }
 
-  float dat[2];
   x_e = 0;
   x_w += 1;
   innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, x_w + 1, datOut);
-  tmp_vel += dat[0];
-  tmp_cell += dat[1];
+  tmp_vel += datOut[0];
+  tmp_cell += datOut[1];
 
   params->totCells += tmp_cell;
   params->totVel += tmp_vel;
