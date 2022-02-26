@@ -310,27 +310,6 @@ int propagate(const t_param params, t_speed* cells, t_speed* tmp_cells)
 
 int rebound(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles)
 {
-  /* loop over the cells in the grid */
-  // for (int jj = 0; jj < params.ny; jj++)
-  // {
-  //   for (int ii = 0; ii < params.nx; ii++)
-  //   {
-  //     /* if the cell contains an obstacle */
-  //     if (obstacles[jj*params.nx + ii])
-  //     {
-  //       /* called after propagate, so taking values from scratch space
-  //       ** mirroring, and writing into main grid */
-  //       cells[ii + jj*params.nx].speeds[1] = tmp_cells[ii + jj*params.nx].speeds[3];
-  //       cells[ii + jj*params.nx].speeds[2] = tmp_cells[ii + jj*params.nx].speeds[4];
-  //       cells[ii + jj*params.nx].speeds[3] = tmp_cells[ii + jj*params.nx].speeds[1];
-  //       cells[ii + jj*params.nx].speeds[4] = tmp_cells[ii + jj*params.nx].speeds[2];
-  //       cells[ii + jj*params.nx].speeds[5] = tmp_cells[ii + jj*params.nx].speeds[7];
-  //       cells[ii + jj*params.nx].speeds[6] = tmp_cells[ii + jj*params.nx].speeds[8];
-  //       cells[ii + jj*params.nx].speeds[7] = tmp_cells[ii + jj*params.nx].speeds[5];
-  //       cells[ii + jj*params.nx].speeds[8] = tmp_cells[ii + jj*params.nx].speeds[6];
-  //     }
-  //   }
-  // }
   for(oi i = 0; i < obsSize; i++){
     int index = obstacleIndices[i];
     cells[index].speeds[1] = tmp_cells[index].speeds[3];
@@ -437,100 +416,41 @@ float collision(const t_param params, t_speed* cells, t_speed* tmp_cells, int* o
                                          - u_sq / (2.f * c_sq));
 
         
+        //Relaxation
+        local_density = 0.0f;
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
           cells[ii + jj*params.nx].speeds[kk] = tmp_cells[ii + jj*params.nx].speeds[kk]
                                                   + params.omega
                                                   * (d_equ[kk] - tmp_cells[ii + jj*params.nx].speeds[kk]);
+          local_density += cells[ii + jj*params.nx].speeds[kk];
         }
-        tot_u += sqrtf((u_x * u_x) + (u_y * u_y));
+        //Recalc velocity bc we have finished relaxing
         
+
+        /* x-component of velocity */
+        u_x = (cells[ii + jj*params.nx].speeds[1]
+                      + cells[ii + jj*params.nx].speeds[5]
+                      + cells[ii + jj*params.nx].speeds[8]
+                      - (cells[ii + jj*params.nx].speeds[3]
+                         + cells[ii + jj*params.nx].speeds[6]
+                         + cells[ii + jj*params.nx].speeds[7]))
+                     / local_density;
+        /* compute y velocity component */
+        u_y = (cells[ii + jj*params.nx].speeds[2]
+                      + cells[ii + jj*params.nx].speeds[5]
+                      + cells[ii + jj*params.nx].speeds[6]
+                      - (cells[ii + jj*params.nx].speeds[4]
+                         + cells[ii + jj*params.nx].speeds[7]
+                         + cells[ii + jj*params.nx].speeds[8]))
+                     / local_density;
+        /* accumulate the norm of x- and y- velocity components */
+        tot_u += sqrtf((u_x * u_x) + (u_y * u_y));
+        /* increase counter of inspected cells */
         ++tot_cells;
       }
     }
   }
-  // for(oi i = 0; i < nobsSize; i++){
-  //   int index = nonObstacleIndices[i];
-
-  //   float local_density = 0.f;
-
-  //   for (int kk = 0; kk < NSPEEDS; kk++)
-  //   {
-  //     local_density += tmp_cells[index].speeds[kk];
-  //   }
-
-  //   float u_x = (tmp_cells[index].speeds[1]
-  //                 + tmp_cells[index].speeds[5]
-  //                 + tmp_cells[index].speeds[8]
-  //                 - (tmp_cells[index].speeds[3]
-  //                     + tmp_cells[index].speeds[6]
-  //                     + tmp_cells[index].speeds[7]))
-  //                 / local_density;
-  //   float u_y = (tmp_cells[index].speeds[2]
-  //                 + tmp_cells[index].speeds[5]
-  //                 + tmp_cells[index].speeds[6]
-  //                 - (tmp_cells[index].speeds[4]
-  //                     + tmp_cells[index].speeds[7]
-  //                     + tmp_cells[index].speeds[8]))
-  //                 / local_density;
-
-  //   float u_sq = u_x * u_x + u_y * u_y;
-
-  //   float u[NSPEEDS];
-  //   u[1] =   u_x;      
-  //   u[2] =         u_y; 
-  //   u[3] = - u_x;       
-  //   u[4] =       - u_y; 
-  //   u[5] =   u_x + u_y;
-  //   u[6] = - u_x + u_y;  
-  //   u[7] = - u_x - u_y; 
-  //   u[8] =   u_x - u_y; 
-
-    
-  //   float d_equ[NSPEEDS];
-    
-  //   d_equ[0] = w0 * local_density
-  //               * (1.f - u_sq / (2.f * c_sq));
-    
-  //   d_equ[1] = w1 * local_density * (1.f + u[1] / c_sq
-  //                                     + (u[1] * u[1]) / (2.f * c_sq * c_sq)
-  //                                     - u_sq / (2.f * c_sq));
-  //   d_equ[2] = w1 * local_density * (1.f + u[2] / c_sq
-  //                                     + (u[2] * u[2]) / (2.f * c_sq * c_sq)
-  //                                     - u_sq / (2.f * c_sq));
-  //   d_equ[3] = w1 * local_density * (1.f + u[3] / c_sq
-  //                                     + (u[3] * u[3]) / (2.f * c_sq * c_sq)
-  //                                     - u_sq / (2.f * c_sq));
-  //   d_equ[4] = w1 * local_density * (1.f + u[4] / c_sq
-  //                                     + (u[4] * u[4]) / (2.f * c_sq * c_sq)
-  //                                     - u_sq / (2.f * c_sq));
-    
-  //   d_equ[5] = w2 * local_density * (1.f + u[5] / c_sq
-  //                                     + (u[5] * u[5]) / (2.f * c_sq * c_sq)
-  //                                     - u_sq / (2.f * c_sq));
-  //   d_equ[6] = w2 * local_density * (1.f + u[6] / c_sq
-  //                                     + (u[6] * u[6]) / (2.f * c_sq * c_sq)
-  //                                     - u_sq / (2.f * c_sq));
-  //   d_equ[7] = w2 * local_density * (1.f + u[7] / c_sq
-  //                                     + (u[7] * u[7]) / (2.f * c_sq * c_sq)
-  //                                     - u_sq / (2.f * c_sq));
-  //   d_equ[8] = w2 * local_density * (1.f + u[8] / c_sq
-  //                                     + (u[8] * u[8]) / (2.f * c_sq * c_sq)
-  //                                     - u_sq / (2.f * c_sq));
-
-    
-  //   for (int kk = 0; kk < NSPEEDS; kk++)
-  //   {
-  //     cells[index].speeds[kk] = tmp_cells[index].speeds[kk]
-  //                                             + params.omega
-  //                                             * (d_equ[kk] - tmp_cells[index].speeds[kk]);
-  //   }
-  //   tot_u += sqrtf((u_x * u_x) + (u_y * u_y));
-    
-  //   ++tot_cells;
-  // }
-
-  
 
   return tot_u / (float)tot_cells;
 }
