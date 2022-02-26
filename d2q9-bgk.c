@@ -87,16 +87,21 @@ int initialise(const char* paramfile, const char* obstaclefile,
                t_param* params, t_speed** cells_ptr, t_speed** tmp_cells_ptr,
                int** obstacles_ptr, float** av_vels_ptr);
 
+// typedef int const* const restrict Obs;
+// typedef t_speed*const restrict t_speed_pcr;
+typedef int* Obs;
+typedef t_speed* t_speed_pcr;
+
 /*
 ** The main calculation methods.
 ** timestep calls, in order, the functions:
 ** accelerate_flow(), propagate(), rebound() & collision()
 */
-float timestep(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles);
-int accelerate_flow(const t_param params, t_speed* cells, int* obstacles);
-int propagate(const t_param params, t_speed* cells, t_speed* tmp_cells);
-int rebound(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles);
-float collision(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles);
+float timestep(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells, Obs obstacles);
+int accelerate_flow(const t_param params, t_speed_pcr cells, Obs obstacles);
+int propagate(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells);
+int rebound(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells, Obs obstacles);
+float collision(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells, Obs obstacles);
 int write_values(const t_param params, t_speed* cells, int* obstacles, float* av_vels);
 
 /* finalise, including freeing up allocated memory */
@@ -126,6 +131,13 @@ oi* obstacleIndices;
 oi* nonObstacleIndices;
 int obsSize;
 int nobsSize; //Tee hee
+
+
+//Some globals because that seems to speed it up
+int tot_cells;
+float tot_u;
+int x_e, x_w, y_n, y_s;
+
 int main(int argc, char* argv[])
 {
   char*    paramfile = NULL;    /* name of the input parameter file */
@@ -209,7 +221,7 @@ int main(int argc, char* argv[])
   return EXIT_SUCCESS;
 }
 
-float timestep(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles)
+float timestep(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells, Obs obstacles)
 {
   accelerate_flow(params, cells, obstacles);
   propagate(params, cells, tmp_cells);
@@ -218,7 +230,7 @@ float timestep(const t_param params, t_speed* cells, t_speed* tmp_cells, int* ob
   //return EXIT_SUCCESS;
 }
 
-int accelerate_flow(const t_param params, t_speed* cells, int* obstacles)
+int accelerate_flow(const t_param params, t_speed_pcr cells, Obs obstacles)
 {
   /* compute weighting factors */
   float w1 = params.density * params.accel / 9.f;
@@ -250,7 +262,7 @@ int accelerate_flow(const t_param params, t_speed* cells, int* obstacles)
   return EXIT_SUCCESS;
 }
 
-inline void propagateSwap(const t_param params, t_speed*const restrict cells, t_speed*const restrict tmp_cells, const int ii, const int jj, const int y_n, const int x_e, int const y_s, int const x_w){
+inline void propagateSwap(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells, const int ii, const int jj){
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
   ** scratch space grid */
@@ -265,11 +277,11 @@ inline void propagateSwap(const t_param params, t_speed*const restrict cells, t_
   tmp_cells[ii + jj*params.nx].speeds[8] = cells[x_w + y_n*params.nx].speeds[8]; /* south-east */
 }
 
-inline void innerPropLoop(const t_param params, t_speed* const restrict cells, t_speed*const restrict tmp_cells, const int iiLimit, const int jj, const int y_n, const int y_s){
-  int x_e = 1;
-  int x_w = iiLimit;
+inline void innerPropLoop(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells, const int iiLimit, const int jj){
+  x_e = 1;
+  x_w = iiLimit;
 
-  propagateSwap(params, cells, tmp_cells, 0, jj, y_n, x_e, y_s, x_w);
+  propagateSwap(params, cells, tmp_cells, 0, jj);
   for (int ii = 1; ii < iiLimit; ii++)
   {
     /* determine indices of axis-direction neighbours
@@ -277,38 +289,38 @@ inline void innerPropLoop(const t_param params, t_speed* const restrict cells, t
     x_e += 1;
     x_w = ii - 1;
 
-    propagateSwap(params, cells, tmp_cells, ii, jj, y_n, x_e, y_s, x_w);
+    propagateSwap(params, cells, tmp_cells, ii, jj);
   }
   x_e = 0;
   x_w = iiLimit - 1;
 
-  propagateSwap(params, cells, tmp_cells, iiLimit, jj, y_n, x_e, y_s, x_w);
+  propagateSwap(params, cells, tmp_cells, iiLimit, jj);
 }
 
-int propagate(const t_param params, t_speed* cells, t_speed* tmp_cells)
+int propagate(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells)
 {
   /* loop over _all_ cells */
   const int iiLimit = params.nx - 1;
   const int jjLimit = params.ny - 1;
   
-  int y_n = 1;
-  int y_s = jjLimit;
-  innerPropLoop(params, cells, tmp_cells, iiLimit , 0, y_n, y_s);
+  y_n = 1;
+  y_s = jjLimit;
+  innerPropLoop(params, cells, tmp_cells, iiLimit , 0);
   for (int jj = 1; jj < jjLimit; jj++)
   {  
     y_n += 1;
     y_s = jj - 1;
-    innerPropLoop(params, cells, tmp_cells, iiLimit, jj, y_n, y_s);
+    innerPropLoop(params, cells, tmp_cells, iiLimit, jj);
   }
   y_n = 0;
   y_s = jjLimit - 1;
-  innerPropLoop(params, cells, tmp_cells, iiLimit, jjLimit , y_n, y_s);
+  innerPropLoop(params, cells, tmp_cells, iiLimit, jjLimit);
 
   return EXIT_SUCCESS;
 }
 
 
-int rebound(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles)
+int rebound(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells, Obs obstacles)
 {
   for(oi i = 0; i < obsSize; i++){
     int index = obstacleIndices[i];
@@ -325,11 +337,13 @@ int rebound(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obsta
   return EXIT_SUCCESS;
 }
 
-float collision(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles)
+float collision(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells, Obs obstacles)
 {
 
-  int    tot_cells = 0;  /* no. of cells used in calculation */
-  float tot_u;          /* accumulated magnitudes of velocity for each cell */
+  //int    tot_cells = 0;  /* no. of cells used in calculation */
+  //float tot_u;          /* accumulated magnitudes of velocity for each cell */
+
+  tot_cells = 0;
 
   /* initialise */
   tot_u = 0.f;
