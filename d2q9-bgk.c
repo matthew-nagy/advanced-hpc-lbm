@@ -136,7 +136,6 @@ int nobsSize; //Tee hee
 //Some globals because that seems to speed it up
 int tot_cells;
 float tot_u;
-int x_e, x_w, y_n, y_s;
 
 int main(int argc, char* argv[])
 {
@@ -262,7 +261,7 @@ int accelerate_flow(const t_param params, t_speed_pcr cells, Obs obstacles)
   return EXIT_SUCCESS;
 }
 
-inline void propagateSwap(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells, const int ii, const int jj){
+extern inline void propagateSwap(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells, const int ii, const int jj, const int x_e, const int x_w, const int y_n, const int y_s){
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
   ** scratch space grid */
@@ -277,11 +276,11 @@ inline void propagateSwap(const t_param params, t_speed_pcr cells, t_speed_pcr t
   tmp_cells[ii + jj*params.nx].speeds[8] = cells[x_w + y_n*params.nx].speeds[8]; /* south-east */
 }
 
-inline void innerPropLoop(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells, const int iiLimit, const int jj){
-  x_e = 1;
-  x_w = iiLimit;
+extern inline void innerPropLoop(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells, const int iiLimit, const int jj, const int y_n, const int y_s){
+  int x_e = 1;
+  int x_w = iiLimit;
 
-  propagateSwap(params, cells, tmp_cells, 0, jj);
+  propagateSwap(params, cells, tmp_cells, 0, jj, x_e, x_w, y_n, y_s);
   for (int ii = 1; ii < iiLimit; ii++)
   {
     /* determine indices of axis-direction neighbours
@@ -289,12 +288,12 @@ inline void innerPropLoop(const t_param params, t_speed_pcr cells, t_speed_pcr t
     x_e += 1;
     x_w = ii - 1;
 
-    propagateSwap(params, cells, tmp_cells, ii, jj);
+    propagateSwap(params, cells, tmp_cells, ii, jj, x_e, x_w, y_n, y_s);
   }
   x_e = 0;
   x_w = iiLimit - 1;
 
-  propagateSwap(params, cells, tmp_cells, iiLimit, jj);
+  propagateSwap(params, cells, tmp_cells, iiLimit, jj, x_e, x_w, y_n, y_s);
 }
 
 int propagate(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells)
@@ -303,18 +302,18 @@ int propagate(const t_param params, t_speed_pcr cells, t_speed_pcr tmp_cells)
   const int iiLimit = params.nx - 1;
   const int jjLimit = params.ny - 1;
   
-  y_n = 1;
-  y_s = jjLimit;
-  innerPropLoop(params, cells, tmp_cells, iiLimit , 0);
+  int y_n = 1;
+  int y_s = jjLimit;
+  innerPropLoop(params, cells, tmp_cells, iiLimit , 0, y_n, y_s);
   for (int jj = 1; jj < jjLimit; jj++)
   {  
     y_n += 1;
     y_s = jj - 1;
-    innerPropLoop(params, cells, tmp_cells, iiLimit, jj);
+    innerPropLoop(params, cells, tmp_cells, iiLimit, jj, y_n, y_s);
   }
   y_n = 0;
   y_s = jjLimit - 1;
-  innerPropLoop(params, cells, tmp_cells, iiLimit, jjLimit);
+  innerPropLoop(params, cells, tmp_cells, iiLimit, jjLimit, y_n, y_s);
 
   return EXIT_SUCCESS;
 }
