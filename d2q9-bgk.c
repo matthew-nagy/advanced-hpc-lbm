@@ -294,8 +294,6 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
   scratch[7] = cells[7][x_e + y_n*params->nx]; /* south-west */
   scratch[8] = cells[8][x_w + y_n*params->nx]; /* south-east */
 
-  float u_sq = 0.0f;
-
   /* if the cell contains an obstacle */
   if (obstacles[index])
   {
@@ -339,7 +337,7 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
                   / local_density;
 
     /* velocity squared */
-    u_sq = u_x * u_x + u_y * u_y;
+    const u_sq1 = u_x * u_x + u_y * u_y;
 
     /* directional velocity components */
     float u[NSPEEDS];
@@ -363,33 +361,33 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
 
     /* zero velocity density: weight w0 */
     d_equ[0] = w0 * local_density
-                * (1.f - u_sq * over2c_sq);
+                * (1.f - u_sq1 * over2c_sq);
     /* axis speeds: weight w1 */
     d_equ[1] = denw1 * (1.f + u[1] * overC_sq
                                       + (u[1] * u[1]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
+                                      - u_sq1 * over2c_sq);
     d_equ[2] = denw1 * (1.f + u[2] * overC_sq
                                       + (u[2] * u[2]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
+                                      - u_sq1 * over2c_sq);
     d_equ[3] = denw1 * (1.f + u[3] * overC_sq
                                       + (u[3] * u[3]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
+                                      - u_sq1 * over2c_sq);
     d_equ[4] = denw1 * (1.f + u[4] * overC_sq
                                       + (u[4] * u[4]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
+                                      - u_sq1 * over2c_sq);
     /* diagonal speeds: weight w2 */
     d_equ[5] = denw2 * (1.f + u[5] * overC_sq
                                       + (u[5] * u[5]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
+                                      - u_sq1 * over2c_sq);
     d_equ[6] = denw2 * (1.f + u[6] * overC_sq
                                       + (u[6] * u[6]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
+                                      - u_sq1 * over2c_sq);
     d_equ[7] = denw2 * (1.f + u[7] * overC_sq
                                       + (u[7] * u[7]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
+                                      - u_sq1 * over2c_sq);
     d_equ[8] = denw2 * (1.f + u[8] * overC_sq
                                       + (u[8] * u[8]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
+                                      - u_sq1 * over2c_sq);
 
     local_density = 0.0f;
     /* relaxation step */
@@ -420,11 +418,11 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
 
 
     /* velocity squared */
-    u_sq = u_x * u_x + u_y * u_y;
+    const float u_sq2 = u_x * u_x + u_y * u_y;
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
-    dat[0] += sqrtf(u_sq);
+    dat[0] += sqrtf(u_sq2);
     /* increase counter of inspected cells */
     dat[1] += (1 - obstacles[jj*params->nx + ii]);
   }
