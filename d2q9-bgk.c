@@ -383,7 +383,7 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
       tmp_cells[kk][index] = scratch[kk]
                                               + params->omega
                                               * (d_equ[kk] - scratch[kk]);
-      local_density += tmp_cells[kk][index]
+      local_density += tmp_cells[kk][index];
     }
 
     /* compute x velocity component */
