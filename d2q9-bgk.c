@@ -411,25 +411,32 @@ float collision(t_param*const restrict params, CellList cells, CellList tmp_cell
   params->totCells = 0;
   params->totVel = 0.0f;
 
+  const int iiLimit = params.nx - 1;
+  const int jjLimit = params.ny - 1;
+
   /* loop over the cells in the grid
   ** NB the collision step is called after
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
   
   int y_n = 1;
-  int y_s = params->ny;
+  int y_s = jjLimit;
   outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, 0);
   y_s = -1;
-  for (int jj = 1; jj < params->ny - 1; jj++)
+  for (int jj = 1; jj < params->ny - 1; jj+=2)
   {
     y_n += 1;
     y_s += 1;
     outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj);
+    //manual unwrap bc of compiler
+    y_n += 1;
+    y_s += 1;
+    outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj+1);
   }
 
   y_n = 0;
-  y_s = params->ny - 2;
-  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, params->ny - 1);
+  y_s = jjLimit - 1;
+  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jjLimit);
   
   return params->totVel / (float)params->totCells;
 }
