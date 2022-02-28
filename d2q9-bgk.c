@@ -108,7 +108,7 @@ float timestep(t_param*const restrict params, CellList cells, CellList tmp_cells
 int accelerate_flow(const t_param params, CellList cells, int const*const restrict obstacles);
 int propagate(const t_param params, float** cells, float** tmp_cells);
 int rebound(const t_param params, float** cells, float** tmp_cells, int* obstacles);
-float collision(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles);
+float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles);
 int write_values(const t_param params, float** cells, int* obstacles, float* av_vels);
 
 /* finalise, including freeing up allocated memory */
@@ -244,19 +244,15 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   float w1 = params.density * params.accel * (1.0/9.f);
   float w2 = params.density * params.accel * (1.0f/36.f);
 
+  const float changes[8] = {0.0f, w1, 0.0f, w1, 0.0f, w2, w2, w2, w2};
+
   for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
   {
-    /* if the cell is not occupied and
-    ** we don't send a negative density */
-      /* increase 'east-side' densities */
-      int index = secondRowNonObs[ii];
-      cells[1][index] += w1;
-      cells[5][index] += w2;
-      cells[8][index] += w2;
-      /* decrease 'west-side' densities */
-      cells[3][index] -= w1;
-      cells[6][index] -= w2;
-      cells[7][index] -= w2;
+    const int index = secondRowNonObs[ii];
+    #pragma omp simd
+    for(int i = 0; i < 8; i++){
+      cells[i][index] += changes[i];
+    }
   }
 
   return EXIT_SUCCESS;
@@ -440,7 +436,7 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
   params->totVel += tmp_vel;
 }
 
-float collision(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles)
+float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles)
 {
 
   params->totCells = 0;
