@@ -187,6 +187,8 @@ int main(int argc, char* argv[])
   init_toc = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
   comp_tic=init_toc;
 
+  findSecondRowObs(params, obstacles);
+
   for (int tt = 0; tt < params.maxIters; tt++)
   {
     av_vels[tt] = timestep(&params, cells, tmp_cells, obstacles);
@@ -236,30 +238,22 @@ float timestep(t_param*const restrict params, CellList cells, CellList tmp_cells
 int accelerate_flow(const t_param params, CellList cells, int const*const restrict obstacles)
 {
   /* compute weighting factors */
-  float w1 = params.density * params.accel / 9.f;
-  float w2 = params.density * params.accel / 36.f;
+  float w1 = params.density * params.accel * (1.0/9.f);
+  float w2 = params.density * params.accel * (1.0f/36.f);
 
-  /* modify the 2nd row of the grid */
-  int jj = params.ny - 2;
-
-  for (int ii = 0; ii < params.nx; ii++)
+  for (int ii = 0; ii < secondRowNonObs; ii++)
   {
     /* if the cell is not occupied and
     ** we don't send a negative density */
-    if (!obstacles[ii + jj*params.nx]
-        && (cells[3][ii + jj*params.nx] - w1) > 0.f
-        && (cells[6][ii + jj*params.nx] - w2) > 0.f
-        && (cells[7][ii + jj*params.nx] - w2) > 0.f)
-    {
       /* increase 'east-side' densities */
-      cells[1][ii + jj*params.nx] += w1;
-      cells[5][ii + jj*params.nx] += w2;
-      cells[8][ii + jj*params.nx] += w2;
+      int index = secondRowNonObs[ii];
+      cells[1][index] += w1;
+      cells[5][index] += w2;
+      cells[8][index] += w2;
       /* decrease 'west-side' densities */
-      cells[3][ii + jj*params.nx] -= w1;
-      cells[6][ii + jj*params.nx] -= w2;
-      cells[7][ii + jj*params.nx] -= w2;
-    }
+      cells[3][index] -= w1;
+      cells[6][index] -= w2;
+      cells[7][index] -= w2;
   }
 
   return EXIT_SUCCESS;
