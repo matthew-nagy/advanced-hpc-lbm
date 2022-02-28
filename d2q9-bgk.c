@@ -337,7 +337,7 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
                   / local_density;
 
     /* velocity squared */
-    const u_sq1 = u_x * u_x + u_y * u_y;
+    const int u_sq1 = u_x * u_x + u_y * u_y;
 
     /* directional velocity components */
     float u[NSPEEDS];
