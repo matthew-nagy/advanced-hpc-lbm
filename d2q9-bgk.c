@@ -127,6 +127,28 @@ float calc_reynolds(const t_param params, float** cells, int* obstacles);
 void die(const char* message, const int line, const char* file);
 void usage(const char* exe);
 
+int* secondRowNonObs;
+void findSecondRowObs(const t_param params, int const*const restrict obstacles){
+ int jj = params.ny - 2;
+
+  int* nonObs = (int*)malloc(sizeof(int) * params.nx);
+  int index = 0;
+
+  for (int ii = 0; ii < params.nx; ii++)
+  {
+     if (!obstacles[ii + jj*params.nx]){
+       nonObs[index] = ii + jj * params.nx;
+       index ++;
+     }
+  }
+
+  secondRowNonObs = (int*)aligned_alloc(64, sizeof(int) * index);
+  for(int i = 0; i < index; i++){
+    secondRowNonObs[i] = nonObs[i];
+  }
+  free(nonObs);
+}
+
 /*
 ** main program:
 ** initialise, timestep loop, finalise
@@ -220,7 +242,6 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   /* modify the 2nd row of the grid */
   int jj = params.ny - 2;
 
-  #pragma omp simd aligned(cells : 64)
   for (int ii = 0; ii < params.nx; ii++)
   {
     /* if the cell is not occupied and
