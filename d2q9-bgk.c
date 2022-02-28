@@ -332,29 +332,29 @@ extern inline void innerCollider(const t_param*const restrict params, CellList c
     d_equ[0] = w0 * local_density
                 * (1.f - u_sq * over2c_sq);
     /* axis speeds: weight w1 */
-    d_equ[1] = w1 * local_density * (1.f + u[1] * overC_sq
+    d_equ[1] = w1 * local_density * (1.f + u[1] / c_sq
                                       + (u[1] * u[1]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[2] = w1 * local_density * (1.f + u[2] * overC_sq
+    d_equ[2] = w1 * local_density * (1.f + u[2] / c_sq
                                       + (u[2] * u[2]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[3] = w1 * local_density * (1.f + u[3] * overC_sq
+    d_equ[3] = w1 * local_density * (1.f + u[3] / c_sq
                                       + (u[3] * u[3]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[4] = w1 * local_density * (1.f + u[4] * overC_sq
+    d_equ[4] = w1 * local_density * (1.f + u[4] / c_sq
                                       + (u[4] * u[4]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
     /* diagonal speeds: weight w2 */
-    d_equ[5] = w2 * local_density * (1.f + u[5] * overC_sq
+    d_equ[5] = w2 * local_density * (1.f + u[5] / c_sq
                                       + (u[5] * u[5]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[6] = w2 * local_density * (1.f + u[6] * overC_sq
+    d_equ[6] = w2 * local_density * (1.f + u[6] / c_sq
                                       + (u[6] * u[6]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[7] = w2 * local_density * (1.f + u[7] * overC_sq
+    d_equ[7] = w2 * local_density * (1.f + u[7] / c_sq
                                       + (u[7] * u[7]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[8] = w2 * local_density * (1.f + u[8] * overC_sq
+    d_equ[8] = w2 * local_density * (1.f + u[8] / c_sq
                                       + (u[8] * u[8]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
 
