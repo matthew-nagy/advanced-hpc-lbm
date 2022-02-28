@@ -380,25 +380,7 @@ extern inline void innerCollider(const t_param*const restrict params, CellList c
       tmp_cells[kk][index] = scratch[kk]
                                               + params->omega
                                               * (d_equ[kk] - scratch[kk]);
-      local_density += tmp_cells[kk][index];
     }
-    //Recompute after relaxation
-    /* compute x velocity component */
-    u_x = (tmp_cells[1][index]
-                  + tmp_cells[5][index]
-                  + tmp_cells[8][index]
-                  - (tmp_cells[3][index]
-                      + tmp_cells[6][index]
-                      + tmp_cells[7][index]))
-                  / local_density;
-    /* compute y velocity component */
-    u_y = (tmp_cells[2][index]
-                  + tmp_cells[5][index]
-                  + tmp_cells[6][index]
-                  - (tmp_cells[4][index]
-                      + tmp_cells[7][index]
-                      + tmp_cells[8][index]))
-                  / local_density;
 
     /* velocity squared */
     u_sq = u_x * u_x + u_y * u_y;
