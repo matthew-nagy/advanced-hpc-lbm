@@ -387,21 +387,21 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
     }
 
     /* compute x velocity component */
-    float u_x = (tmp_cells[1][index]
-                  + tmp_cells[5][index]
-                  + tmp_cells[8][index]
-                  - (tmp_cells[3][index]
-                      + tmp_cells[6][index]
-                      + tmp_cells[7][index]))
-                  / local_density;
+    u_x = (tmp_cells[1][index]
+          + tmp_cells[5][index]
+          + tmp_cells[8][index]
+          - (tmp_cells[3][index]
+              + tmp_cells[6][index]
+              + tmp_cells[7][index]))
+          / local_density;
     /* compute y velocity component */
-    float u_y = (tmp_cells[2][index]
-                  + tmp_cells[5][index]
-                  + tmp_cells[6][index]
-                  - (tmp_cells[4][index]
-                      + tmp_cells[7][index]
-                      + tmp_cells[8][index]))
-                  / local_density;
+    u_y = (tmp_cells[2][index]
+          + tmp_cells[5][index]
+          + tmp_cells[6][index]
+          - (tmp_cells[4][index]
+              + tmp_cells[7][index]
+              + tmp_cells[8][index]))
+          / local_density;
 
 
     /* velocity squared */
