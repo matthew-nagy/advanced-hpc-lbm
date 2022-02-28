@@ -244,13 +244,13 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   float w1 = params.density * params.accel * (1.0/9.f);
   float w2 = params.density * params.accel * (1.0f/36.f);
 
-  const float changes[8] = {0.0f, w1, 0.0f, w1, 0.0f, w2, w2, w2, w2};
+  const float changes[9] = {0.0f, w1, 0.0f, w1, 0.0f, w2, w2, w2, w2};
 
   for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
   {
     const int index = secondRowNonObs[ii];
     #pragma omp simd
-    for(int i = 0; i < 8; i++){
+    for(int i = 0; i < 9; i++){
       cells[i][index] += changes[i];
     }
   }
