@@ -128,22 +128,23 @@ void die(const char* message, const int line, const char* file);
 void usage(const char* exe);
 
 int* secondRowNonObs;
+int numOfSecondRowNonObs;
 void findSecondRowObs(const t_param params, int const*const restrict obstacles){
- int jj = params.ny - 2;
+  int jj = params.ny - 2;
 
   int* nonObs = (int*)malloc(sizeof(int) * params.nx);
-  int index = 0;
+  numOfSecondRowNonObs = 0;
 
   for (int ii = 0; ii < params.nx; ii++)
   {
      if (!obstacles[ii + jj*params.nx]){
-       nonObs[index] = ii + jj * params.nx;
-       index ++;
+       nonObs[numOfSecondRowNonObs] = ii + jj * params.nx;
+       numOfSecondRowNonObs ++;
      }
   }
 
-  secondRowNonObs = (int*)aligned_alloc(64, sizeof(int) * index);
-  for(int i = 0; i < index; i++){
+  secondRowNonObs = (int*)aligned_alloc(64, sizeof(int) * numOfSecondRowNonObs);
+  for(int i = 0; i < numOfSecondRowNonObs; i++){
     secondRowNonObs[i] = nonObs[i];
   }
   free(nonObs);
@@ -241,7 +242,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   float w1 = params.density * params.accel * (1.0/9.f);
   float w2 = params.density * params.accel * (1.0f/36.f);
 
-  for (int ii = 0; ii < secondRowNonObs; ii++)
+  for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
   {
     /* if the cell is not occupied and
     ** we don't send a negative density */
