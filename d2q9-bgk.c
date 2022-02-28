@@ -396,6 +396,7 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
       tmp_cells[kk][index] = scratch[kk]
                                               + params->omega
                                               * (d_equ[kk] - scratch[kk]);
+    #ifdef TRUE_VEL
       local_density += tmp_cells[kk][index];
     }
 
@@ -419,6 +420,9 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
 
     /* velocity squared */
     const float u_sq2 = u_x * u_x + u_y * u_y;
+    #else
+    }
+    #endif
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
