@@ -323,7 +323,6 @@ extern inline void innerCollider(const t_param*const restrict params, CellList c
     /* equilibrium densities */
     float d_equ[NSPEEDS];
 
-    const float c = 1.0f / c_sq;
     const float u_sq_over2c_sq = u_sq / (2.0f * c_sq);
     const float over2c_sq_squared = 1.0 / (2.f * c_sq * c_sq);
 
@@ -331,7 +330,7 @@ extern inline void innerCollider(const t_param*const restrict params, CellList c
     d_equ[0] = w0 * local_density
                 * (1.f - u_sq_over2c_sq);
     /* axis speeds: weight w1 */
-    d_equ[1] = w1 * local_density * (1.f + u[1] * c_sq
+    d_equ[1] = w1 * local_density * (1.f + u[1] / c_sq
                                       + (u[1] * u[1]) * over2c_sq_squared
                                       - u_sq_over2c_sq);
     d_equ[2] = w1 * local_density * (1.f + u[2] / c_sq
