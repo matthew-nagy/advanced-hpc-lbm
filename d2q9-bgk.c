@@ -411,8 +411,8 @@ float collision(t_param*const restrict params, CellList cells, CellList tmp_cell
   params->totCells = 0;
   params->totVel = 0.0f;
 
-  const int iiLimit = params.nx - 1;
-  const int jjLimit = params.ny - 1;
+  const int iiLimit = params->nx - 1;
+  const int jjLimit = params->ny - 1;
 
   /* loop over the cells in the grid
   ** NB the collision step is called after
