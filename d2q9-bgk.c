@@ -402,16 +402,16 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
 
   
 
-  __assume((params->nx % 4) == 0);
-  __assume_aligned(cells[0]);
-  __assume_aligned(cells[1]);
-  __assume_aligned(cells[2]);
-  __assume_aligned(cells[3]);
-  __assume_aligned(cells[4]);
-  __assume_aligned(cells[5]);
-  __assume_aligned(cells[6]);
-  __assume_aligned(cells[7]);
-  __assume_aligned(cells[8]);
+  __assume((params->nx % 4) == 0),
+  __assume_aligned(cells[0]),
+  __assume_aligned(cells[1]),
+  __assume_aligned(cells[2]),
+  __assume_aligned(cells[3]),
+  __assume_aligned(cells[4]),
+  __assume_aligned(cells[5]),
+  __assume_aligned(cells[6]),
+  __assume_aligned(cells[7]),
+  __assume_aligned(cells[8])
   #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
   for (int ii = 0; ii < params->nx; ii+=1)
   {
