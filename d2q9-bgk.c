@@ -248,11 +248,12 @@ extern inline void innerCollider(const t_param*const restrict params, CellList c
   float scratch[9];
   dat[0] = 0.0f;
   dat[1] = 0.0f;
+  const int index = ii + jj * params->nx;
 
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
   ** scratch space grid */
-  scratch[0] = cells[0][ii + jj*params->nx]; /* central cell, no movement */
+  scratch[0] = cells[0][index]; /* central cell, no movement */
   scratch[1] = cells[1][x_w + jj*params->nx]; /* east */
   scratch[2] = cells[2][ii + y_s*params->nx]; /* north */
   scratch[3] = cells[3][x_e + jj*params->nx]; /* west */
@@ -265,18 +266,18 @@ extern inline void innerCollider(const t_param*const restrict params, CellList c
   float u_sq = 0.0f;
 
   /* if the cell contains an obstacle */
-  if (obstacles[jj*params->nx + ii])
+  if (obstacles[index])
   {
     /* called after propagate, so taking values from scratch space
     ** mirroring, and writing into main grid */
-    tmp_cells[1][ii + jj*params->nx] = scratch[3];
-    tmp_cells[2][ii + jj*params->nx] = scratch[4];
-    tmp_cells[3][ii + jj*params->nx] = scratch[1];
-    tmp_cells[4][ii + jj*params->nx] = scratch[2];
-    tmp_cells[5][ii + jj*params->nx] = scratch[7];
-    tmp_cells[6][ii + jj*params->nx] = scratch[8];
-    tmp_cells[7][ii + jj*params->nx] = scratch[5];
-    tmp_cells[8][ii + jj*params->nx] = scratch[6];
+    tmp_cells[1][index] = scratch[3];
+    tmp_cells[2][index] = scratch[4];
+    tmp_cells[3][index] = scratch[1];
+    tmp_cells[4][index] = scratch[2];
+    tmp_cells[5][index] = scratch[7];
+    tmp_cells[6][index] = scratch[8];
+    tmp_cells[7][index] = scratch[5];
+    tmp_cells[8][index] = scratch[6];
   }
   /* don't consider occupied cells */
   else
@@ -325,61 +326,62 @@ extern inline void innerCollider(const t_param*const restrict params, CellList c
 
     const float over2c_sq = 1.0 / (2.0f * c_sq);
     const float over2c_sq_squared = 1.0 / (2.f * c_sq * c_sq);
+    const float overC_sq = 1.0 / c_sq;
 
     /* zero velocity density: weight w0 */
     d_equ[0] = w0 * local_density
                 * (1.f - u_sq * over2c_sq);
     /* axis speeds: weight w1 */
-    d_equ[1] = w1 * local_density * (1.f + u[1] / c_sq
+    d_equ[1] = w1 * local_density * (1.f + u[1] * overC_sq
                                       + (u[1] * u[1]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[2] = w1 * local_density * (1.f + u[2] / c_sq
+    d_equ[2] = w1 * local_density * (1.f + u[2] * overC_sq
                                       + (u[2] * u[2]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[3] = w1 * local_density * (1.f + u[3] / c_sq
+    d_equ[3] = w1 * local_density * (1.f + u[3] * overC_sq
                                       + (u[3] * u[3]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[4] = w1 * local_density * (1.f + u[4] / c_sq
+    d_equ[4] = w1 * local_density * (1.f + u[4] * overC_sq
                                       + (u[4] * u[4]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
     /* diagonal speeds: weight w2 */
-    d_equ[5] = w2 * local_density * (1.f + u[5] / c_sq
+    d_equ[5] = w2 * local_density * (1.f + u[5] * overC_sq
                                       + (u[5] * u[5]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[6] = w2 * local_density * (1.f + u[6] / c_sq
+    d_equ[6] = w2 * local_density * (1.f + u[6] * overC_sq
                                       + (u[6] * u[6]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[7] = w2 * local_density * (1.f + u[7] / c_sq
+    d_equ[7] = w2 * local_density * (1.f + u[7] * overC_sq
                                       + (u[7] * u[7]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[8] = w2 * local_density * (1.f + u[8] / c_sq
+    d_equ[8] = w2 * local_density * (1.f + u[8] * overC_sq
                                       + (u[8] * u[8]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
 
     /* relaxation step */
     for (int kk = 0; kk < NSPEEDS; kk++)
     {
-      tmp_cells[kk][ii + jj*params->nx] = scratch[kk]
+      tmp_cells[kk][index] = scratch[kk]
                                               + params->omega
                                               * (d_equ[kk] - scratch[kk]);
-      local_density += tmp_cells[kk][ii + jj*params->nx];
+      local_density += tmp_cells[kk][index];
     }
     //Recompute after relaxation
     /* compute x velocity component */
-    u_x = (tmp_cells[1][ii + jj*params->nx]
-                  + tmp_cells[5][ii + jj*params->nx]
-                  + tmp_cells[8][ii + jj*params->nx]
-                  - (tmp_cells[3][ii + jj*params->nx]
-                      + tmp_cells[6][ii + jj*params->nx]
-                      + tmp_cells[7][ii + jj*params->nx]))
+    u_x = (tmp_cells[1][index]
+                  + tmp_cells[5][index]
+                  + tmp_cells[8][index]
+                  - (tmp_cells[3][index]
+                      + tmp_cells[6][index]
+                      + tmp_cells[7][index]))
                   / local_density;
     /* compute y velocity component */
-    u_y = (tmp_cells[2][ii + jj*params->nx]
-                  + tmp_cells[5][ii + jj*params->nx]
-                  + tmp_cells[6][ii + jj*params->nx]
-                  - (tmp_cells[4][ii + jj*params->nx]
-                      + tmp_cells[7][ii + jj*params->nx]
-                      + tmp_cells[8][ii + jj*params->nx]))
+    u_y = (tmp_cells[2][index]
+                  + tmp_cells[5][index]
+                  + tmp_cells[6][index]
+                  - (tmp_cells[4][index]
+                      + tmp_cells[7][index]
+                      + tmp_cells[8][index]))
                   / local_density;
 
     /* velocity squared */
@@ -613,18 +615,19 @@ int initialise(const char* paramfile, const char* obstaclefile,
   {
     for (int ii = 0; ii < params->nx; ii++)
     {
+      const int index = ii + jj*params->nx;
       /* centre */
-      (*cells_ptr)[0][ii + jj*params->nx] = w0;
+      (*cells_ptr)[0][index] = w0;
       /* axis directions */
-      (*cells_ptr)[1][ii + jj*params->nx] = w1;
-      (*cells_ptr)[2][ii + jj*params->nx] = w1;
-      (*cells_ptr)[3][ii + jj*params->nx] = w1;
-      (*cells_ptr)[4][ii + jj*params->nx] = w1;
+      (*cells_ptr)[1][index] = w1;
+      (*cells_ptr)[2][index] = w1;
+      (*cells_ptr)[3][index] = w1;
+      (*cells_ptr)[4][index] = w1;
       /* diagonals */
-      (*cells_ptr)[5][ii + jj*params->nx] = w2;
-      (*cells_ptr)[6][ii + jj*params->nx] = w2;
-      (*cells_ptr)[7][ii + jj*params->nx] = w2;
-      (*cells_ptr)[8][ii + jj*params->nx] = w2;
+      (*cells_ptr)[5][index] = w2;
+      (*cells_ptr)[6][index] = w2;
+      (*cells_ptr)[7][index] = w2;
+      (*cells_ptr)[8][index] = w2;
     }
   }
 
