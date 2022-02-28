@@ -243,7 +243,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   return EXIT_SUCCESS;
 }
 
-inline void innerCollider(const t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii, float* dat){
+extern inline void innerCollider(const t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii, float* dat){
   float scratch[9];
   dat[0] = 0.0f;
   dat[1] = 0.0f;
@@ -367,7 +367,7 @@ inline void innerCollider(const t_param*const restrict params, CellList cells, C
   }
 }
 
-inline void outerCollide(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int jj){
+extern inline void outerCollide(t_param*const restrict params, CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int jj){
 
   float tmp_cell = 0.0f;
   float tmp_vel = 0.0f;
