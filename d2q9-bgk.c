@@ -406,7 +406,7 @@ extern inline void outerCollide(t_param*const restrict params, CellList cells, C
   tmp_vel += datOut1[0];
   tmp_cell += datOut1[1];
 
-  #pragma omp for simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
+  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
   for (int ii = 1; ii < params->nx - 1; ii++)
   {
     /* determine indices of axis-direction neighbours
