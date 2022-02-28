@@ -72,6 +72,8 @@ typedef struct
 {
   int    nx;            /* no. of cells in x-direction */
   int    ny;            /* no. of cells in y-direction */
+  int nxBitMask;
+  int nyBitMask;
   int    maxIters;      /* no. of iterations */
   int    reynolds_dim;  /* dimension for Reynolds number */
   float density;       /* density per link */
@@ -399,32 +401,19 @@ extern inline void outerCollide(t_param*const restrict params, CellList cells, C
   float tmp_vel = 0.0f;
 
   
-  float datOut1[2];
-  int x_eo = 1;
-  int x_wo = params->nx - 1;
-  innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_eo, x_wo, jj, 0, datOut1);
-  tmp_vel += datOut1[0];
-  tmp_cell += datOut1[1];
 
   #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
-  for (int ii = 1; ii < params->nx - 1; ii+=1)
+  for (int ii = 0; ii < params->nx; ii+=1)
   {
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
     float dat[2];
-    int x_e = ii + 1;
-    int x_w = ii - 1;
+    int x_e = (ii + 1) & params->nxBitMask;
+    int x_w = (ii - 1) & params->nxBitMask;
     innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, dat);
     tmp_vel += dat[0];
     tmp_cell += dat[1];
   }
-
-  float datOut2[2];
-  x_eo = 0;
-  x_wo = params->nx - 2;
-  innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_eo, x_wo, jj, params->nx - 1, datOut2);
-  tmp_vel += datOut2[0];
-  tmp_cell += datOut2[1];
 
   params->totCells += tmp_cell;
   params->totVel += tmp_vel;
@@ -544,6 +533,11 @@ int initialise(const char* paramfile, const char* obstaclefile,
   retval = fscanf(fp, "%d\n", &(params->ny));
 
   if (retval != 1) die("could not read param file: ny", __LINE__, __FILE__);
+
+
+  params->nxBitMask = params->nx - 1;
+  params->nyBitMask = params->ny - 1;
+
 
   retval = fscanf(fp, "%d\n", &(params->maxIters));
 
