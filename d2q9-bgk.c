@@ -436,6 +436,8 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
   
 
   __assume((params->nx % 4) == 0);
+  __assume((params->nx % 8) == 0);
+  __assume((params->nx % 16) == 0);
   #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
   for (int ii = 0; ii < params->nx; ii+=1)
   {
@@ -470,8 +472,14 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   int y_n = 1;
   int y_s = jjLimit;
   outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, 0);
-  y_s = -1;
-  for (int jj = 1; jj < params->ny - 1; jj+=2)
+  
+  y_n += 1;
+  y_s = 0;
+  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, 1);
+  __assume((params->ny % 4) == 0);
+  __assume((params->ny % 8) == 0);
+  __assume((params->ny % 16) == 0);
+  for (int jj = 2; jj < params->ny - 2; jj+=4)
   {
     y_n += 1;
     y_s += 1;
@@ -480,7 +488,21 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
     y_n += 1;
     y_s += 1;
     outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj+1);
+    
+    //manual unwrap bc of compiler
+    y_n += 1;
+    y_s += 1;
+    outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj+2);
+    
+    //manual unwrap bc of compiler
+    y_n += 1;
+    y_s += 1;
+    outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj+3);
   }
+  
+  y_n += 1;
+  y_s += 1;
+  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jjLimit - 1);
 
   y_n = 0;
   y_s = jjLimit - 1;
