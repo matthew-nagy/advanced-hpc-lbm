@@ -66,6 +66,7 @@ const float w1 = 1.f / 9.f;  /* weighting factor */
 const float w2 = 1.f / 36.f; /* weighting factor */
 
 
+
 /* struct to hold the parameter values */
 typedef struct
 {
@@ -357,7 +358,28 @@ extern inline void innerCollider(const t_param*const restrict params, CellList c
       tmp_cells[kk][ii + jj*params->nx] = scratch[kk]
                                               + params->omega
                                               * (d_equ[kk] - scratch[kk]);
+      local_density += tmp_cells[kk][ii + jj*params->nx];
     }
+    //Recompute after relaxation
+    /* compute x velocity component */
+    u_x = (scratch[1]
+                  + scratch[5]
+                  + scratch[8]
+                  - (scratch[3]
+                      + scratch[6]
+                      + scratch[7]))
+                  / local_density;
+    /* compute y velocity component */
+    u_y = (scratch[2]
+                  + scratch[5]
+                  + scratch[6]
+                  - (scratch[4]
+                      + scratch[7]
+                      + scratch[8]))
+                  / local_density;
+
+    /* velocity squared */
+    u_sq = u_x * u_x + u_y * u_y;
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
