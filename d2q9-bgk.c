@@ -420,13 +420,11 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
 
     /* velocity squared */
     const float u_sq2 = u_x * u_x + u_y * u_y;
+    dat[0] += sqrtf(u_sq2);
     #else
     }
+    dat[0] += sqrtf(u_sq1);
     #endif
-
-    //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
-    /* accumulate the norm of x- and y- velocity components */
-    dat[0] += sqrtf(u_sq2);
     /* increase counter of inspected cells */
     dat[1] += (1 - obstacles[jj*params->nx + ii]);
   }
