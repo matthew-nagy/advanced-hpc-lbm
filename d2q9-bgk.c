@@ -250,39 +250,38 @@ extern inline void innerCollider(const t_param*const restrict params, CellList c
   dat[1] = 0.0f;
   const int index = ii + jj * params->nx;
   
+  /* propagate densities from neighbouring cells, following
+  ** appropriate directions of travel and writing into
+  ** scratch space grid */
+  scratch[0] = cells[0][index]; /* central cell, no movement */
+  scratch[1] = cells[1][x_w + jj*params->nx]; /* east */
+  scratch[2] = cells[2][ii + y_s*params->nx]; /* north */
+  scratch[3] = cells[3][x_e + jj*params->nx]; /* west */
+  scratch[4] = cells[4][ii + y_n*params->nx]; /* south */
+  scratch[5] = cells[5][x_w + y_s*params->nx]; /* north-east */
+  scratch[6] = cells[6][x_e + y_s*params->nx]; /* north-west */
+  scratch[7] = cells[7][x_e + y_n*params->nx]; /* south-west */
+  scratch[8] = cells[8][x_w + y_n*params->nx]; /* south-east */
+
   float u_sq = 0.0f;
 
   /* if the cell contains an obstacle */
   if (obstacles[index])
   {
-    /* propagate densities from neighbouring cells, following
-    ** appropriate directions of travel and writing into
-    ** scratch space grid */
-    tmp_cells[3][index] = cells[1][x_w + jj*params->nx]; /* east */
-    tmp_cells[4][index] = cells[2][ii + y_s*params->nx]; /* north */
-    tmp_cells[1][index] = cells[3][x_e + jj*params->nx]; /* west */
-    tmp_cells[2][index] = cells[4][ii + y_n*params->nx]; /* south */
-    tmp_cells[7][index] = cells[5][x_w + y_s*params->nx]; /* north-east */
-    tmp_cells[8][index] = cells[6][x_e + y_s*params->nx]; /* north-west */
-    tmp_cells[5][index] = cells[7][x_e + y_n*params->nx]; /* south-west */
-    tmp_cells[6][index] = cells[8][x_w + y_n*params->nx]; /* south-east */
+    /* called after propagate, so taking values from scratch space
+    ** mirroring, and writing into main grid */
+    tmp_cells[1][index] = scratch[3];
+    tmp_cells[2][index] = scratch[4];
+    tmp_cells[3][index] = scratch[1];
+    tmp_cells[4][index] = scratch[2];
+    tmp_cells[5][index] = scratch[7];
+    tmp_cells[6][index] = scratch[8];
+    tmp_cells[7][index] = scratch[5];
+    tmp_cells[8][index] = scratch[6];
   }
   /* don't consider occupied cells */
   else
   {
-      /* propagate densities from neighbouring cells, following
-      ** appropriate directions of travel and writing into
-      ** scratch space grid */
-      scratch[0] = cells[0][index]; /* central cell, no movement */
-      scratch[1] = cells[1][x_w + jj*params->nx]; /* east */
-      scratch[2] = cells[2][ii + y_s*params->nx]; /* north */
-      scratch[3] = cells[3][x_e + jj*params->nx]; /* west */
-      scratch[4] = cells[4][ii + y_n*params->nx]; /* south */
-      scratch[5] = cells[5][x_w + y_s*params->nx]; /* north-east */
-      scratch[6] = cells[6][x_e + y_s*params->nx]; /* north-west */
-      scratch[7] = cells[7][x_e + y_n*params->nx]; /* south-west */
-      scratch[8] = cells[8][x_w + y_n*params->nx]; /* south-east */
-
     /* compute local density total */
     float local_density = 0.f;
 
