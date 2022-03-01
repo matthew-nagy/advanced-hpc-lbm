@@ -349,10 +349,9 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
 
   float u_sq = 0.0f;
   float localVelocity = 0.0f;
+  int obs = ii == 0 || ii == (params->nx - 1);
 
-  /* if the cell contains an obstacle */
-  if (ii == 0 || ii == (params->nx - 1))
-  {
+
     /* called after propagate, so taking values from scratch space
     ** mirroring, and writing into main grid */
     tmp_cells[1][index] = scratch[3];
@@ -363,10 +362,8 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
     tmp_cells[6][index] = scratch[8];
     tmp_cells[7][index] = scratch[5];
     tmp_cells[8][index] = scratch[6];
-  }
-  /* don't consider occupied cells */
-  else
-  {
+
+
     /* compute local density total */
     float local_density = 0.f;
 
@@ -447,9 +444,9 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
     /* relaxation step */
     for (int kk = 0; kk < NSPEEDS; kk++)
     {
-      tmp_cells[kk][index] = scratch[kk]
+      tmp_cells[kk][index] = (scratch[kk]
                                               + params->omega
-                                              * (d_equ[kk] - scratch[kk]);
+                                              * (d_equ[kk] - scratch[kk])) * obs;
     #ifndef VEL
     }
     #else
@@ -480,8 +477,8 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
-    localVelocity = sqrtf(u_sq);
-  }
+    localVelocity = sqrtf(u_sq) * obs;
+
   return localVelocity;
 }
 
