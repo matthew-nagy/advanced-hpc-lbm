@@ -309,7 +309,7 @@ extern inline void edgeCollider(const int nx, const CellList cells, CellList tmp
   tmp_cells[7][index] = cells[5][x_w + (y_s*nx)];
   tmp_cells[8][index] = cells[6][x_e + (y_s*nx)];
 }
-extern inline float innerCollider(const t_param*const restrict params, const CellList cells, CellList tmp_cells, const int y_n, const int y_s, const int x_e, const int x_w, const int jj, const int ii){
+extern inline float innerCollider(const t_param*const restrict params, const CellList cells, CellList tmp_cells, const int*const restrict obstacles, const int y_n, const int y_s, const int x_e, const int x_w, const int jj, const int ii){
   __assume(x_e >= 0);
   __assume(x_w >= 0);
   __assume(y_n >= 0);
@@ -349,7 +349,7 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
 
   float u_sq = 0.0f;
   float localVelocity = 0.0f;
-  int obs = ii == 0 || ii == (params->nx - 1);
+  int obs = obstacles[index];
 
 
     /* called after propagate, so taking values from scratch space
@@ -551,7 +551,7 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
       __assume(x_w >= 0);
       __assume(y_n >= 0);
       __assume(y_s >= 0);
-      tmp_vel += innerCollider(params, cells, tmp_cells, y_n, y_s, x_e, x_w, jj, ii);
+      tmp_vel += innerCollider(params, cells, tmp_cells,obstacles, y_n, y_s, x_e, x_w, jj, ii);
     }
     tot_u += tmp_vel;
   }
