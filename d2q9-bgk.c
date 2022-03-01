@@ -673,7 +673,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
   __assume(params->ny % 128 == 0);
   __assume(params->ny > 128);
 
-  #pragma omp parallel for
+  #pragma omp parallel for collapse(2)
   for (int jj = 0; jj < params->ny; jj++)
   { 
     for (int ii = 0; ii < params->nx; ii++)
