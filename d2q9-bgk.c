@@ -111,7 +111,7 @@ float timestep(t_param*const restrict params, CellList cells, CellList tmp_cells
 int accelerate_flow(const t_param params, CellList cells, int const*const restrict obstacles);
 int propagate(const t_param params, float** cells, float** tmp_cells);
 int rebound(const t_param params, float** cells, float** tmp_cells, int* obstacles);
-float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles);
+float collision(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles);
 int write_values(const t_param params, float** cells, int* obstacles, float* av_vels);
 
 /* finalise, including freeing up allocated memory */
@@ -443,7 +443,7 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
   }
 }
 
-extern inline void outerCollide(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int jj){
+extern inline void outerCollide(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int jj){
 
   float tmp_u = 0.0f;
 
@@ -469,7 +469,7 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
   tot_u += tmp_u;;
 }
 
-float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles)
+float collision(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles)
 {
 
   tot_u = 0.0f;
