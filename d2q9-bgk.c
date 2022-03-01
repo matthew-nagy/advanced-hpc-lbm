@@ -311,9 +311,10 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
     cells[6][x_e + y_s*params->nx], /* north-west */
     cells[7][x_e + y_n*params->nx], /* south-west */
     cells[8][x_w + y_n*params->nx] /* south-east */
-  }
+  };
 
   float u_sq = 0.0f;
+  float localVelocity = 0.0f;
 
   /* if the cell contains an obstacle */
   if (obstacles[index])
@@ -445,8 +446,9 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
-    *dat += sqrtf(u_sq);
+    localVelocity = sqrtf(u_sq);
   }
+  return localVelocity;
 }
 
 float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles)
@@ -506,13 +508,11 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
       ** respecting periodic boundary conditions (wrap around) */
       int x_e = (ii + 1) & params->nxBitMask;
       int x_w = (ii - 1) & params->nxBitMask;
-      float dat;
       __assume(x_e >= 0);
       __assume(x_w >= 0);
       __assume(y_n >= 0);
       __assume(y_s >= 0);
-      innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, dat);
-      tmp_vel += dat;
+      tmp_vel += innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);;
     }
     tot_u += tmp_vel;
   }
