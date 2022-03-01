@@ -296,7 +296,9 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
   __assume(x_e > 0);
   __assume(y_n > 0);
   __assume(y_s > 0);
-  
+  __assume(index > 0);
+  __assume(index < (params->nx * params->ny));
+
   scratch[0] = cells[0][index]; /* central cell, no movement */
   scratch[1] = cells[1][x_w + (jj<<params->nxBitShift)]; /* east */
   scratch[2] = cells[2][ii + (y_s<<params->nxBitShift)]; /* north */
