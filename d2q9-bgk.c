@@ -477,7 +477,7 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   __assume((params->ny % 4) == 0);
   __assume((params->ny % 8) == 0);
   __assume((params->ny % 16) == 0);
-  #pragma omp parallel for aligned(cells, tmp_cells : 64), reduction(+:params->totCells), reduction(+:params->totVel)
+  #pragma omp parallel for reduction(+:params->totCells), reduction(+:params->totVel)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
     int y_n = (jj + 1) & params->nyBitMask;
