@@ -477,7 +477,7 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
     outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj);
   }
   
-  return params->totVel / (float)params->totCells;
+  return tot_u / (float)tot_cells;
 }
 
 float av_velocity(const t_param params, float** cells, int* obstacles)
