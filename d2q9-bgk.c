@@ -75,6 +75,7 @@ typedef struct
   int    ny;            /* no. of cells in y-direction */
   int nxBitMask;
   int nyBitMask;
+  int nxBitShift;
   int    maxIters;      /* no. of iterations */
   int    reynolds_dim;  /* dimension for Reynolds number */
   float density;       /* density per link */
@@ -254,7 +255,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   for (int ii = 0; ii < end; ii++)
   {
     const int index = secondRowNonObs[ii];
-    #pragma omp simd
+    #pragma omp simd aligned(cells)
     for(int i = 1; i < 9; i++){
       cells[i][index] += changes[i];
     }
@@ -284,9 +285,12 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
   *dat = 0.0f;
   const int index = ii + jj * params->nx;
   
+  __assume_aligned(cells, 64);
+  __assume_aligned(tmp_cells, 64);
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
   ** scratch space grid */
+  __assume((params->nx % 2) == 0)
   scratch[0] = cells[0][index]; /* central cell, no movement */
   scratch[1] = cells[1][x_w + jj*params->nx]; /* east */
   scratch[2] = cells[2][ii + y_s*params->nx]; /* north */
@@ -562,6 +566,9 @@ int initialise(const char* paramfile, const char* obstaclefile,
 
   params->nxBitMask = params->nx - 1;
   params->nyBitMask = params->ny - 1;
+
+  //int xCopy = params->nx;
+  //while()
 
 
   retval = fscanf(fp, "%d\n", &(params->maxIters));
