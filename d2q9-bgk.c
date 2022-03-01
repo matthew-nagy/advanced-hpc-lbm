@@ -251,7 +251,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   const float changes[9] = {0.0f, w1, 0.0f, w1, 0.0f, w2, w2, w2, w2};
   const int end = numOfSecondRowNonObs;
 
-  //#pragma omp parallel for
+  #pragma omp parallel for
   for (int ii = 0; ii < end; ii++)
   {
     const int index = secondRowNonObs[ii];
@@ -489,7 +489,7 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   __assume((params->ny % 64) == 0);
   __assume((params->ny % 128) == 0);
   __assume(params->ny >= 128);
-  //#pragma omp parallel for reduction(+:tot_cells), reduction(+:tot_u)
+  #pragma omp parallel for reduction(+:tot_cells), reduction(+:tot_u)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
     int y_n = (jj + 1) & params->nyBitMask;
