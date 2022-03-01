@@ -250,7 +250,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   {
     const int index = secondRowNonObs[ii];
     for(int i = 1; i < 9; i ++){
-      changes[i][index] += changes[i];
+      cells[i][index] += changes[i];
     }
   }
 
