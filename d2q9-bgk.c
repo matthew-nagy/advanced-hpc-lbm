@@ -636,6 +636,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
   /* main grid */
   *cells_ptr = (float**)aligned_alloc(64, sizeof(float*) * (NSPEEDS));
   *tmp_cells_ptr = (float**)aligned_alloc(64, sizeof(float*) * (NSPEEDS));
+  #pragma omp parallel for
   for(int i = 0; i < NSPEEDS; i++){
     // (*cells_ptr)[i] = (float*)malloc(sizeof(float) * params->nx * params->ny);
     // (*tmp_cells_ptr)[i] = (float*)malloc(sizeof(float) * params->nx * params->ny);
@@ -654,6 +655,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
   float w1 = params->density      / 9.f;
   float w2 = params->density      / 36.f;
 
+  #pragma omp parallel for
   for (int jj = 0; jj < params->ny; jj++)
   {
     for (int ii = 0; ii < params->nx; ii++)
@@ -671,6 +673,19 @@ int initialise(const char* paramfile, const char* obstaclefile,
       (*cells_ptr)[6][index] = w2;
       (*cells_ptr)[7][index] = w2;
       (*cells_ptr)[8][index] = w2;
+
+      
+      (*tmp_cells_ptr)[0][index] = w0;
+      /* axis directions */
+      (*tmp_cells_ptr)[1][index] = w1;
+      (*tmp_cells_ptr)[2][index] = w1;
+      (*tmp_cells_ptr)[3][index] = w1;
+      (*tmp_cells_ptr)[4][index] = w1;
+      /* diagonals */
+      (*tmp_cells_ptr)[5][index] = w2;
+      (*tmp_cells_ptr)[6][index] = w2;
+      (*tmp_cells_ptr)[7][index] = w2;
+      (*tmp_cells_ptr)[8][index] = w2;
     }
   }
 
