@@ -84,6 +84,18 @@ typedef struct
   float totVel;
 } t_param;
 
+// typedef struct 
+// {
+//   int index;
+//   short ii;
+//   short jj;
+// } obstacle_cell;
+
+// obstacle_cell* obstacleCells;
+// int obsNum;
+// int* nonObstacleCells;
+// int nobsNum;//THE RETURN! MAYBE NOT!
+
 /* struct to hold the 'speed' values */
 
 /*
@@ -108,7 +120,7 @@ float timestep(t_param*const restrict params, CellList cells, CellList tmp_cells
 int accelerate_flow(const t_param params, CellList cells, int const*const restrict obstacles);
 int propagate(const t_param params, float** cells, float** tmp_cells);
 int rebound(const t_param params, float** cells, float** tmp_cells, int* obstacles);
-float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles);
+float collision(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles);
 int write_values(const t_param params, float** cells, int* obstacles, float* av_vels);
 
 /* finalise, including freeing up allocated memory */
@@ -274,7 +286,28 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   return EXIT_SUCCESS;
 }
 
-extern inline float innerCollider(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii){
+extern inline void edgeCollider(const int xBitmask, const CellList cells, CellList tmp_cells, const int ii, const int jj, const int y_n, const int y_s, const int x_e, const int x_w){
+  /* called after propagate, so taking values from scratch space
+  ** mirroring, and writing into main grid */
+  __assume_aligned(cells, 64);
+  __assume_aligned(tmp_cells, 64);
+  __assume(xBitmask > 0);
+  __assume(ii >= 0);
+  __assume(jj >= 0);
+  __assume(x_w >= 0);
+  __assume(x_e >= 0);
+  __assume(y_n>= 0);
+  __assume(y_s >= 0);
+  tmp_cells[1][index] = cells[3][x_e + (jj&xBitmask)];
+  tmp_cells[2][index] = cells[4][ii + (y_n&xBitmask)];
+  tmp_cells[3][index] = cells[1][x_w + (jj&xBitmask)];
+  tmp_cells[4][index] = cells[2][ii + (y_s&xBitmask)];
+  tmp_cells[5][index] = cells[7][x_e + (y_n&xBitmask)];
+  tmp_cells[6][index] = cells[8][x_w + (y_n&xBitmask)];
+  tmp_cells[7][index] = cells[5][x_w + (y_s*xBitmask)];
+  tmp_cells[8][index] = cells[6][x_e + (y_s&xBitmask)];
+}
+extern inline float innerCollider(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, const int y_n, const int y_s, const int x_e, const int x_w, const int jj, const int ii){
   __assume(x_e >= 0);
   __assume(x_w >= 0);
   __assume(y_n >= 0);
@@ -378,35 +411,33 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
     const float over2c_sq_squared = 1.0 / (2.f * c_sq * c_sq);
     const float overC_sq = 1.0 / c_sq;
 
-    const float densityHere = local_density;
-
     /* zero velocity density: weight w0 */
-    d_equ[0] = w0 * densityHere
+    d_equ[0] = w0 * local_density
                 * (1.f - u_sq * over2c_sq);
     /* axis speeds: weight w1 */
-    d_equ[1] = w1 * densityHere * (1.f + u[1] * overC_sq
+    d_equ[1] = w1 * local_density * (1.f + u[1] * overC_sq
                                       + (u[1] * u[1]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[2] = w1 * densityHere * (1.f + u[2] * overC_sq
+    d_equ[2] = w1 * local_density * (1.f + u[2] * overC_sq
                                       + (u[2] * u[2]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[3] = w1 * densityHere * (1.f + u[3] * overC_sq
+    d_equ[3] = w1 * local_density * (1.f + u[3] * overC_sq
                                       + (u[3] * u[3]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[4] = w1 * densityHere * (1.f + u[4] * overC_sq
+    d_equ[4] = w1 * local_density * (1.f + u[4] * overC_sq
                                       + (u[4] * u[4]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
     /* diagonal speeds: weight w2 */
-    d_equ[5] = w2 * densityHere * (1.f + u[5] * overC_sq
+    d_equ[5] = w2 * local_density * (1.f + u[5] * overC_sq
                                       + (u[5] * u[5]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[6] = w2 * densityHere * (1.f + u[6] * overC_sq
+    d_equ[6] = w2 * local_density * (1.f + u[6] * overC_sq
                                       + (u[6] * u[6]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[7] = w2 * densityHere * (1.f + u[7] * overC_sq
+    d_equ[7] = w2 * local_density * (1.f + u[7] * overC_sq
                                       + (u[7] * u[7]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[8] = w2 * densityHere * (1.f + u[8] * overC_sq
+    d_equ[8] = w2 * local_density * (1.f + u[8] * overC_sq
                                       + (u[8] * u[8]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
 
@@ -452,7 +483,7 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
   return localVelocity;
 }
 
-float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles)
+float collision(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles)
 {
 
   const int iiLimit = params->nx - 1;
@@ -481,10 +512,18 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   __assume((params->ny % 64) == 0);
   __assume((params->ny % 128) == 0);
   __assume(params->ny >= 128);
-  for (int jj = 0; jj < params->ny; jj+=1)
+
+  #pragma omp simd aligned(cells : 64) aligned(tmp_cells : 64)
+  for(int ii = 0; ii< params->nx; ii++){
+    const int x_e = (ii + 1) & params->nxBitMask;
+    const int x_w = (ii - 1) & params->nxBitMask;
+    edgeCollider(params->nxBitMask, cells, tmp_cells, ii, 0, 1, params->ny - 1, x_e, x_w);
+  }
+
+  for (int jj = 1; jj < params->ny - 1; jj+=1)
   {
-    int y_n = (jj + 1) & params->nyBitMask;
-    int y_s = (jj - 1) & params->nyBitMask;
+    const int y_n = (jj + 1);// & params->nyBitMask;
+    const int y_s = (jj - 1);// & params->nyBitMask;
     float tmp_vel;
     __assume((params->nx % 2) == 0);
     __assume((params->nx % 4) == 0);
@@ -507,8 +546,8 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
     {
       /* determine indices of axis-direction neighbours
       ** respecting periodic boundary conditions (wrap around) */
-      int x_e = (ii + 1) & params->nxBitMask;
-      int x_w = (ii - 1) & params->nxBitMask;
+      const int x_e = (ii + 1) & params->nxBitMask;
+      const int x_w = (ii - 1) & params->nxBitMask;
       __assume(x_e >= 0);
       __assume(x_w >= 0);
       __assume(y_n >= 0);
@@ -516,6 +555,13 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
       tmp_vel += innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);
     }
     tot_u += tmp_vel;
+  }
+
+  #pragma omp simd aligned(cells : 64) aligned(tmp_cells : 64)
+  for(int ii = 0; ii< params->nx; ii++){
+    const int x_e = (ii + 1) & params->nxBitMask;
+    const int x_w = (ii - 1) & params->nxBitMask;
+    edgeCollider(params->nxBitMask, cells, tmp_cells, ii, params->ny-1, 0, params->ny - 2, x_e, x_w);
   }
 
   
@@ -708,6 +754,8 @@ int initialise(const char* paramfile, const char* obstaclefile,
   }
   
   overNumOfObstacles = 0.0f;
+  
+
   /* read-in the blocked cells list */
   while ((retval = fscanf(fp, "%d %d %d\n", &xx, &yy, &blocked)) != EOF)
   {
