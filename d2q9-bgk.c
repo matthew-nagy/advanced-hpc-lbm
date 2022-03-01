@@ -65,7 +65,7 @@ const float w0 = 4.f / 9.f;  /* weighting factor */
 const float w1 = 1.f / 9.f;  /* weighting factor */
 const float w2 = 1.f / 36.f; /* weighting factor */
 
-
+float overNumOfObstacles;
 
 /* struct to hold the parameter values */
 typedef struct
@@ -275,23 +275,43 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
 }
 
 extern inline void innerCollider(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii, float* dat){
-  float scratch[9];
-  dat[0] = 0.0f;
-  dat[1] = 0.0f;
+  __assume(x_e >= 0);
+  __assume(x_w >= 0);
+  __assume(y_n >= 0);
+  __assume(y_s >= 0);
+  __assume((params->nx % 2) == 0);
+  __assume((params->nx % 4) == 0);
+  __assume((params->nx % 8) == 0);
+  __assume((params->nx % 16) == 0);
+  __assume((params->nx % 32) == 0);
+  __assume((params->nx % 64) == 0);
+  __assume((params->nx % 128) == 0);
+  __assume(params->nx >= 128);
+  __assume((params->ny % 2) == 0);
+  __assume((params->ny % 4) == 0);
+  __assume((params->ny % 8) == 0);
+  __assume((params->ny % 16) == 0);
+  __assume((params->ny % 32) == 0);
+  __assume((params->ny % 64) == 0);
+  __assume((params->ny % 128) == 0);
+  __assume(params->ny >= 128);
+  *dat = 0.0f;
   const int index = ii + jj * params->nx;
   
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
   ** scratch space grid */
-  scratch[0] = cells[0][index]; /* central cell, no movement */
-  scratch[1] = cells[1][x_w + jj*params->nx]; /* east */
-  scratch[2] = cells[2][ii + y_s*params->nx]; /* north */
-  scratch[3] = cells[3][x_e + jj*params->nx]; /* west */
-  scratch[4] = cells[4][ii + y_n*params->nx]; /* south */
-  scratch[5] = cells[5][x_w + y_s*params->nx]; /* north-east */
-  scratch[6] = cells[6][x_e + y_s*params->nx]; /* north-west */
-  scratch[7] = cells[7][x_e + y_n*params->nx]; /* south-west */
-  scratch[8] = cells[8][x_w + y_n*params->nx]; /* south-east */
+  const scratch[9] = {
+    cells[0][index], /* central cell, no movement */
+    cells[1][x_w + jj*params->nx], /* east */
+    cells[2][ii + y_s*params->nx], /* north */
+    cells[3][x_e + jj*params->nx], /* west */
+    cells[4][ii + y_n*params->nx], /* south */
+    cells[5][x_w + y_s*params->nx], /* north-east */
+    cells[6][x_e + y_s*params->nx], /* north-west */
+    cells[7][x_e + y_n*params->nx], /* south-west */
+    cells[8][x_w + y_n*params->nx] /* south-east */
+  }
 
   float u_sq = 0.0f;
 
@@ -425,42 +445,12 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
-    dat[0] += sqrtf(u_sq);
-    /* increase counter of inspected cells */
-    dat[1] += (1 - obstacles[jj*params->nx + ii]);
+    *dat += sqrtf(u_sq);
   }
-}
-
-extern inline void outerCollide(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int jj){
-
-  float tmp_cell = 0.0f;
-  float tmp_vel = 0.0f;
-
-  
-
-  __assume((params->nx % 4) == 0);
-  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
-  for (int ii = 0; ii < params->nx; ii+=1)
-  {
-    /* determine indices of axis-direction neighbours
-    ** respecting periodic boundary conditions (wrap around) */
-    float dat[2];
-    int x_e = (ii + 1) & params->nxBitMask;
-    int x_w = (ii - 1) & params->nxBitMask;
-    innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, dat);
-    tmp_vel += dat[0];
-    tmp_cell += dat[1];
-  }
-
-  params->totCells += tmp_cell;
-  params->totVel += tmp_vel;
 }
 
 float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles)
 {
-
-  params->totCells = 0;
-  params->totVel = 0.0f;
 
   const int iiLimit = params->nx - 1;
   const int jjLimit = params->ny - 1;
@@ -469,27 +459,66 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   ** NB the collision step is called after
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
+
+  float tot_u = 0.0f;
   
-  int y_n = 1;
-  int y_s = jjLimit;
-  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, 0);
-  y_s = -1;
-  for (int jj = 1; jj < params->ny - 1; jj+=2)
+  __assume((params->nx % 2) == 0);
+  __assume((params->nx % 4) == 0);
+  __assume((params->nx % 8) == 0);
+  __assume((params->nx % 16) == 0);
+  __assume((params->nx % 32) == 0);
+  __assume((params->nx % 64) == 0);
+  __assume((params->nx % 128) == 0);
+  __assume(params->nx >= 128);
+  __assume((params->ny % 2) == 0);
+  __assume((params->ny % 4) == 0);
+  __assume((params->ny % 8) == 0);
+  __assume((params->ny % 16) == 0);
+  __assume((params->ny % 32) == 0);
+  __assume((params->ny % 64) == 0);
+  __assume((params->ny % 128) == 0);
+  __assume(params->ny >= 128);
+  for (int jj = 0; jj < params->ny; jj+=1)
   {
-    y_n += 1;
-    y_s += 1;
-    outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj);
-    //manual unwrap bc of compiler
-    y_n += 1;
-    y_s += 1;
-    outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj+1);
+    int y_n = (jj + 1) & params->nyBitMask;
+    int y_s = (jj - 1) & params->nyBitMask;
+    float tmp_vel;
+    __assume((params->nx % 2) == 0);
+    __assume((params->nx % 4) == 0);
+    __assume((params->nx % 8) == 0);
+    __assume((params->nx % 16) == 0);
+    __assume((params->nx % 32) == 0);
+    __assume((params->nx % 64) == 0);
+    __assume((params->nx % 128) == 0);
+    __assume(params->nx >= 128);
+    __assume((params->ny % 2) == 0);
+    __assume((params->ny % 4) == 0);
+    __assume((params->ny % 8) == 0);
+    __assume((params->ny % 16) == 0);
+    __assume((params->ny % 32) == 0);
+    __assume((params->ny % 64) == 0);
+    __assume((params->ny % 128) == 0);
+    __assume(params->ny >= 128);
+    #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_vel)
+    for (int ii = 0; ii < params->nx; ii+=1)
+    {
+      /* determine indices of axis-direction neighbours
+      ** respecting periodic boundary conditions (wrap around) */
+      int x_e = (ii + 1) & params->nxBitMask;
+      int x_w = (ii - 1) & params->nxBitMask;
+      float dat;
+      __assume(x_e >= 0);
+      __assume(x_w >= 0);
+      __assume(y_n >= 0);
+      __assume(y_s >= 0);
+      innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, dat);
+      tmp_vel += dat;
+    }
+    tot_u += tmp_vel;
   }
 
-  y_n = 0;
-  y_s = jjLimit - 1;
-  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jjLimit);
   
-  return params->totVel / (float)params->totCells;
+  return tot_u * overNumOfObstacles;
 }
 
 float av_velocity(const t_param params, float** cells, int* obstacles)
@@ -676,7 +705,8 @@ int initialise(const char* paramfile, const char* obstaclefile,
     sprintf(message, "could not open input obstacles file: %s", obstaclefile);
     die(message, __LINE__, __FILE__);
   }
-
+  
+  overNumOfObstacles = 0.0f;
   /* read-in the blocked cells list */
   while ((retval = fscanf(fp, "%d %d %d\n", &xx, &yy, &blocked)) != EOF)
   {
@@ -691,7 +721,9 @@ int initialise(const char* paramfile, const char* obstaclefile,
 
     /* assign to array */
     (*obstacles_ptr)[xx + yy*params->nx] = blocked;
+    overNumOfObstacles += 1;
   }
+  overNumOfObstacles = 1.0f / overNumOfObstacles;
 
   /* and close the file */
   fclose(fp);
