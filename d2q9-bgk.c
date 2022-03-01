@@ -310,7 +310,7 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
     cells[6][x_e + y_s*params->nx], /* north-west */
     cells[7][x_e + y_n*params->nx], /* south-west */
     cells[8][x_w + y_n*params->nx] /* south-east */
-  };
+  }; 
 
   float u_sq = 0.0f;
   float localVelocity = 0.0f;
