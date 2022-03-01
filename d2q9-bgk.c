@@ -249,6 +249,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
   {
     const int index = secondRowNonObs[ii];
+    #pragma omp simd aligned(cells : 64)
     for(int i = 1; i < 9; i++){
       cells[i][index] += changes[i];
     }
