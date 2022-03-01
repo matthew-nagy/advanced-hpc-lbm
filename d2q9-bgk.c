@@ -655,9 +655,28 @@ int initialise(const char* paramfile, const char* obstaclefile,
   float w1 = params->density      / 9.f;
   float w2 = params->density      / 36.f;
 
-  //#pragma omp parallel for
+  #pragma omp parallel for
+  __assume(params->nx % 2 == 0);
+  __assume(params->nx % 4 == 0);
+  __assume(params->nx % 8 == 0);
+  __assume(params->nx % 16 == 0);
+  __assume(params->nx % 32 == 0);
+  __assume(params->nx % 64 == 0);
+  __assume(params->nx % 128 == 0);
+  __assume(params->nx > 128);
+
+  __assume(params->ny % 2 == 0);
+  __assume(params->ny % 4 == 0);
+  __assume(params->ny % 8 == 0);
+  __assume(params->ny % 16 == 0);
+  __assume(params->ny % 32 == 0);
+  __assume(params->ny % 64 == 0);
+  __assume(params->ny % 128 == 0);
+  __assume(params->ny > 128);
   for (int jj = 0; jj < params->ny; jj++)
-  {
+  { 
+    __assume_aligned(*cells_ptr);
+    __assume_aligned(*tmp_cells_ptr);
     for (int ii = 0; ii < params->nx; ii++)
     {
       const int index = ii + jj*params->nx;
