@@ -286,13 +286,13 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   return EXIT_SUCCESS;
 }
 
-extern inline void edgeCollider(const int xBitmask, const CellList cells, CellList tmp_cells, const int ii, const int jj, const int y_n, const int y_s, const int x_e, const int x_w){
+extern inline void edgeCollider(const int nx, const CellList cells, CellList tmp_cells, const int ii, const int jj, const int y_n, const int y_s, const int x_e, const int x_w){
   /* called after propagate, so taking values from scratch space
   ** mirroring, and writing into main grid */
-  const int index = ii + (jj << params->nx);
+  const int index = ii + (jj * nx);
   __assume_aligned(cells, 64);
   __assume_aligned(tmp_cells, 64);
-  __assume(xBitmask > 0);
+  __assume(nx >= 128);
   __assume(ii >= 0);
   __assume(jj >= 0);
   __assume(x_w >= 0);
@@ -300,14 +300,14 @@ extern inline void edgeCollider(const int xBitmask, const CellList cells, CellLi
   __assume(y_n>= 0);
   __assume(y_s >= 0);
   __assume(index >= 0);
-  tmp_cells[1][index] = cells[3][x_e + (jj<<xBitmask)];
-  tmp_cells[2][index] = cells[4][ii + (y_n<<xBitmask)];
-  tmp_cells[3][index] = cells[1][x_w + (jj<<xBitmask)];
-  tmp_cells[4][index] = cells[2][ii + (y_s<<xBitmask)];
-  tmp_cells[5][index] = cells[7][x_e + (y_n<<xBitmask)];
-  tmp_cells[6][index] = cells[8][x_w + (y_n<<xBitmask)];
-  tmp_cells[7][index] = cells[5][x_w + (y_s<<xBitmask)];
-  tmp_cells[8][index] = cells[6][x_e + (y_s<<xBitmask)];
+  tmp_cells[1][index] = cells[3][x_e + (jj*nx)];
+  tmp_cells[2][index] = cells[4][ii + (y_n*nx)];
+  tmp_cells[3][index] = cells[1][x_w + (jj*nx)];
+  tmp_cells[4][index] = cells[2][ii + (y_s*nx)];
+  tmp_cells[5][index] = cells[7][x_e + (y_n*nx)];
+  tmp_cells[6][index] = cells[8][x_w + (y_n*nx)];
+  tmp_cells[7][index] = cells[5][x_w + (y_s*nx)];
+  tmp_cells[8][index] = cells[6][x_e + (y_s*nx)];
 }
 extern inline float innerCollider(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, const int y_n, const int y_s, const int x_e, const int x_w, const int jj, const int ii){
   __assume(x_e >= 0);
@@ -519,7 +519,7 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
   for(int ii = 0; ii< params->nx; ii++){
     const int x_e = (ii + 1) & params->nxBitMask;
     const int x_w = (ii - 1) & params->nxBitMask;
-    edgeCollider(params->nxBitMask, cells, tmp_cells, ii, 0, 1, params->ny - 1, x_e, x_w);
+    edgeCollider(params->nx, cells, tmp_cells, ii, 0, 1, params->ny - 1, x_e, x_w);
   }
 
   for (int jj = 1; jj < params->ny - 1; jj+=1)
@@ -563,7 +563,7 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
   for(int ii = 0; ii< params->nx; ii++){
     const int x_e = (ii + 1) & params->nxBitMask;
     const int x_w = (ii - 1) & params->nxBitMask;
-    edgeCollider(params->nxBitMask, cells, tmp_cells, ii, params->ny-1, 0, params->ny - 2, x_e, x_w);
+    edgeCollider(params->nx, cells, tmp_cells, ii, params->ny-1, 0, params->ny - 2, x_e, x_w);
   }
 
   
