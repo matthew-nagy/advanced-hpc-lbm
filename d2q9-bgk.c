@@ -283,7 +283,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
 extern inline void innerCollider(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii, float* dat){
   float scratch[9];
   *dat = 0.0f;
-  const int index = ii + jj * params->nx;
+  const int index = ii + (jj << params->nxBitShift);
   
   __assume_aligned(cells, 64);
   __assume_aligned(tmp_cells, 64);
@@ -292,14 +292,14 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
   ** scratch space grid */
   __assume((params->nx % 2) == 0);
   scratch[0] = cells[0][index]; /* central cell, no movement */
-  scratch[1] = cells[1][x_w + jj*params->nx]; /* east */
-  scratch[2] = cells[2][ii + y_s*params->nx]; /* north */
-  scratch[3] = cells[3][x_e + jj*params->nx]; /* west */
-  scratch[4] = cells[4][ii + y_n*params->nx]; /* south */
-  scratch[5] = cells[5][x_w + y_s*params->nx]; /* north-east */
-  scratch[6] = cells[6][x_e + y_s*params->nx]; /* north-west */
-  scratch[7] = cells[7][x_e + y_n*params->nx]; /* south-west */
-  scratch[8] = cells[8][x_w + y_n*params->nx]; /* south-east */
+  scratch[1] = cells[1][x_w + (jj<<params->nxBitShift)]; /* east */
+  scratch[2] = cells[2][ii + (y_s<<params->nxBitShift)]; /* north */
+  scratch[3] = cells[3][x_e + (jj<<params->nxBitShift)]; /* west */
+  scratch[4] = cells[4][ii + (y_n<<params->nxBitShift)]; /* south */
+  scratch[5] = cells[5][x_w + (y_s<<params->nxBitShift)]; /* north-east */
+  scratch[6] = cells[6][x_e + (y_s<<params->nxBitShift)]; /* north-west */
+  scratch[7] = cells[7][x_e + (y_n<<params->nxBitShift)]; /* south-west */
+  scratch[8] = cells[8][x_w + (y_n<<params->nxBitShift)]; /* south-east */
 
   /* if the cell contains an obstacle */
   if (obstacles[index])
@@ -442,6 +442,10 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
   __assume((params->nx % 4) == 0);
   __assume((params->nx % 8) == 0);
   __assume((params->nx % 16) == 0);
+  // __assume((params->nx % 32) == 0);
+  // __assume((params->nx % 64) == 0);
+  // __assume((params->nx % 128) == 0);
+  // __assume(params->nx >= 128);
   #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_u)
   for (int ii = 0; ii < params->nx; ii+=1)
   {
@@ -473,6 +477,10 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   __assume((params->ny % 4) == 0);
   __assume((params->ny % 8) == 0);
   __assume((params->ny % 16) == 0);
+  // __assume((params->ny % 32) == 0);
+  // __assume((params->ny % 64) == 0);
+  // __assume((params->ny % 128) == 0);
+  // __assume(params->ny >= 128);
   //#pragma omp parallel for reduction(+:tot_cells), reduction(+:tot_u)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
@@ -567,8 +575,12 @@ int initialise(const char* paramfile, const char* obstaclefile,
   params->nxBitMask = params->nx - 1;
   params->nyBitMask = params->ny - 1;
 
-  //int xCopy = params->nx;
-  //while()
+  params->nxBitShift = 0;
+  int xCopy = params->nx;
+  while(xCopy != 1){
+    params->nxBitShift += 1;
+    xCopy = xCopy >> 1;
+  }
 
 
   retval = fscanf(fp, "%d\n", &(params->maxIters));
