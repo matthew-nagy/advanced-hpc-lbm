@@ -80,9 +80,6 @@ typedef struct
   float density;       /* density per link */
   float accel;         /* density redistribution */
   float omega;         /* relaxation parameter */
-
-  int totCells;
-  float totVel;
 } t_param;
 
 /* struct to hold the 'speed' values */
@@ -98,6 +95,9 @@ int initialise(const char* paramfile, const char* obstaclefile,
 
 typedef float* const restrict*const restrict CellList;
 
+
+int tot_cells;
+float tot_u;
 
 
 /*
@@ -435,11 +435,6 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
 
 extern inline void outerCollide(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int jj){
 
-  float tmp_cell = 0.0f;
-  float tmp_vel = 0.0f;
-
-  
-
   __assume((params->nx % 4) == 0);
   __assume((params->nx % 8) == 0);
   __assume((params->nx % 16) == 0);
@@ -452,19 +447,16 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
     int x_e = (ii + 1) & params->nxBitMask;
     int x_w = (ii - 1) & params->nxBitMask;
     innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, dat);
-    tmp_vel += dat[0];
-    tmp_cell += dat[1];
+    tot_u += dat[0];
+    tot_cells += dat[1];
   }
-
-  params->totCells += tmp_cell;
-  params->totVel += tmp_vel;
 }
 
 float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles)
 {
 
-  params->totCells = 0;
-  params->totVel = 0.0f;
+  tot_cells = 0;
+  tot_u += 0.0f;
 
   const int iiLimit = params->nx - 1;
   const int jjLimit = params->ny - 1;
@@ -477,7 +469,7 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   __assume((params->ny % 4) == 0);
   __assume((params->ny % 8) == 0);
   __assume((params->ny % 16) == 0);
-  #pragma omp parallel for reduction(+:params->totCells), reduction(+:params->totVel)
+  #pragma omp parallel for reduction(+:tot_cells), reduction(+:tot_u)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
     int y_n = (jj + 1) & params->nyBitMask;
