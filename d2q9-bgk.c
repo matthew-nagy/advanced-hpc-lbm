@@ -395,6 +395,9 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
       tmp_cells[kk][index] = scratch[kk]
                                               + params->omega
                                               * (d_equ[kk] - scratch[kk]);
+    #ifndef VEL
+    }
+    #else
       local_density += tmp_cells[kk][index];
     }
 
@@ -414,6 +417,7 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
               + tmp_cells[7][index]
               + tmp_cells[8][index]))
           / local_density;
+    #endif
 
 
     /* velocity squared */
