@@ -655,7 +655,6 @@ int initialise(const char* paramfile, const char* obstaclefile,
   float w1 = params->density      / 9.f;
   float w2 = params->density      / 36.f;
 
-  #pragma omp parallel for
   __assume(params->nx % 2 == 0);
   __assume(params->nx % 4 == 0);
   __assume(params->nx % 8 == 0);
@@ -673,6 +672,8 @@ int initialise(const char* paramfile, const char* obstaclefile,
   __assume(params->ny % 64 == 0);
   __assume(params->ny % 128 == 0);
   __assume(params->ny > 128);
+
+  #pragma omp parallel for
   for (int jj = 0; jj < params->ny; jj++)
   { 
     for (int ii = 0; ii < params->nx; ii++)
