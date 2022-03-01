@@ -312,9 +312,6 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
     cells[8][x_w + y_n*params->nx] /* south-east */
   }; 
 
-  float u_sq = 0.0f;
-  float localVelocity = 0.0f;
-
   /* if the cell contains an obstacle */
   if (obstacles[index])
   {
@@ -328,6 +325,7 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
     tmp_cells[6][index] = scratch[8];
     tmp_cells[7][index] = scratch[5];
     tmp_cells[8][index] = scratch[6];
+    return 0;
   }
   /* don't consider occupied cells */
   else
@@ -358,18 +356,19 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
                   / local_density;
 
     /* velocity squared */
-    u_sq = u_x * u_x + u_y * u_y;
+    const float u_sq = u_x * u_x + u_y * u_y;
 
     /* directional velocity components */
-    float u[NSPEEDS];
-    u[1] =   u_x;        /* east */
-    u[2] =         u_y;  /* north */
-    u[3] = - u_x;        /* west */
-    u[4] =       - u_y;  /* south */
-    u[5] =   u_x + u_y;  /* north-east */
-    u[6] = - u_x + u_y;  /* north-west */
-    u[7] = - u_x - u_y;  /* south-west */
-    u[8] =   u_x - u_y;  /* south-east */
+    const float u[NSPEEDS] = {
+      u[1] =   u_x,        /* east */
+      u[2] =         u_y,  /* north */
+      u[3] = - u_x,        /* west */
+      u[4] =       - u_y,  /* south */
+      u[5] =   u_x + u_y,  /* north-east */
+      u[6] = - u_x + u_y,  /* north-west */
+      u[7] = - u_x - u_y,  /* south-west */
+      u[8] =   u_x - u_y,  /* south-east */
+    };
 
     /* equilibrium densities */
     float d_equ[NSPEEDS];
@@ -378,33 +377,35 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
     const float over2c_sq_squared = 1.0 / (2.f * c_sq * c_sq);
     const float overC_sq = 1.0 / c_sq;
 
+    const float densityHere = local_density;
+
     /* zero velocity density: weight w0 */
-    d_equ[0] = w0 * local_density
+    d_equ[0] = w0 * densityHere
                 * (1.f - u_sq * over2c_sq);
     /* axis speeds: weight w1 */
-    d_equ[1] = w1 * local_density * (1.f + u[1] * overC_sq
+    d_equ[1] = w1 * densityHere * (1.f + u[1] * overC_sq
                                       + (u[1] * u[1]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[2] = w1 * local_density * (1.f + u[2] * overC_sq
+    d_equ[2] = w1 * densityHere * (1.f + u[2] * overC_sq
                                       + (u[2] * u[2]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[3] = w1 * local_density * (1.f + u[3] * overC_sq
+    d_equ[3] = w1 * densityHere * (1.f + u[3] * overC_sq
                                       + (u[3] * u[3]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[4] = w1 * local_density * (1.f + u[4] * overC_sq
+    d_equ[4] = w1 * densityHere * (1.f + u[4] * overC_sq
                                       + (u[4] * u[4]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
     /* diagonal speeds: weight w2 */
-    d_equ[5] = w2 * local_density * (1.f + u[5] * overC_sq
+    d_equ[5] = w2 * densityHere * (1.f + u[5] * overC_sq
                                       + (u[5] * u[5]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[6] = w2 * local_density * (1.f + u[6] * overC_sq
+    d_equ[6] = w2 * densityHere * (1.f + u[6] * overC_sq
                                       + (u[6] * u[6]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[7] = w2 * local_density * (1.f + u[7] * overC_sq
+    d_equ[7] = w2 * densityHere * (1.f + u[7] * overC_sq
                                       + (u[7] * u[7]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
-    d_equ[8] = w2 * local_density * (1.f + u[8] * overC_sq
+    d_equ[8] = w2 * densityHere * (1.f + u[8] * overC_sq
                                       + (u[8] * u[8]) * over2c_sq_squared
                                       - u_sq * over2c_sq);
 
@@ -437,17 +438,13 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
               + tmp_cells[7][index]
               + tmp_cells[8][index]))
           / local_density;
-    #endif
-
-
-    /* velocity squared */
     u_sq = u_x * u_x + u_y * u_y;
+    #endif
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
-    localVelocity = sqrtf(u_sq);
+    return sqrtf(u_sq);
   }
-  return localVelocity;
 }
 
 float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles)
