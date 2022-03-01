@@ -290,7 +290,7 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
   ** scratch space grid */
-  __assume((params->nx % 2) == 0)
+  __assume((params->nx % 2) == 0);
   scratch[0] = cells[0][index]; /* central cell, no movement */
   scratch[1] = cells[1][x_w + jj*params->nx]; /* east */
   scratch[2] = cells[2][ii + y_s*params->nx]; /* north */
