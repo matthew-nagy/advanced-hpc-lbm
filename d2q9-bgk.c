@@ -312,6 +312,9 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
     cells[8][x_w + y_n*params->nx] /* south-east */
   }; 
 
+  float u_sq = 0.0f;
+  float localVelocity = 0.0f;
+
   /* if the cell contains an obstacle */
   if (obstacles[index])
   {
@@ -325,7 +328,6 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
     tmp_cells[6][index] = scratch[8];
     tmp_cells[7][index] = scratch[5];
     tmp_cells[8][index] = scratch[6];
-    return 0;
   }
   /* don't consider occupied cells */
   else
@@ -356,19 +358,18 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
                   / local_density;
 
     /* velocity squared */
-    const float u_sq = u_x * u_x + u_y * u_y;
+    u_sq = u_x * u_x + u_y * u_y;
 
     /* directional velocity components */
-    const float u[NSPEEDS] = {
-      u[1] =   u_x,        /* east */
-      u[2] =         u_y,  /* north */
-      u[3] = - u_x,        /* west */
-      u[4] =       - u_y,  /* south */
-      u[5] =   u_x + u_y,  /* north-east */
-      u[6] = - u_x + u_y,  /* north-west */
-      u[7] = - u_x - u_y,  /* south-west */
-      u[8] =   u_x - u_y,  /* south-east */
-    };
+    float u[NSPEEDS];
+    u[1] =   u_x;        /* east */
+    u[2] =         u_y;  /* north */
+    u[3] = - u_x;        /* west */
+    u[4] =       - u_y;  /* south */
+    u[5] =   u_x + u_y;  /* north-east */
+    u[6] = - u_x + u_y;  /* north-west */
+    u[7] = - u_x - u_y;  /* south-west */
+    u[8] =   u_x - u_y;  /* south-east */
 
     /* equilibrium densities */
     float d_equ[NSPEEDS];
@@ -446,8 +447,9 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
-    return sqrtf(u_sq);
+    localVelocity = sqrtf(u_sq);
   }
+  return localVelocity;
 }
 
 float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles)
