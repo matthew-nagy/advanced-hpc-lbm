@@ -247,9 +247,10 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
 
   
   const float changes[9] = {0.0f, w1, 0.0f, w1, 0.0f, w2, w2, w2, w2};
+  const int end = numOfSecondRowNonObs;
 
   #pragma omp parallel for
-  for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
+  for (int ii = 0; ii < end; ii++)
   {
     const int index = secondRowNonObs[ii];
     #pragma omp simd
@@ -479,8 +480,8 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   #pragma omp parallel for aligned(cells, tmp_cells : 64), reduction(+:params->totCells), reduction(+:params->totVel)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
-    y_n += (jj + 1) & params->nyBitMask;
-    y_s += (jj - 1) & params->nyBitMask;
+    int y_n += (jj + 1) & params->nyBitMask;
+    int y_s += (jj - 1) & params->nyBitMask;
     outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj);
   }
   
