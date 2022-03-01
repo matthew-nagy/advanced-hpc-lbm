@@ -450,10 +450,10 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
   __assume((params->nx % 4) == 0);
   __assume((params->nx % 8) == 0);
   __assume((params->nx % 16) == 0);
-  // __assume((params->nx % 32) == 0);
-  // __assume((params->nx % 64) == 0);
-  // __assume((params->nx % 128) == 0);
-  // __assume(params->nx >= 128);
+  __assume((params->nx % 32) == 0);
+  __assume((params->nx % 64) == 0);
+  __assume((params->nx % 128) == 0);
+  __assume(params->nx >= 128);
   #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_u)
   for (int ii = 0; ii < params->nx; ii+=1)
   {
@@ -485,10 +485,10 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   __assume((params->ny % 4) == 0);
   __assume((params->ny % 8) == 0);
   __assume((params->ny % 16) == 0);
-  // __assume((params->ny % 32) == 0);
-  // __assume((params->ny % 64) == 0);
-  // __assume((params->ny % 128) == 0);
-  // __assume(params->ny >= 128);
+  __assume((params->ny % 32) == 0);
+  __assume((params->ny % 64) == 0);
+  __assume((params->ny % 128) == 0);
+  __assume(params->ny >= 128);
   //#pragma omp parallel for reduction(+:tot_cells), reduction(+:tot_u)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
