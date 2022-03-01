@@ -289,6 +289,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
 extern inline void edgeCollider(const int xBitmask, const CellList cells, CellList tmp_cells, const int ii, const int jj, const int y_n, const int y_s, const int x_e, const int x_w){
   /* called after propagate, so taking values from scratch space
   ** mirroring, and writing into main grid */
+  const int index = ii + jj * params->nx;
   __assume_aligned(cells, 64);
   __assume_aligned(tmp_cells, 64);
   __assume(xBitmask > 0);
@@ -298,6 +299,7 @@ extern inline void edgeCollider(const int xBitmask, const CellList cells, CellLi
   __assume(x_e >= 0);
   __assume(y_n>= 0);
   __assume(y_s >= 0);
+  __assume(index >= 0);
   tmp_cells[1][index] = cells[3][x_e + (jj&xBitmask)];
   tmp_cells[2][index] = cells[4][ii + (y_n&xBitmask)];
   tmp_cells[3][index] = cells[1][x_w + (jj&xBitmask)];
