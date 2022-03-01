@@ -247,34 +247,35 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   float w2 = params.density * params.accel * (1.0f/36.f);
 
   
-  const float changes[9] = {0.0f, w1, 0.0f, w1, 0.0f, w2, w2, w2, w2};
+  // const float changes[9] = {0.0f, w1, 0.0f, w1, 0.0f, w2, w2, w2, w2};
   const int end = numOfSecondRowNonObs;
 
-  #pragma omp parallel for num_threads(24)
-  for (int ii = 0; ii < end; ii++)
-  {
-    const int index = secondRowNonObs[ii];
-    #pragma omp simd aligned(cells)
-    for(int i = 1; i < 9; i++){
-      cells[i][index] += changes[i];
-    }
-  }
+  // #pragma omp parallel for num_threads(24)
+  // for (int ii = 0; ii < end; ii++)
+  // {
+  //   const int index = secondRowNonObs[ii];
+  //   #pragma omp simd aligned(cells)
+  //   for(int i = 1; i < 9; i++){
+  //     cells[i][index] += changes[i];
+  //   }
+  // }
   
 
-  // for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
-  // {
-  //   /* if the cell is not occupied and
-  //   ** we don't send a negative density */
-  //     /* increase 'east-side' densities */
-  //     int index = secondRowNonObs[ii];
-  //     cells[1][index] += w1;
-  //     cells[5][index] += w2;
-  //     cells[8][index] += w2;
-  //     /* decrease 'west-side' densities */
-  //     cells[3][index] -= w1;
-  //     cells[6][index] -= w2;
-  //     cells[7][index] -= w2;
-  // }
+  #pragma omp parallel for num_threads(24)
+  for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
+  {
+    /* if the cell is not occupied and
+    ** we don't send a negative density */
+      /* increase 'east-side' densities */
+      int index = secondRowNonObs[ii];
+      cells[1][index] += w1;
+      cells[5][index] += w2;
+      cells[8][index] += w2;
+      /* decrease 'west-side' densities */
+      cells[3][index] -= w1;
+      cells[6][index] -= w2;
+      cells[7][index] -= w2;
+  }
 
   return EXIT_SUCCESS;
 }
