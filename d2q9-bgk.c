@@ -417,6 +417,27 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
   tmp_cells[8][index] = (obs * scratch[6]) + (nonObs * (scratch[8] + params->omega * (d_equ[8] - scratch[8])));
 
 
+  local_density = 0.0f;
+  for (int kk = 0; kk < NSPEEDS; kk++)
+  {
+    local_density += tmp_cells[kk][index];
+  }
+  u_x = (tmp_cells[1][index]
+                + tmp_cells[5][index]
+                + tmp_cells[8][index]
+                - (tmp_cells[3][index]
+                    + tmp_cells[6][index]
+                    + tmp_cells[7][index]))
+                / local_density;
+  /* compute y velocity component */
+  u_y = (tmp_cells[2][index]
+                + tmp_cells[5][index]
+                + tmp_cells[6][index]
+                - (tmp_cells[4][index]
+                    + tmp_cells[7][index]
+                    + tmp_cells[8][index]))
+                / local_density;
+
   /* velocity squared */
   u_sq = u_x * u_x + u_y * u_y;
 
