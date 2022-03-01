@@ -274,7 +274,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   return EXIT_SUCCESS;
 }
 
-extern inline void innerCollider(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii, float* dat){
+extern inline void innerCollider(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii){
   __assume(x_e >= 0);
   __assume(x_w >= 0);
   __assume(y_n >= 0);
@@ -512,7 +512,7 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
       __assume(x_w >= 0);
       __assume(y_n >= 0);
       __assume(y_s >= 0);
-      tmp_vel += innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);;
+      tmp_vel += innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);
     }
     tot_u += tmp_vel;
   }
