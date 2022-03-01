@@ -493,7 +493,7 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
   __assume((params->ny % 128) == 0);
   __assume(params->ny >= 128);
   int y_n, y_s;
-  #pragma omp parallel for reduction(+:tot_u) private(y_n) private(y_s)
+  //#pragma omp parallel for reduction(+:tot_u) private(y_n) private(y_s)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
     __assume(y_n > 0);
