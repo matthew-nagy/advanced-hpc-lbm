@@ -435,10 +435,13 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
 
 extern inline void outerCollide(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int jj){
 
+  int tmp_cell_count = 0;
+  float tmp_u = 0.0f;
+
   __assume((params->nx % 4) == 0);
   __assume((params->nx % 8) == 0);
   __assume((params->nx % 16) == 0);
-  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
+  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell_count), reduction(+:tmp_u)
   for (int ii = 0; ii < params->nx; ii+=1)
   {
     /* determine indices of axis-direction neighbours
@@ -447,16 +450,19 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
     int x_e = (ii + 1) & params->nxBitMask;
     int x_w = (ii - 1) & params->nxBitMask;
     innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, dat);
-    tot_u += dat[0];
-    tot_cells += dat[1];
+    tmp_u += dat[0];
+    tmp_cell_count += dat[1];
   }
+
+  tot_u += tmp_u;
+  tot_cells += tmp_cell_count;
 }
 
 float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles)
 {
 
   tot_cells = 0;
-  tot_u += 0.0f;
+  tot_u = 0.0f;
 
   const int iiLimit = params->nx - 1;
   const int jjLimit = params->ny - 1;
