@@ -280,7 +280,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
 }
 
 extern inline void innerCollider(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii, float* dat){
-  float scratch[9];
+ 
   *dat = 0.0f;
   const int index = ii + (jj << params->nxBitShift);
   
@@ -298,16 +298,17 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
   __assume(index > 0);
   __assume(index < (params->nx * params->ny));
 
-  scratch[0] = cells[0][index]; /* central cell, no movement */
-  scratch[1] = cells[1][x_w + (jj<<params->nxBitShift)]; /* east */
-  scratch[2] = cells[2][ii + (y_s<<params->nxBitShift)]; /* north */
-  scratch[3] = cells[3][x_e + (jj<<params->nxBitShift)]; /* west */
-  scratch[4] = cells[4][ii + (y_n<<params->nxBitShift)]; /* south */
-  scratch[5] = cells[5][x_w + (y_s<<params->nxBitShift)]; /* north-east */
-  scratch[6] = cells[6][x_e + (y_s<<params->nxBitShift)]; /* north-west */
-  scratch[7] = cells[7][x_e + (y_n<<params->nxBitShift)]; /* south-west */
-  scratch[8] = cells[8][x_w + (y_n<<params->nxBitShift)]; /* south-east */
-
+  const float scratch[9] = {
+    cells[0][index], /* central cell, no movement */
+    cells[1][x_w + (jj<<params->nxBitShift)], /* east */
+    cells[2][ii + (y_s<<params->nxBitShift)], /* north */
+    cells[3][x_e + (jj<<params->nxBitShift)], /* west */
+    cells[4][ii + (y_n<<params->nxBitShift)], /* south */
+    cells[5][x_w + (y_s<<params->nxBitShift)], /* north-east */
+    cells[6][x_e + (y_s<<params->nxBitShift)], /* north-west */
+    cells[7][x_e + (y_n<<params->nxBitShift)], /* south-west */
+    cells[8][x_w + (y_n<<params->nxBitShift)], /* south-east */
+  };
   /* if the cell contains an obstacle */
   if (obstacles[index])
   {
@@ -459,6 +460,10 @@ extern inline void outerCollide(const t_param*const restrict params, const CellL
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
     float dat;
+    __assume(y_n > 0);
+    __assume(y_s > 0);
+    __assume(x_e > 0);
+    __assume(x_w > 0);
     int x_e = (ii + 1) & params->nxBitMask;
     int x_w = (ii - 1) & params->nxBitMask;
     innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, &dat);
@@ -472,9 +477,6 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
 {
 
   tot_u = 0.0f;
-
-  const int iiLimit = params->nx - 1;
-  const int jjLimit = params->ny - 1;
 
   /* loop over the cells in the grid
   ** NB the collision step is called after
@@ -492,11 +494,14 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
   #pragma omp parallel for reduction(+:tot_u) private(y_n) private(y_s)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
+    __assume(y_n > 0);
+    __assume(y_s > 0);
     y_n = (jj + 1) & params->nyBitMask;
     y_s = (jj - 1) & params->nyBitMask;
     outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj);
   }
   
+  __assume(numOfObs > 0);
   return tot_u / params->numOfObs;
 }
 
