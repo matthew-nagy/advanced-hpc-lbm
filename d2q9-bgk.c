@@ -291,6 +291,12 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
   ** appropriate directions of travel and writing into
   ** scratch space grid */
   __assume((params->nx % 2) == 0);
+
+  __assume(x_w > 0);
+  __assume(x_e > 0);
+  __assume(y_n > 0);
+  __assume(y_s > 0);
+  
   scratch[0] = cells[0][index]; /* central cell, no movement */
   scratch[1] = cells[1][x_w + (jj<<params->nxBitShift)]; /* east */
   scratch[2] = cells[2][ii + (y_s<<params->nxBitShift)]; /* north */
