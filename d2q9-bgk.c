@@ -460,12 +460,14 @@ extern inline void outerCollide(const t_param*const restrict params, const CellL
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
     float dat;
+    __assume(params->nxBitMask > 0);
+    __assume((params->nxBitMask % 2) == 1);
+    int x_e = (ii + 1) & params->nxBitMask;
+    int x_w = (ii - 1) & params->nxBitMask;
     __assume(y_n > 0);
     __assume(y_s > 0);
     __assume(x_e > 0);
     __assume(x_w > 0);
-    int x_e = (ii + 1) & params->nxBitMask;
-    int x_w = (ii - 1) & params->nxBitMask;
     innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, &dat);
     tmp_u += dat;
   }
@@ -496,12 +498,14 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
   {
     __assume(y_n > 0);
     __assume(y_s > 0);
+    __assume(params->nyBitMask > 0);
+    __assume((params->nyBitMask % 2) == 1);
     y_n = (jj + 1) & params->nyBitMask;
     y_s = (jj - 1) & params->nyBitMask;
     outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj);
   }
   
-  __assume(numOfObs > 0);
+  __assume(params->numOfObs > 0);
   return tot_u / params->numOfObs;
 }
 
