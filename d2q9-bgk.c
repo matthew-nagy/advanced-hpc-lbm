@@ -360,14 +360,14 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
 
     /* directional velocity components */
     const float u[NSPEEDS] = {
-         u_x,        /* east */
-               u_y,  /* north */
-       - u_x,        /* west */
-             - u_y,  /* south */
-         u_x + u_y,  /* north-east */
-       - u_x + u_y,  /* north-west */
-       - u_x - u_y,  /* south-west */
-         u_x - u_y,  /* south-east */
+      u[1] =   u_x,        /* east */
+      u[2] =         u_y,  /* north */
+      u[3] = - u_x,        /* west */
+      u[4] =       - u_y,  /* south */
+      u[5] =   u_x + u_y,  /* north-east */
+      u[6] = - u_x + u_y,  /* north-west */
+      u[7] = - u_x - u_y,  /* south-west */
+      u[8] =   u_x - u_y,  /* south-east */
     };
 
     /* equilibrium densities */
@@ -438,8 +438,11 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
               + tmp_cells[7][index]
               + tmp_cells[8][index]))
           / local_density;
-    u_sq = u_x * u_x + u_y * u_y;
     #endif
+
+
+    /* velocity squared */
+    u_sq = u_x * u_x + u_y * u_y;
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
