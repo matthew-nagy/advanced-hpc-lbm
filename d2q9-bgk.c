@@ -59,7 +59,6 @@
 #define NSPEEDS         9
 #define FINALSTATEFILE  "final_state.dat"
 #define AVVELSFILE      "av_vels.dat"
-#define OMP_NUM_THREADS 24
 
 const float c_sq = 1.f / 3.f; /* square of speed of sound */
 const float w0 = 4.f / 9.f;  /* weighting factor */
@@ -251,7 +250,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   const float changes[9] = {0.0f, w1, 0.0f, w1, 0.0f, w2, w2, w2, w2};
   const int end = numOfSecondRowNonObs;
 
-  #pragma omp parallel for
+  #pragma omp parallel for num_threads(24)
   for (int ii = 0; ii < end; ii++)
   {
     const int index = secondRowNonObs[ii];
@@ -489,7 +488,7 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
   __assume((params->ny % 64) == 0);
   __assume((params->ny % 128) == 0);
   __assume(params->ny >= 128);
-  #pragma omp simd parallel for reduction(+:tot_u)
+  #pragma omp parallel for reduction(+:tot_u)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
     int y_n = (jj + 1) & params->nyBitMask;
@@ -673,7 +672,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
   __assume(params->ny % 128 == 0);
   __assume(params->ny > 128);
 
-  #pragma omp parallel for collapse(2)
+  #pragma omp parallel for num_threads(24) collapse(2)
   for (int jj = 0; jj < params->ny; jj++)
   { 
     for (int ii = 0; ii < params->nx; ii++)
