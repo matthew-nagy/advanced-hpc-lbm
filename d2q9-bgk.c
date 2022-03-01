@@ -80,6 +80,7 @@ typedef struct
   float density;       /* density per link */
   float accel;         /* density redistribution */
   float omega;         /* relaxation parameter */
+  float numOfObs;
 } t_param;
 
 /* struct to hold the 'speed' values */
@@ -249,7 +250,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   const float changes[9] = {0.0f, w1, 0.0f, w1, 0.0f, w2, w2, w2, w2};
   const int end = numOfSecondRowNonObs;
 
-  #pragma omp parallel for
+  //#pragma omp parallel for
   for (int ii = 0; ii < end; ii++)
   {
     const int index = secondRowNonObs[ii];
@@ -280,8 +281,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
 
 extern inline void innerCollider(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii, float* dat){
   float scratch[9];
-  dat[0] = 0.0f;
-  dat[1] = 0.0f;
+  *dat = 0.0f;
   const int index = ii + jj * params->nx;
   
   /* propagate densities from neighbouring cells, following
@@ -423,45 +423,39 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
 
     /* velocity squared */
     const float u_sq2 = u_x * u_x + u_y * u_y;
-    dat[0] += sqrtf(u_sq2);
+    *dat += sqrtf(u_sq2);
     #else
-    }
-    dat[0] += sqrtf(u_sq1);
+    }//from for loop
+    *dat += sqrtf(u_sq1);
     #endif
-    /* increase counter of inspected cells */
-    dat[1] += (1 - obstacles[jj*params->nx + ii]);
   }
 }
 
 extern inline void outerCollide(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int jj){
 
-  int tmp_cell_count = 0;
   float tmp_u = 0.0f;
 
   __assume((params->nx % 4) == 0);
   __assume((params->nx % 8) == 0);
   __assume((params->nx % 16) == 0);
-  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell_count), reduction(+:tmp_u)
+  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_u)
   for (int ii = 0; ii < params->nx; ii+=1)
   {
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
-    float dat[2];
+    float dat;
     int x_e = (ii + 1) & params->nxBitMask;
     int x_w = (ii - 1) & params->nxBitMask;
-    innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, dat);
-    tmp_u += dat[0];
-    tmp_cell_count += dat[1];
+    innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, &dat);
+    tmp_u += dat;
   }
 
-  tot_u += tmp_u;
-  tot_cells += tmp_cell_count;
+  tot_u += tmp_u;;
 }
 
 float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles)
 {
 
-  tot_cells = 0;
   tot_u = 0.0f;
 
   const int iiLimit = params->nx - 1;
@@ -475,7 +469,7 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   __assume((params->ny % 4) == 0);
   __assume((params->ny % 8) == 0);
   __assume((params->ny % 16) == 0);
-  #pragma omp parallel for reduction(+:tot_cells), reduction(+:tot_u)
+  //#pragma omp parallel for reduction(+:tot_cells), reduction(+:tot_u)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
     int y_n = (jj + 1) & params->nyBitMask;
@@ -483,7 +477,7 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
     outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj);
   }
   
-  return tot_u / (float)tot_cells;
+  return tot_u / params->numOfObs;
 }
 
 float av_velocity(const t_param params, float** cells, int* obstacles)
@@ -671,6 +665,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
     die(message, __LINE__, __FILE__);
   }
 
+  params->numOfObs = 0;
   /* read-in the blocked cells list */
   while ((retval = fscanf(fp, "%d %d %d\n", &xx, &yy, &blocked)) != EOF)
   {
@@ -685,6 +680,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
 
     /* assign to array */
     (*obstacles_ptr)[xx + yy*params->nx] = blocked;
+    params->numOfObs += 1;
   }
 
   /* and close the file */
