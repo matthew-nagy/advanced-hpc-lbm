@@ -480,8 +480,8 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   #pragma omp parallel for aligned(cells, tmp_cells : 64), reduction(+:params->totCells), reduction(+:params->totVel)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
-    int y_n += (jj + 1) & params->nyBitMask;
-    int y_s += (jj - 1) & params->nyBitMask;
+    int y_n = (jj + 1) & params->nyBitMask;
+    int y_s = (jj - 1) & params->nyBitMask;
     outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj);
   }
   
