@@ -60,6 +60,8 @@
 #define FINALSTATEFILE  "final_state.dat"
 #define AVVELSFILE      "av_vels.dat"
 
+export 
+
 const float c_sq = 1.f / 3.f; /* square of speed of sound */
 const float w0 = 4.f / 9.f;  /* weighting factor */
 const float w1 = 1.f / 9.f;  /* weighting factor */
@@ -488,11 +490,12 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
   __assume((params->ny % 64) == 0);
   __assume((params->ny % 128) == 0);
   __assume(params->ny >= 128);
-  #pragma omp parallel for reduction(+:tot_u)
+  int y_n, y_s;
+  #pragma omp parallel for reduction(+:tot_u) private(y_n) private(y_s)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
-    int y_n = (jj + 1) & params->nyBitMask;
-    int y_s = (jj - 1) & params->nyBitMask;
+    y_n = (jj + 1) & params->nyBitMask;
+    y_s = (jj - 1) & params->nyBitMask;
     outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj);
   }
   
