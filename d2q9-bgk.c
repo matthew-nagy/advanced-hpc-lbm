@@ -675,11 +675,10 @@ int initialise(const char* paramfile, const char* obstaclefile,
   __assume(params->ny > 128);
   for (int jj = 0; jj < params->ny; jj++)
   { 
-    __assume_aligned(*cells_ptr);
-    __assume_aligned(*tmp_cells_ptr);
     for (int ii = 0; ii < params->nx; ii++)
     {
       const int index = ii + jj*params->nx;
+      __assume(index > 0);
       /* centre */
       (*cells_ptr)[0][index] = w0;
       /* axis directions */
