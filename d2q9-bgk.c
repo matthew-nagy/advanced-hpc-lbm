@@ -59,6 +59,7 @@
 #define NSPEEDS         9
 #define FINALSTATEFILE  "final_state.dat"
 #define AVVELSFILE      "av_vels.dat"
+#define OMP_NUM_THREADS 24
 
 const float c_sq = 1.f / 3.f; /* square of speed of sound */
 const float w0 = 4.f / 9.f;  /* weighting factor */
@@ -247,6 +248,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   
   const float changes[9] = {0.0f, w1, 0.0f, w1, 0.0f, w2, w2, w2, w2};
 
+  #pragma omp parallel for
   for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
   {
     const int index = secondRowNonObs[ii];
@@ -471,44 +473,16 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
   
-  int y_n = 1;
-  int y_s = jjLimit;
-  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, 0);
-  
-  y_n += 1;
-  y_s = 0;
-  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, 1);
   __assume((params->ny % 4) == 0);
   __assume((params->ny % 8) == 0);
   __assume((params->ny % 16) == 0);
-  for (int jj = 2; jj < params->ny - 2; jj+=4)
+  #pragma omp parallel for aligned(cells, tmp_cells : 64), reduction(+:params->totCells), reduction(+:params->totVel)
+  for (int jj = 0; jj < params->ny; jj+=1)
   {
-    y_n += 1;
-    y_s += 1;
+    y_n += (jj + 1) & params->nyBitMask;
+    y_s += (jj - 1) & params->nyBitMask;
     outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj);
-    //manual unwrap bc of compiler
-    y_n += 1;
-    y_s += 1;
-    outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj+1);
-    
-    //manual unwrap bc of compiler
-    y_n += 1;
-    y_s += 1;
-    outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj+2);
-    
-    //manual unwrap bc of compiler
-    y_n += 1;
-    y_s += 1;
-    outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj+3);
   }
-  
-  y_n += 1;
-  y_s += 1;
-  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jjLimit - 1);
-
-  y_n = 0;
-  y_s = jjLimit - 1;
-  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jjLimit);
   
   return params->totVel / (float)params->totCells;
 }
