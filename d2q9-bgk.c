@@ -315,18 +315,9 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
   float u_sq = 0.0f;
 
   /* if the cell contains an obstacle */
-  const int nonObs = 1 - obstacles[index];
   
     /* called after propagate, so taking values from scratch space
     ** mirroring, and writing into main grid */
-    tmp_cells[1][index] = scratch[3];
-    tmp_cells[2][index] = scratch[4];
-    tmp_cells[3][index] = scratch[1];
-    tmp_cells[4][index] = scratch[2];
-    tmp_cells[5][index] = scratch[7];
-    tmp_cells[6][index] = scratch[8];
-    tmp_cells[7][index] = scratch[5];
-    tmp_cells[8][index] = scratch[6];
   
   /* don't consider occupied cells */
 
@@ -411,34 +402,19 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
 
   local_density = 0.0f;
   /* relaxation step */
-  for (int kk = 0; kk < NSPEEDS; kk++)
-  {
-    tmp_cells[kk][index] = nonObs * (scratch[kk]
-                                            + params->omega
-                                            * (d_equ[kk] - scratch[kk]));
-  #ifndef VEL
-  }
-  #else
-    local_density += tmp_cells[kk][index];
-  }
+  
+  const float obs = (float) obstacles[index];
+  const float nonObs = 1.0 - obs;
 
-  /* compute x velocity component */
-  u_x = (tmp_cells[1][index]
-        + tmp_cells[5][index]
-        + tmp_cells[8][index]
-        - (tmp_cells[3][index]
-            + tmp_cells[6][index]
-            + tmp_cells[7][index]))
-        / local_density;
-  /* compute y velocity component */
-  u_y = (tmp_cells[2][index]
-        + tmp_cells[5][index]
-        + tmp_cells[6][index]
-        - (tmp_cells[4][index]
-            + tmp_cells[7][index]
-            + tmp_cells[8][index]))
-        / local_density;
-  #endif
+  tmp_cells[0][index] = (obs * scratch[0]) + (nonObs * (scratch[0] + params->omega * (d_equ[0] - scratch[0])));
+  tmp_cells[1][index] = (obs * scratch[3]) + (nonObs * (scratch[1] + params->omega * (d_equ[1] - scratch[1])));
+  tmp_cells[2][index] = (obs * scratch[4]) + (nonObs * (scratch[2] + params->omega * (d_equ[2] - scratch[2])));
+  tmp_cells[3][index] = (obs * scratch[1]) + (nonObs * (scratch[3] + params->omega * (d_equ[3] - scratch[3])));
+  tmp_cells[4][index] = (obs * scratch[2]) + (nonObs * (scratch[4] + params->omega * (d_equ[4] - scratch[4])));
+  tmp_cells[5][index] = (obs * scratch[7]) + (nonObs * (scratch[5] + params->omega * (d_equ[5] - scratch[5])));
+  tmp_cells[6][index] = (obs * scratch[8]) + (nonObs * (scratch[6] + params->omega * (d_equ[6] - scratch[6])));
+  tmp_cells[7][index] = (obs * scratch[5]) + (nonObs * (scratch[7] + params->omega * (d_equ[7] - scratch[7])));
+  tmp_cells[8][index] = (obs * scratch[6]) + (nonObs * (scratch[8] + params->omega * (d_equ[8] - scratch[8])));
 
 
   /* velocity squared */
