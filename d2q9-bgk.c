@@ -475,9 +475,7 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   __assume((params->ny % 64) == 0);
   __assume((params->ny % 128) == 0);
   __assume(params->ny >= 128);
-  #pragma omp parallel num_threads(28)
-  {
-  #pragma omp for reduction(+:tot_u) nowait
+  #pragma omp parallel for reduction(+:tot_u) num_threads(28)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
     int y_n = (jj + 1) & params->nyBitMask;
@@ -513,7 +511,6 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
       tmp_vel += innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);
     }
     tot_u += tmp_vel;
-  }
   }
 
   
