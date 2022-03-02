@@ -670,9 +670,10 @@ int initialise(const char* paramfile, const char* obstaclefile,
   float w1 = params->density      / 9.f;
   float w2 = params->density      / 36.f;
 
-  #pragma omp parallel for collapse(2)
+  #pragma omp parallel for
   for (int jj = 0; jj < params->ny; jj++)
   {
+    #pragma omp simd aligned(cells_ptr : 64) aligned(tmp_cells_ptr : 64)
     for (int ii = 0; ii < params->nx; ii++)
     {
       const int index = ii + jj*params->nx;
@@ -688,6 +689,18 @@ int initialise(const char* paramfile, const char* obstaclefile,
       (*cells_ptr)[6][index] = w2;
       (*cells_ptr)[7][index] = w2;
       (*cells_ptr)[8][index] = w2;
+
+      (*tmp_cells_ptr)[0][index] = w0;
+      /* axis directions */
+      (*tmp_cells_ptr)[1][index] = w1;
+      (*tmp_cells_ptr)[2][index] = w1;
+      (*tmp_cells_ptr)[3][index] = w1;
+      (*tmp_cells_ptr)[4][index] = w1;
+      /* diagonals */
+      (*tmp_cells_ptr)[5][index] = w2;
+      (*tmp_cells_ptr)[6][index] = w2;
+      (*tmp_cells_ptr)[7][index] = w2;
+      (*tmp_cells_ptr)[8][index] = w2;
     }
   }
 

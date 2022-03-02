@@ -5,8 +5,8 @@ EXE=d2q9-bgk
 CC=icc
 //CFLAGS= -std=c11 -Wall -g -O0
 //CFLAGS= -std=c11 -Wall -Ofast -mtune=native -march=native -fopt-info-all=optRep.out -fopenmp -fopenmp-simd
-CFLAGS = -std=c11 -Wall -fast -xHOST -qopenmp -qopenmp-link=static -pg
-//OtherIcc = -qopt-report=1 -qopt-report-phase=vec
+//CFLAGS = -std=c11 -Wall -fast -xHOST -qopenmp -qopenmp-link=static -pg
+//OtherIcc = -std=c11 -Wall -ofast -xHOST -qopenmp -qopenmp-link=dynamic -g
 LIBS = -lm
 
 FINAL_STATE_FILE=./final_state.dat
