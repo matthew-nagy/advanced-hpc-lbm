@@ -193,10 +193,13 @@ int main(int argc, char* argv[])
   findSecondRowObs(params, obstacles);
 
   const int itter = params.maxIters;
-  //__assume(para)
+  __assume((itter % 20000) == 0);
+  __assume(itter >= 20000);
   for (int tt = 0; tt <itter; tt++)
   {
     av_vels[tt] = timestep(&params, cells, tmp_cells, obstacles);
+    __assume_aligned(tmp_cells, 64);
+    __assume_aligned(cells, 64);
     float** tmp = tmp_cells;
     tmp_cells = cells;
     cells = tmp;
