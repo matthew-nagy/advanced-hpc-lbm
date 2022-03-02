@@ -251,6 +251,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
 
   const float changes[9] = { -1.0f, w1, 0.0f, w1 * -1, 0.0f, w2, w2 * -1, w2 * -1, w2 };
 
+  #pragma omp parallel for
   for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
   {
     const int index = secondRowNonObs[ii];
@@ -480,7 +481,7 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
   __assume((params->ny % 64) == 0);
   __assume((params->ny % 128) == 0);
   __assume(params->ny >= 128);
-  #pragma omp parallel for reduction(+:tot_u) num_threads(28)
+  #pragma omp parallel for reduction(+:tot_u)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
     int y_n = (jj + 1) & params->nyBitMask;
@@ -669,7 +670,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
   float w1 = params->density      / 9.f;
   float w2 = params->density      / 36.f;
 
-  #pragma omp parallel for num_threads(28)
+  #pragma omp parallel for collapse(2)
   for (int jj = 0; jj < params->ny; jj++)
   {
     for (int ii = 0; ii < params->nx; ii++)
