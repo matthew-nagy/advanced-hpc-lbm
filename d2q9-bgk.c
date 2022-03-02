@@ -108,7 +108,7 @@ float timestep(t_param*const restrict params, CellList cells, CellList tmp_cells
 int accelerate_flow(const t_param params, CellList cells, int const*const restrict obstacles);
 int propagate(const t_param params, float** cells, float** tmp_cells);
 int rebound(const t_param params, float** cells, float** tmp_cells, int* obstacles);
-float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles);
+float collision(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles);
 int write_values(const t_param params, float** cells, int* obstacles, float* av_vels);
 
 /* finalise, including freeing up allocated memory */
@@ -192,7 +192,9 @@ int main(int argc, char* argv[])
 
   findSecondRowObs(params, obstacles);
 
-  for (int tt = 0; tt < params.maxIters; tt++)
+  const int itter = params.maxIters;
+  //__assume(para)
+  for (int tt = 0; tt <itter; tt++)
   {
     av_vels[tt] = timestep(&params, cells, tmp_cells, obstacles);
     float** tmp = tmp_cells;
@@ -446,7 +448,7 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
   return nonObs * sqrtf(u_sq);
 }
 
-float collision(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles)
+float collision(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles)
 {
 
   const int iiLimit = params->nx - 1;
