@@ -478,7 +478,6 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   #pragma #pragma omp parallel
   {
   #pragma omp for reduction(+:tot_u) num_threads(28)
-  {
   for (int jj = 0; jj < params->ny; jj+=1)
   {
     int y_n = (jj + 1) & params->nyBitMask;
