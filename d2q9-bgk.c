@@ -475,7 +475,7 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   __assume((params->ny % 64) == 0);
   __assume((params->ny % 128) == 0);
   __assume(params->ny >= 128);
-  #pragma omp simd parallel for reduction(+:tot_u) num_threads(28)
+  #pragma omp parallel for reduction(+:tot_u) num_threads(28)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
     int y_n = (jj + 1) & params->nyBitMask;
