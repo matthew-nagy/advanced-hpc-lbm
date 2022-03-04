@@ -475,7 +475,7 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   __assume((params->ny % 4) == 0);
   __assume((params->ny % 8) == 0);
   __assume((params->ny % 16) == 0);
-  for (int jj = 0; jj < params->ny; jj+=4)
+  for (int jj = 0; jj < params->ny; jj+=1)
   {
     int y_n = (jj + 1) & params->nyBitMask;
     int y_s = (jj - 1) & params->nyBitMask;
