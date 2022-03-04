@@ -255,12 +255,6 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   __assume(params.nx % 8 == 0);
   __assume(params.nx % 16 == 0);
   const int yAddition = (params.ny - 2) * params.nx;
-  #pragma prefetch cells[1]:0:1
-  #pragma prefetch cells[5]:0:1
-  #pragma prefetch cells[8]:0:1
-  #pragma prefetch cells[3]:0:1
-  #pragma prefetch cells[6]:0:1
-  #pragma prefetch cells[7]:0:1
   #pragma vector aligned
   #pragma omp parallel for num_threads(28)
   for (int ii = 1; ii < params.nx - 1; ii++)
