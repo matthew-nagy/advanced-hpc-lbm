@@ -249,19 +249,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   float w1 = params.density * params.accel * (1.0/9.f);
   float w2 = params.density * params.accel * (1.0f/36.f);
 
-  // const float changes[9] = { -1.0f, w1, 0.0f, w1 * -1, 0.0f, w2, w2 * -1, w2 * -1, w2 };
-
-  // #pragma omp parallel for
-  // for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
-  // {
-  //   const int index = secondRowNonObs[ii];
-  //   __assume_aligned(cells, 64);
-  //   //#pragma omp simd aligned(cells)
-  //   for(int i = 1; i < 9; i ++){
-  //     cells[i][index] += changes[i];
-  //   }
-  // }
-
+  #pragma vector aligned
   #pragma omp parallel for
   for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
   {
