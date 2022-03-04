@@ -276,7 +276,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
 }
 
 extern inline void innerCollider(const t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii, float* dat){
-  float scratch[9];
+  float scratch[9] __attribute__((aligned(64)));
   dat[0] = 0.0f;
   dat[1] = 0.0f;
   const int index = ii + jj * params->nx;
@@ -318,6 +318,7 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
     /* compute local density total */
     float local_density = 0.f;
 
+    #pragma vector aligned
     for (int kk = 0; kk < NSPEEDS; kk++)
     {
       local_density += scratch[kk];
@@ -355,7 +356,7 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
     u[8] =   u_x - u_y;  /* south-east */
 
     /* equilibrium densities */
-    float d_equ[NSPEEDS];
+    float d_equ[NSPEED] __attribute__((aligned(64)));
 
     const float over2c_sq = 1.0 / (2.0f * c_sq);
     const float over2c_sq_squared = 1.0 / (2.f * c_sq * c_sq);
@@ -397,6 +398,7 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
     /* relaxation step */
   __assume_aligned(cells, 64);
   __assume_aligned(tmp_cells, 64);
+    #pragma vector aligned
     for (int kk = 0; kk < NSPEEDS; kk++)
     {
       tmp_cells[kk][index] = scratch[kk]
