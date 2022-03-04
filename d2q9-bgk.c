@@ -507,33 +507,12 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
     __assume(params->ny >= 128);
     #pragma vector aligned
     #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_vel)
-    for (int ii = 0; ii < params->nx; ii+=4)
+    for (int ii = 0; ii < params->nx; ii+=1)
     {
       /* determine indices of axis-direction neighbours
       ** respecting periodic boundary conditions (wrap around) */
-      int x_e = (ii + 1) ;
+      int x_e = (ii + 1) & params->nxBitMask;
       int x_w = (ii - 1) & params->nxBitMask;
-      __assume(x_e >= 0);
-      __assume(x_w >= 0);
-      __assume(y_n >= 0);
-      __assume(y_s >= 0);
-      tmp_vel += innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);
-       x_e = x_e + 1;
-       x_w = ii;
-      __assume(x_e >= 0);
-      __assume(x_w >= 0);
-      __assume(y_n >= 0);
-      __assume(y_s >= 0);
-      tmp_vel += innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);
-       x_e = (x_e + 1);
-       x_w = (ii + 1);
-      __assume(x_e >= 0);
-      __assume(x_w >= 0);
-      __assume(y_n >= 0);
-      __assume(y_s >= 0);
-      tmp_vel += innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);
-       x_e = (x_e + 1) & params->nxBitMask;
-       x_w = ii + 2;
       __assume(x_e >= 0);
       __assume(x_w >= 0);
       __assume(y_n >= 0);
