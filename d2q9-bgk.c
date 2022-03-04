@@ -249,14 +249,20 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   float w1 = params.density * params.accel * (1.0/9.f);
   float w2 = params.density * params.accel * (1.0f/36.f);
 
+  __assume(params.nx >= 128);
+  __assume(params.nx % 2 == 0);
+  __assume(params.nx % 4 == 0);
+  __assume(params.nx % 8 == 0);
+  __assume(params.nx % 16 == 0);
+  const int yAddition = (params.ny - 2) * params->nx;
   #pragma vector aligned
   #pragma omp parallel for num_threads(28)
-  for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
+  for (int ii = 1; ii < params.nx - 1; ii++)
   {
     /* if the cell is not occupied and
     ** we don't send a negative density */
       /* increase 'east-side' densities */
-      int index = secondRowNonObs[ii];
+      const int index = ii + yAddition;
       cells[1][index] += w1;
       cells[5][index] += w2;
       cells[8][index] += w2;
