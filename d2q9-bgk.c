@@ -250,7 +250,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   float w2 = params.density * params.accel * (1.0f/36.f);
 
   #pragma vector aligned
-  #pragma omp parallel for
+  #pragma omp parallel for num_threads(28)
   for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
   {
     /* if the cell is not occupied and
