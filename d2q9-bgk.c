@@ -487,22 +487,22 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
   for (int jj = 0; jj < params->ny; jj+=1)
   {
     
-    __assume((params->nx % 2) == 0);
-    __assume((params->nx % 4) == 0);
-    __assume((params->nx % 8) == 0);
-    __assume((params->nx % 16) == 0);
-    __assume((params->nx % 32) == 0);
-    __assume((params->nx % 64) == 0);
-    __assume((params->nx % 128) == 0);
-    __assume(params->nx >= 128);
-    __assume((params->ny % 2) == 0);
-    __assume((params->ny % 4) == 0);
-    __assume((params->ny % 8) == 0);
-    __assume((params->ny % 16) == 0);
-    __assume((params->ny % 32) == 0);
-    __assume((params->ny % 64) == 0);
-    __assume((params->ny % 128) == 0);
-    __assume(params->ny >= 128);
+    // __assume((params->nx % 2) == 0);
+    // __assume((params->nx % 4) == 0);
+    // __assume((params->nx % 8) == 0);
+    // __assume((params->nx % 16) == 0);
+    // __assume((params->nx % 32) == 0);
+    // __assume((params->nx % 64) == 0);
+    // __assume((params->nx % 128) == 0);
+    // __assume(params->nx >= 128);
+    // __assume((params->ny % 2) == 0);
+    // __assume((params->ny % 4) == 0);
+    // __assume((params->ny % 8) == 0);
+    // __assume((params->ny % 16) == 0);
+    // __assume((params->ny % 32) == 0);
+    // __assume((params->ny % 64) == 0);
+    // __assume((params->ny % 128) == 0);
+    // __assume(params->ny >= 128);
     #pragma vector aligned
     #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_vel)
     for (int ii = 0; ii < params->nx; ii+=1)
