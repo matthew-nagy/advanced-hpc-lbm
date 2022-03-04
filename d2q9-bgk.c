@@ -262,7 +262,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   //   }
   // }
 
-  #pragma omp parallel for aligned(cells : 64)
+  #pragma omp parallel for
   for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
   {
     /* if the cell is not occupied and
