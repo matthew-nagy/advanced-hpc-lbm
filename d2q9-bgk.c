@@ -453,6 +453,7 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
   __assume((params->nx % 4) == 0);
   __assume((params->nx % 8) == 0);
   __assume((params->nx % 16) == 0);
+  #pragma vector aligned
   #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
   for (int ii = 0; ii < params->nx; ii+=1)
   {
