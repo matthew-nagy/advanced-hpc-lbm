@@ -481,7 +481,7 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
   __assume((params->ny % 64) == 0);
   __assume((params->ny % 128) == 0);
   __assume(params->ny >= 128);
-  #pragma omp parallel for reduction(+:tot_u)
+  #pragma omp parallel for reduction(+:tot_u) schedule(dynamic)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
     int y_n = (jj + 1) & params->nyBitMask;
