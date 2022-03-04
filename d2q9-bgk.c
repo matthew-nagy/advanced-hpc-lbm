@@ -482,34 +482,33 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
   __assume((params->ny % 64) == 0);
   __assume((params->ny % 128) == 0);
   __assume(params->ny >= 128);
-  #pragma vector aligned
-  #pragma omp parallel for reduction(+:tot_u) collapse(2)
+  #pragma vector
+  #pragma omp parallel for reduction(+:tot_u)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
-    
-    // __assume((params->nx % 2) == 0);
-    // __assume((params->nx % 4) == 0);
-    // __assume((params->nx % 8) == 0);
-    // __assume((params->nx % 16) == 0);
-    // __assume((params->nx % 32) == 0);
-    // __assume((params->nx % 64) == 0);
-    // __assume((params->nx % 128) == 0);
-    // __assume(params->nx >= 128);
-    // __assume((params->ny % 2) == 0);
-    // __assume((params->ny % 4) == 0);
-    // __assume((params->ny % 8) == 0);
-    // __assume((params->ny % 16) == 0);
-    // __assume((params->ny % 32) == 0);
-    // __assume((params->ny % 64) == 0);
-    // __assume((params->ny % 128) == 0);
-    // __assume(params->ny >= 128);
+    int y_n = (jj + 1) & params->nyBitMask;
+    int y_s = (jj - 1) & params->nyBitMask;
+    float tmp_vel;
+    __assume((params->nx % 2) == 0);
+    __assume((params->nx % 4) == 0);
+    __assume((params->nx % 8) == 0);
+    __assume((params->nx % 16) == 0);
+    __assume((params->nx % 32) == 0);
+    __assume((params->nx % 64) == 0);
+    __assume((params->nx % 128) == 0);
+    __assume(params->nx >= 128);
+    __assume((params->ny % 2) == 0);
+    __assume((params->ny % 4) == 0);
+    __assume((params->ny % 8) == 0);
+    __assume((params->ny % 16) == 0);
+    __assume((params->ny % 32) == 0);
+    __assume((params->ny % 64) == 0);
+    __assume((params->ny % 128) == 0);
+    __assume(params->ny >= 128);
     #pragma vector aligned
     #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_vel)
     for (int ii = 0; ii < params->nx; ii+=1)
     {
-      int y_n = (jj + 1) & params->nyBitMask;
-    int y_s = (jj - 1) & params->nyBitMask;
-    float tmp_vel;
       /* determine indices of axis-direction neighbours
       ** respecting periodic boundary conditions (wrap around) */
       int x_e = (ii + 1) & params->nxBitMask;
@@ -519,8 +518,8 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
       __assume(y_n >= 0);
       __assume(y_s >= 0);
       tmp_vel += innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);
-    tot_u += tmp_vel;
     }
+    tot_u += tmp_vel;
   }
 
   
