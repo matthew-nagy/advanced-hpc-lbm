@@ -316,7 +316,7 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
     cells[6][x_e + y_s*params->nx], /* north-west */
     cells[7][x_e + y_n*params->nx], /* south-west */
     cells[8][x_w + y_n*params->nx] /* south-east */
-  }; 
+  } __attribute__((aligned(64)));
 
   float u_sq = 0.0f;
 
@@ -357,7 +357,7 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
   u_sq = u_x * u_x + u_y * u_y;
 
   /* directional velocity components */
-  float u[NSPEEDS];
+  float u[NSPEEDS] __attribute__((aligned(64)));
   u[1] =   u_x;        /* east */
   u[2] =         u_y;  /* north */
   u[3] = - u_x;        /* west */
@@ -368,7 +368,7 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
   u[8] =   u_x - u_y;  /* south-east */
 
   /* equilibrium densities */
-  float d_equ[NSPEEDS];
+  float d_equ[NSPEEDS] __attribute__((aligned(64)));
 
   const float over2c_sq = 1.0 / (2.0f * c_sq);
   const float over2c_sq_squared = 1.0 / (2.f * c_sq * c_sq);
@@ -503,6 +503,7 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
     __assume((params->ny % 64) == 0);
     __assume((params->ny % 128) == 0);
     __assume(params->ny >= 128);
+    #pragma vector aligned
     #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_vel)
     for (int ii = 0; ii < params->nx; ii+=1)
     {
