@@ -296,25 +296,6 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
   scratch[7] = cells[7][x_e + y_n*params->nx]; /* south-west */
   scratch[8] = cells[8][x_w + y_n*params->nx]; /* south-east */
 
-  /* if the cell contains an obstacle */
-  if (obstacles[index])
-  {
-    /* called after propagate, so taking values from scratch space
-    ** mirroring, and writing into main grid */
-  __assume_aligned(cells, 64);
-  __assume_aligned(tmp_cells, 64);
-    tmp_cells[1][index] = scratch[3];
-    tmp_cells[2][index] = scratch[4];
-    tmp_cells[3][index] = scratch[1];
-    tmp_cells[4][index] = scratch[2];
-    tmp_cells[5][index] = scratch[7];
-    tmp_cells[6][index] = scratch[8];
-    tmp_cells[7][index] = scratch[5];
-    tmp_cells[8][index] = scratch[6];
-  }
-  /* don't consider occupied cells */
-  else
-  {
     /* compute local density total */
     float local_density = 0.f;
 
@@ -398,14 +379,22 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
     /* relaxation step */
   __assume_aligned(cells, 64);
   __assume_aligned(tmp_cells, 64);
-    #pragma vector aligned
-    for (int kk = 0; kk < NSPEEDS; kk++)
-    {
-      tmp_cells[kk][index] = scratch[kk]
-                                              + params->omega
-                                              * (d_equ[kk] - scratch[kk]);
+
+  float obs = obstacles[index];
+  float nonObs = 1.0f- obs;
+
+      tmp_cells[0][index] = scratch[0] * obs + nonObs * (scratch[0] + params->omega * (d_equ[0] - scratch[0]));
+      tmp_cells[1][index] = scratch[3] * obs + nonObs * (scratch[1] + params->omega * (d_equ[1] - scratch[1]));
+      tmp_cells[2][index] = scratch[4] * obs + nonObs * (scratch[2] + params->omega * (d_equ[2] - scratch[2]));
+      tmp_cells[3][index] = scratch[1] * obs + nonObs * (scratch[3] + params->omega * (d_equ[3] - scratch[3]));
+      tmp_cells[4][index] = scratch[2] * obs + nonObs * (scratch[4] + params->omega * (d_equ[4] - scratch[4]));
+      tmp_cells[5][index] = scratch[7] * obs + nonObs * (scratch[5] + params->omega * (d_equ[5] - scratch[5]));
+      tmp_cells[6][index] = scratch[8] * obs + nonObs * (scratch[6] + params->omega * (d_equ[6] - scratch[6]));
+      tmp_cells[7][index] = scratch[5] * obs + nonObs * (scratch[7] + params->omega * (d_equ[7] - scratch[7]));
+      tmp_cells[8][index] = scratch[6] * obs + nonObs * (scratch[8] + params->omega * (d_equ[8] - scratch[8]));
                                       #define TRUE_VEL
     #ifdef TRUE_VEL
+    for(int kk = 0; kk < 9; kk++)
       local_density += tmp_cells[kk][index];
     }
 
@@ -438,7 +427,7 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
     #endif
     /* increase counter of inspected cells */
     dat[1] += (1 - obstacles[jj*params->nx + ii]);
-  }
+  
 }
 
 extern inline void outerCollide(t_param*const restrict params, const CellList cells, CellList tmp_cells, int const*const restrict obstacles, int y_n, int y_s, int jj){
