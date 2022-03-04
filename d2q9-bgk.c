@@ -396,6 +396,7 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
       tmp_cells[kk][index] = scratch[kk]
                                               + params->omega
                                               * (d_equ[kk] - scratch[kk]);
+                                      #define TRUE_VEL
     #ifdef TRUE_VEL
       local_density += tmp_cells[kk][index];
     }
