@@ -306,7 +306,7 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
   ** scratch space grid */
-  const float scratch[9] = {
+  const float scratch[9]  __attribute__((aligned(64)))= {
     cells[0][index], /* central cell, no movement */
     cells[1][x_w + jj*params->nx], /* east */
     cells[2][ii + y_s*params->nx], /* north */
@@ -316,7 +316,7 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
     cells[6][x_e + y_s*params->nx], /* north-west */
     cells[7][x_e + y_n*params->nx], /* south-west */
     cells[8][x_w + y_n*params->nx] /* south-east */
-  } __attribute__((aligned(64)));
+  };
 
   float u_sq = 0.0f;
 
