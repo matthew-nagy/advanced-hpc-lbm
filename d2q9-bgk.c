@@ -249,33 +249,34 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   float w1 = params.density * params.accel * (1.0/9.f);
   float w2 = params.density * params.accel * (1.0f/36.f);
 
-  const float changes[9] = { -1.0f, w1, 0.0f, w1 * -1, 0.0f, w2, w2 * -1, w2 * -1, w2 };
+  // const float changes[9] = { -1.0f, w1, 0.0f, w1 * -1, 0.0f, w2, w2 * -1, w2 * -1, w2 };
 
-  #pragma omp parallel for
-  for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
-  {
-    const int index = secondRowNonObs[ii];
-    __assume_aligned(cells, 64);
-    #pragma omp simd aligned(cells)
-    for(int i = 1; i < 9; i ++){
-      cells[i][index] += changes[i];
-    }
-  }
-
+  // #pragma omp parallel for
   // for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
   // {
-  //   /* if the cell is not occupied and
-  //   ** we don't send a negative density */
-  //     /* increase 'east-side' densities */
-  //     int index = secondRowNonObs[ii];
-  //     cells[1][index] += w1;
-  //     cells[5][index] += w2;
-  //     cells[8][index] += w2;
-  //     /* decrease 'west-side' densities */
-  //     cells[3][index] -= w1;
-  //     cells[6][index] -= w2;
-  //     cells[7][index] -= w2;
+  //   const int index = secondRowNonObs[ii];
+  //   __assume_aligned(cells, 64);
+  //   //#pragma omp simd aligned(cells)
+  //   for(int i = 1; i < 9; i ++){
+  //     cells[i][index] += changes[i];
+  //   }
   // }
+
+  #pragma omp parallel for aligned(cells : 64)
+  for (int ii = 0; ii < numOfSecondRowNonObs; ii++)
+  {
+    /* if the cell is not occupied and
+    ** we don't send a negative density */
+      /* increase 'east-side' densities */
+      int index = secondRowNonObs[ii];
+      cells[1][index] += w1;
+      cells[5][index] += w2;
+      cells[8][index] += w2;
+      /* decrease 'west-side' densities */
+      cells[3][index] -= w1;
+      cells[6][index] -= w2;
+      cells[7][index] -= w2;
+  }
 
   return EXIT_SUCCESS;
 }
@@ -481,7 +482,7 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
   __assume((params->ny % 64) == 0);
   __assume((params->ny % 128) == 0);
   __assume(params->ny >= 128);
-  #pragma omp parallel for reduction(+:tot_u) schedule(dynamic, 4)
+  #pragma omp parallel for reduction(+:tot_u)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
     int y_n = (jj + 1) & params->nyBitMask;
