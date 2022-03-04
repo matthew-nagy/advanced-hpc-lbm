@@ -436,23 +436,37 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
   float tmp_cell = 0.0f;
   float tmp_vel = 0.0f;
 
+
+  float dat[2];
+    int x_e = (0 + 1) & params->nxBitMask;
+    int x_w = (0 - 1) & params->nxBitMask;
+    innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, 0, dat);
+    tmp_vel += dat[0];
+    tmp_cell += dat[1];
   
 
   __assume((params->nx % 4) == 0);
   __assume((params->nx % 8) == 0);
   __assume((params->nx % 16) == 0);
   #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
-  for (int ii = 0; ii < params->nx; ii+=1)
+  for (int ii = 1; ii < params->nx-1; ii+=1)
   {
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
     float dat[2];
-    int x_e = (ii + 1) & params->nxBitMask;
-    int x_w = (ii - 1) & params->nxBitMask;
+    int x_e = (ii + 1);// & params->nxBitMask;
+    int x_w = (ii - 1);// & params->nxBitMask;
     innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, dat);
     tmp_vel += dat[0];
     tmp_cell += dat[1];
   }
+
+  float dat[2];
+    int x_e = (params->nx-1 + 1) & params->nxBitMask;
+    int x_w = (params->nx-1 - 1) & params->nxBitMask;
+    innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, params->nx-1, dat);
+    tmp_vel += dat[0];
+    tmp_cell += dat[1];
 
   params->totCells += tmp_cell;
   params->totVel += tmp_vel;
@@ -475,37 +489,15 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   int y_n = 1;
   int y_s = jjLimit;
   outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, 0);
-  
-  y_n += 1;
-  y_s = 0;
-  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, 1);
   __assume((params->ny % 4) == 0);
   __assume((params->ny % 8) == 0);
   __assume((params->ny % 16) == 0);
-  for (int jj = 2; jj < params->ny - 2; jj+=4)
+  for (int jj = 1; jj < params->ny - 1; jj+=1)
   {
     y_n += 1;
     y_s += 1;
     outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj);
-    //manual unwrap bc of compiler
-    y_n += 1;
-    y_s += 1;
-    outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj+1);
-    
-    //manual unwrap bc of compiler
-    y_n += 1;
-    y_s += 1;
-    outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj+2);
-    
-    //manual unwrap bc of compiler
-    y_n += 1;
-    y_s += 1;
-    outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jj+3);
   }
-  
-  y_n += 1;
-  y_s += 1;
-  outerCollide(params, cells, tmp_cells, obstacles, y_n, y_s, jjLimit - 1);
 
   y_n = 0;
   y_s = jjLimit - 1;
