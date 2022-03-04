@@ -519,8 +519,8 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
       __assume(y_n >= 0);
       __assume(y_s >= 0);
       tmp_vel += innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii);
-    }
     tot_u += tmp_vel;
+    }
   }
 
   
