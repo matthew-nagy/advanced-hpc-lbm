@@ -356,7 +356,7 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
     u[8] =   u_x - u_y;  /* south-east */
 
     /* equilibrium densities */
-    float d_equ[NSPEED] __attribute__((aligned(64)));
+    float d_equ[9] __attribute__((aligned(64)));
 
     const float over2c_sq = 1.0 / (2.0f * c_sq);
     const float over2c_sq_squared = 1.0 / (2.f * c_sq * c_sq);
