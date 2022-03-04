@@ -486,9 +486,7 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
   #pragma omp parallel for reduction(+:tot_u) collapse(2)
   for (int jj = 0; jj < params->ny; jj+=1)
   {
-    int y_n = (jj + 1) & params->nyBitMask;
-    int y_s = (jj - 1) & params->nyBitMask;
-    float tmp_vel;
+    
     __assume((params->nx % 2) == 0);
     __assume((params->nx % 4) == 0);
     __assume((params->nx % 8) == 0);
@@ -509,6 +507,9 @@ float collision(const t_param*const restrict params, const CellList cells, CellL
     #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_vel)
     for (int ii = 0; ii < params->nx; ii+=1)
     {
+      int y_n = (jj + 1) & params->nyBitMask;
+    int y_s = (jj - 1) & params->nyBitMask;
+    float tmp_vel;
       /* determine indices of axis-direction neighbours
       ** respecting periodic boundary conditions (wrap around) */
       int x_e = (ii + 1) & params->nxBitMask;
