@@ -284,6 +284,8 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
   ** scratch space grid */
+  __assume_aligned(cells, 64);
+  __assume_aligned(tmp_cells, 64);
   scratch[0] = cells[0][index]; /* central cell, no movement */
   scratch[1] = cells[1][x_w + jj*params->nx]; /* east */
   scratch[2] = cells[2][ii + y_s*params->nx]; /* north */
@@ -299,6 +301,8 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
   {
     /* called after propagate, so taking values from scratch space
     ** mirroring, and writing into main grid */
+  __assume_aligned(cells, 64);
+  __assume_aligned(tmp_cells, 64);
     tmp_cells[1][index] = scratch[3];
     tmp_cells[2][index] = scratch[4];
     tmp_cells[3][index] = scratch[1];
@@ -391,6 +395,8 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
 
     local_density = 0.0f;
     /* relaxation step */
+  __assume_aligned(cells, 64);
+  __assume_aligned(tmp_cells, 64);
     for (int kk = 0; kk < NSPEEDS; kk++)
     {
       tmp_cells[kk][index] = scratch[kk]
@@ -401,6 +407,8 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
       local_density += tmp_cells[kk][index];
     }
 
+  __assume_aligned(cells, 64);
+  __assume_aligned(tmp_cells, 64);
     /* compute x velocity component */
     u_x = (tmp_cells[1][index]
           + tmp_cells[5][index]
@@ -437,6 +445,8 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
   float tmp_vel = 0.0f;
 
   
+  __assume_aligned(cells, 64);
+  __assume_aligned(tmp_cells, 64);
 
   __assume((params->nx % 4) == 0);
   __assume((params->nx % 8) == 0);
@@ -449,6 +459,9 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
     float dat[2];
     int x_e = (ii + 1) & params->nxBitMask;
     int x_w = (ii - 1) & params->nxBitMask;
+
+    __assume_aligned(cells, 64);
+    __assume_aligned(tmp_cells, 64);
     innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, dat);
     tmp_vel += dat[0];
     tmp_cell += dat[1];
