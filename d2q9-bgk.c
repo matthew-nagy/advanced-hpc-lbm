@@ -257,7 +257,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   __assume(params.nx % 16 == 0);
   const int yAddition = (params.ny - 2) * params.nx;
   #pragma vector aligned
-  #pragma omp parallel for num_threads(28)
+  #pragma omp parallel for
   for (int ii = 1; ii < params.nx - 1; ii++)
   {
     /* if the cell is not occupied and
