@@ -698,14 +698,8 @@ int initialise(const char* paramfile, const char* obstaclefile,
       (*tmp_cells_ptr)[6][index] = w2;
       (*tmp_cells_ptr)[7][index] = w2;
       (*tmp_cells_ptr)[8][index] = w2;
-    }
-  }
 
-  /* first set all cells in obstacle array to zero */
-  for (int jj = 0; jj < params->ny; jj++)
-  {
-    for (int ii = 0; ii < params->nx; ii++)
-    {
+      
       (*obstacles_ptr)[ii + jj*params->nx] = 0;
     }
   }
