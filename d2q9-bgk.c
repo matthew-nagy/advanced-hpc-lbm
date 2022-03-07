@@ -223,13 +223,12 @@ int main(int argc, char* argv[])
   tot_toc = col_toc;
   
   /* write final values and free memory */
-  // printf("==done==\n");
-  // printf("Reynolds number:\t\t%.12E\n", calc_reynolds(params, cells, obstacles));
-  // printf("Elapsed Init time:\t\t\t%.6lf (s)\n",    init_toc - init_tic);
-  // printf("Elapsed Compute time:\t\t\t%.6lf (s)\n", comp_toc - comp_tic);
-  // printf("Elapsed Collate time:\t\t\t%.6lf (s)\n", col_toc  - col_tic);
-  // printf("Elapsed Total time:\t\t\t%.6lf (s)\n",   tot_toc  - tot_tic);
-  printf("%f, ", comp_toc - comp_tic);
+  printf("==done==\n");
+  printf("Reynolds number:\t\t%.12E\n", calc_reynolds(params, cells, obstacles));
+  printf("Elapsed Init time:\t\t\t%.6lf (s)\n",    init_toc - init_tic);
+  printf("Elapsed Compute time:\t\t\t%.6lf (s)\n", comp_toc - comp_tic);
+  printf("Elapsed Collate time:\t\t\t%.6lf (s)\n", col_toc  - col_tic);
+  printf("Elapsed Total time:\t\t\t%.6lf (s)\n",   tot_toc  - tot_tic);
   write_values(params, cells, obstacles, av_vels);
   finalise(&params, &cells, &tmp_cells, &obstacles, &av_vels);
 
@@ -257,7 +256,7 @@ int accelerate_flow(const t_param params, CellList cells, int const*const restri
   __assume(params.nx % 16 == 0);
   const int yAddition = (params.ny - 2) * params.nx;
   #pragma vector aligned
-  #pragma omp parallel for
+  #pragma omp parallel for num_threads(28)
   for (int ii = 1; ii < params.nx - 1; ii++)
   {
     /* if the cell is not occupied and
