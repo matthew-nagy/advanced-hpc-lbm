@@ -352,15 +352,14 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
   u_sq = u_x * u_x + u_y * u_y;
 
   /* directional velocity components */
-  float u[NSPEEDS] __attribute__((aligned(64)));
-  u[1] =   u_x;        /* east */
-  u[2] =         u_y;  /* north */
-  u[3] = - u_x;        /* west */
-  u[4] =       - u_y;  /* south */
-  u[5] =   u_x + u_y;  /* north-east */
-  u[6] = - u_x + u_y;  /* north-west */
-  u[7] = - u_x - u_y;  /* south-west */
-  u[8] =   u_x - u_y;  /* south-east */
+  const float u1 =   u_x;        /* east */
+  const float u2 =         u_y;  /* north */
+  const float u3 = - u_x;        /* west */
+  const float u4 =       - u_y;  /* south */
+  const float u5 =   u_x + u_y;  /* north-east */
+  const float u6 = - u_x + u_y;  /* north-west */
+  const float u7 = - u_x - u_y;  /* south-west */
+  const float u8 =   u_x - u_y;  /* south-east */
 
   /* equilibrium densities */
   float d_equ[NSPEEDS] __attribute__((aligned(64)));
@@ -372,33 +371,33 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
   const float densityHere = local_density;
 
   /* zero velocity density: weight w0 */
-  d_equ[0] = w0 * densityHere
+  const float d_equ0 = w0 * densityHere
               * (1.f - u_sq * over2c_sq);
   /* axis speeds: weight w1 */
-  d_equ[1] = w1 * densityHere * (1.f + u[1] * overC_sq
-                                    + (u[1] * u[1]) * over2c_sq_squared
+  const float d_equ1 = w1 * densityHere * (1.f + u1 * overC_sq
+                                    + (u1 * u1) * over2c_sq_squared
                                     - u_sq * over2c_sq);
-  d_equ[2] = w1 * densityHere * (1.f + u[2] * overC_sq
-                                    + (u[2] * u[2]) * over2c_sq_squared
+  const float d_equ2 = w1 * densityHere * (1.f + u2 * overC_sq
+                                    + (u2 * u2) * over2c_sq_squared
                                     - u_sq * over2c_sq);
-  d_equ[3] = w1 * densityHere * (1.f + u[3] * overC_sq
-                                    + (u[3] * u[3]) * over2c_sq_squared
+  const float d_equ3 = w1 * densityHere * (1.f + u3 * overC_sq
+                                    + (u3 * u3) * over2c_sq_squared
                                     - u_sq * over2c_sq);
-  d_equ[4] = w1 * densityHere * (1.f + u[4] * overC_sq
-                                    + (u[4] * u[4]) * over2c_sq_squared
+  const float d_equ4 = w1 * densityHere * (1.f + u4 * overC_sq
+                                    + (u4 * u4) * over2c_sq_squared
                                     - u_sq * over2c_sq);
   /* diagonal speeds: weight w2 */
-  d_equ[5] = w2 * densityHere * (1.f + u[5] * overC_sq
-                                    + (u[5] * u[5]) * over2c_sq_squared
+  const float d_equ5 = w2 * densityHere * (1.f + u5 * overC_sq
+                                    + (u5 * u5) * over2c_sq_squared
                                     - u_sq * over2c_sq);
-  d_equ[6] = w2 * densityHere * (1.f + u[6] * overC_sq
-                                    + (u[6] * u[6]) * over2c_sq_squared
+  const float d_equ6 = w2 * densityHere * (1.f + u6 * overC_sq
+                                    + (u6 * u6) * over2c_sq_squared
                                     - u_sq * over2c_sq);
-  d_equ[7] = w2 * densityHere * (1.f + u[7] * overC_sq
-                                    + (u[7] * u[7]) * over2c_sq_squared
+  const float d_equ7 = w2 * densityHere * (1.f + u7 * overC_sq
+                                    + (u7 * u7) * over2c_sq_squared
                                     - u_sq * over2c_sq);
-  d_equ[8] = w2 * densityHere * (1.f + u[8] * overC_sq
-                                    + (u[8] * u[8]) * over2c_sq_squared
+  const float d_equ8 = w2 * densityHere * (1.f + u8 * overC_sq
+                                    + (u8 * u8) * over2c_sq_squared
                                     - u_sq * over2c_sq);
 
   local_density = 0.0f;
@@ -407,15 +406,15 @@ extern inline float innerCollider(const t_param*const restrict params, const Cel
   const float obs = (float) obstacles[index];
   const float nonObs = 1.0 - obs;
 
-  tmp_cells[0][index] = (obs * scratch[0]) + (nonObs * (scratch[0] + params->omega * (d_equ[0] - scratch[0])));
-  tmp_cells[1][index] = (obs * scratch[3]) + (nonObs * (scratch[1] + params->omega * (d_equ[1] - scratch[1])));
-  tmp_cells[2][index] = (obs * scratch[4]) + (nonObs * (scratch[2] + params->omega * (d_equ[2] - scratch[2])));
-  tmp_cells[3][index] = (obs * scratch[1]) + (nonObs * (scratch[3] + params->omega * (d_equ[3] - scratch[3])));
-  tmp_cells[4][index] = (obs * scratch[2]) + (nonObs * (scratch[4] + params->omega * (d_equ[4] - scratch[4])));
-  tmp_cells[5][index] = (obs * scratch[7]) + (nonObs * (scratch[5] + params->omega * (d_equ[5] - scratch[5])));
-  tmp_cells[6][index] = (obs * scratch[8]) + (nonObs * (scratch[6] + params->omega * (d_equ[6] - scratch[6])));
-  tmp_cells[7][index] = (obs * scratch[5]) + (nonObs * (scratch[7] + params->omega * (d_equ[7] - scratch[7])));
-  tmp_cells[8][index] = (obs * scratch[6]) + (nonObs * (scratch[8] + params->omega * (d_equ[8] - scratch[8])));
+  tmp_cells[0][index] = (obs * scratch[0]) + (nonObs * (scratch[0] + params->omega * (d_equ0 - scratch[0])));
+  tmp_cells[1][index] = (obs * scratch[3]) + (nonObs * (scratch[1] + params->omega * (d_equ1 - scratch[1])));
+  tmp_cells[2][index] = (obs * scratch[4]) + (nonObs * (scratch[2] + params->omega * (d_equ2 - scratch[2])));
+  tmp_cells[3][index] = (obs * scratch[1]) + (nonObs * (scratch[3] + params->omega * (d_equ3 - scratch[3])));
+  tmp_cells[4][index] = (obs * scratch[2]) + (nonObs * (scratch[4] + params->omega * (d_equ4 - scratch[4])));
+  tmp_cells[5][index] = (obs * scratch[7]) + (nonObs * (scratch[5] + params->omega * (d_equ5 - scratch[5])));
+  tmp_cells[6][index] = (obs * scratch[8]) + (nonObs * (scratch[6] + params->omega * (d_equ6 - scratch[6])));
+  tmp_cells[7][index] = (obs * scratch[5]) + (nonObs * (scratch[7] + params->omega * (d_equ7 - scratch[7])));
+  tmp_cells[8][index] = (obs * scratch[6]) + (nonObs * (scratch[8] + params->omega * (d_equ8 - scratch[8])));
 
 
   local_density = 0.0f;
