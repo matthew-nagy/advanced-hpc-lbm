@@ -7,7 +7,7 @@ CC=icc
 //CFLAGS= -std=c11 -Wall -Ofast -mtune=native -march=native -fopt-info-all=optRep.out -fopenmp -fopenmp-simd
 //CFLAGS = -std=c11 -Wall -fast -xHOST -qopenmp -qopenmp-link=static -pg
 //OtherIcc = -std=c11 -Wall -ofast -xHOST -qopenmp -qopenmp-link=dynamic -g
-CFLAGS = -std=c11 -Wall -Ofast -xHOST -qopenmp -qopt-report=5 -g -qopenmp-link=dynamic -shared-intel -D TBB_USE_THREADING_TOOLS
+CFLAGS = -std=c11 -Wall -fast -xHOST -qopenmp -qopenmp-link=static
 LIBS = -lm
 
 FINAL_STATE_FILE=./final_state.dat
