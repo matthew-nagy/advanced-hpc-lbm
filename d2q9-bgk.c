@@ -234,8 +234,6 @@ int accelerate_flow()
 
 extern inline float innerCollider(int y_n, int y_s, int x_e, int x_w, int jj, int ii){
   float scratch[9];
-  dat[0] = 0.0f;
-  dat[1] = 0.0f;
   const int index = ii + jj * params.nx;
   
   /* propagate densities from neighbouring cells, following
