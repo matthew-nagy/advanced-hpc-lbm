@@ -55,6 +55,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <mpi.h>
 
 #define NSPEEDS         9
 #define FINALSTATEFILE  "final_state.dat"
@@ -89,6 +90,8 @@ typedef struct
 float** cells;
 float** tmp_cells;
 t_param params;
+
+int nprocs, rank, upRank, downRank;
 
 #define IS_OBSTACLE(x, y) ( (x == 0) || (y == 0) || (x == params.nxm1) || (y == params.nym1) )
 
@@ -134,12 +137,31 @@ void die(const char* message, const int line, const char* file);
 void usage(const char* exe);
 
 
+void halo(){
+  int bytesPerRow = sizeof(float) * params.nx;
+  for(int i = 0; i < NSPEEDS){
+    //Send up
+    MPI_Sendrecv(
+      cells[i][(params.ny - 2) * params.nx], bytesPerRow, MPI_CHAR, upRank, 0,
+      cells[i][0], bytesPerRow, MPI_CHAR, downRank, 0,
+      MPI_COMM_WORLD, MPI_STATUS_IGNORE 
+    );
+    //Send down
+    MPI_Sendrecv(
+      cells[i][1], bytesPerRow, MPI_CHAR, downRank, 0,
+      cells[i][(params.ny - 1) * params.nx], bytesPerRow, MPI_CHAR, upRank, 0,
+      MPI_COMM_WORLD, MPI_STATUS_IGNORE 
+    );
+  }
+}
+
 /*
 ** main program:
 ** initialise, timestep loop, finalise
 */
 int main(int argc, char* argv[])
 {
+
   char*    paramfile = NULL;    /* name of the input parameter file */
   char*    obstaclefile = NULL; /* name of a the input obstacle file */
   int*     obstacles = NULL;    /* grid indicating which cells are blocked */
@@ -162,6 +184,18 @@ int main(int argc, char* argv[])
   gettimeofday(&timstr, NULL);
   tot_tic = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
   init_tic=tot_tic;
+
+  MPI_Init(&argc, &argv);
+  MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+  MPI_COMM_rank(MPI_COMM_WORLD, &rank);
+
+  upRank = rank + 1;
+  downRank = rank - 1;
+  if(upRank = nprocs)
+    upRank = 0;
+  if(downRank = -1)
+    downRank += nprocs;
+
   initialise(paramfile, obstaclefile, &obstacles, &av_vels);
 
   /* Init time stops here, compute time starts*/
@@ -171,6 +205,7 @@ int main(int argc, char* argv[])
   
   for (int tt = 0; tt < params.maxIters; tt++)
   {
+    halo();
     av_vels[tt] = timestep(obstacles);
     float** tmp = tmp_cells;
     tmp_cells = cells;
@@ -203,6 +238,8 @@ int main(int argc, char* argv[])
   printf("Elapsed Total time:\t\t\t%.6lf (s)\n",   tot_toc  - tot_tic);
   write_values(obstacles, av_vels);
   finalise(&obstacles, &av_vels);
+
+  MPI_Finalize();
 
   return EXIT_SUCCESS;
 }
@@ -423,7 +460,7 @@ float collision(int const*const restrict obstacles)
     outerCollide(obstacles, y_n, y_s, jj);
   }
   
-  return params.totVel / (float)params.totCells;
+  return params.totVel / params.totCells;
 }
 
 float av_velocity(int* obstacles)
