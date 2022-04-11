@@ -242,9 +242,14 @@ int accelerate_flow(int const*const restrict obstacles)
   return EXIT_SUCCESS;
 }
 
+int const* dbObs;
+
 extern inline float innerCollider(int isOb, int y_n, int y_s, int x_e, int x_w, int jj, int ii){
   float scratch[9];
   const int index = ii + jj * params.nx;
+
+  if(isOb != dbObs[index])
+    printf("Error at %d %d, obstacle is %d but should be %d\n", ii, jj, isOb, dbObs[index]);
   
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
@@ -424,6 +429,7 @@ extern inline void outerCollide(int rowObs, int y_n, int y_s, int jj){
 
 float collision(int const*const restrict obstacles)
 {
+  dbObs = obstacles;
   params.totVel = 0.0f;
 
   const int iiLimit = params.nx - 1;
