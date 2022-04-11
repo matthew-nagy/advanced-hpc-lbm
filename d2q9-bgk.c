@@ -164,13 +164,13 @@ void halo(int rank, int upRank, int downRank, float*** cells, float** cellBuffer
   MPI_Sendrecv(
     (*cells)[0], rowSize, MPI_CHAR, upRank, MPI_ANY_TAG,
     (*cells)[height - 1], rowSize, MPI_CHAR, downRank, MPI_ANY_TAG,
-    MPU_COMM_WORLD, MPI_STATUS_IGNORE 
+    MPI_COMM_WORLD, MPI_STATUS_IGNORE 
   );
 
   MPI_Sendrecv(
     (*cellBuffer), rowSize, MPI_CHAR, downRank, MPI_ANY_TAG,
     (*cells)[0], rowSize, MPI_CHAR, upRank, MPI_ANY_TAG,
-    MPU_COMM_WORLD, MPI_STATUS_IGNORE 
+    MPI_COMM_WORLD, MPI_STATUS_IGNORE 
   );
 }
 
