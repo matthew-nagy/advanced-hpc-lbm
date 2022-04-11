@@ -242,7 +242,7 @@ int accelerate_flow(int const*const restrict obstacles)
   return EXIT_SUCCESS;
 }
 
-extern inline float innerCollider(int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii){
+extern inline float innerCollider(int isOb, int y_n, int y_s, int x_e, int x_w, int jj, int ii){
   float scratch[9];
   const int index = ii + jj * params.nx;
   
@@ -261,9 +261,7 @@ extern inline float innerCollider(int const*const restrict obstacles, int y_n, i
 
   float u_sq = 0.0f;
 
-  float obMark = IS_OBSTACLE(ii, jj);
-  if(obMark)
-    printf("%d %d\n", ii, jj);
+  float obMark = isOb;
   float nonObMark = 1.f - obMark;
 
   // /* if the cell contains an obstacle */
@@ -419,7 +417,7 @@ extern inline void outerCollide(int const*const restrict obstacles, int y_n, int
     ** respecting periodic boundary conditions (wrap around) */
     int x_e = (ii + 1) & params.nxBitMask;
     int x_w = (ii - 1) & params.nxBitMask;
-    tmp_vel += innerCollider(obstacles, y_n, y_s, x_e, x_w, jj, ii);
+    tmp_vel += innerCollider(obstacles[ii + jj *params.nx], y_n, y_s, x_e, x_w, jj, ii);
   }
   params.totVel += tmp_vel;
 }
