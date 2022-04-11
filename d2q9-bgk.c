@@ -221,17 +221,18 @@ int accelerate_flow()
   for (int ii = 1; ii < params.nx - 1; ii++)
   {
     /* increase 'east-side' densities */
-    cells[ii + jj*params.nx].speeds[1] += w1;
-    cells[ii + jj*params.nx].speeds[5] += w2;
-    cells[ii + jj*params.nx].speeds[8] += w2;
+    cells[1][ii + jj*params.nx] += w1;
+    cells[5][ii + jj*params.nx] += w2;
+    cells[8][ii + jj*params.nx] += w2;
     /* decrease 'west-side' densities */
-    cells[ii + jj*params.nx].speeds[3] -= w1;
-    cells[ii + jj*params.nx].speeds[6] -= w2;
-    cells[ii + jj*params.nx].speeds[7] -= w2;
+    cells[3][ii + jj*params.nx] -= w1;
+    cells[6][ii + jj*params.nx] -= w2;
+    cells[7][ii + jj*params.nx] -= w2;
   }
+  return EXIT_SUCCESS;
 }
 
-extern inline void innerCollider(int y_n, int y_s, int x_e, int x_w, int jj, int ii, float* dat){
+extern inline float innerCollider(int y_n, int y_s, int x_e, int x_w, int jj, int ii){
   float scratch[9];
   dat[0] = 0.0f;
   dat[1] = 0.0f;
@@ -378,15 +379,12 @@ extern inline void innerCollider(int y_n, int y_s, int x_e, int x_w, int jj, int
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
-    dat[0] += sqrtf(u_sq);
-    /* increase counter of inspected cells */
-    dat[1] += (1 - obstacles[jj*params.nx + ii]);
+    return sqrtf(u_sq);
   }
+  return 0.f;
 }
 
 extern inline void outerCollide(int y_n, int y_s, int jj){
-
-  float tmp_cell = 0.0f;
   float tmp_vel = 0.0f;
 
   
@@ -398,15 +396,10 @@ extern inline void outerCollide(int y_n, int y_s, int jj){
   {
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
-    float dat[2];
     int x_e = (ii + 1) & params.nxBitMask;
     int x_w = (ii - 1) & params.nxBitMask;
-    innerCollider(y_n, y_s, x_e, x_w, jj, ii, dat);
-    tmp_vel += dat[0];
-    tmp_cell += dat[1];
+    tmp_vel += innerCollider(y_n, y_s, x_e, x_w, jj, ii);
   }
-
-  params.totCells += tmp_cell;
   params.totVel += tmp_vel;
 }
 
@@ -428,7 +421,7 @@ float collision()
   int y_s = jjLimit;
   outerCollide(y_n, y_s, 0);
   y_s = -1;
-  for (int jj = 1; jj < params.ny - 1; j++)
+  for (int jj = 1; jj < params.ny - 1; jj++)
   {
     y_n += 1;
     y_s += 1;
@@ -439,7 +432,7 @@ float collision()
   y_s = jjLimit - 1;
   outerCollide(y_n, y_s, jjLimit);
   
-  return params.totVel / (float)params.totCells;
+  return params.totVel / params.totCells;
 }
 
 float av_velocity()
@@ -575,6 +568,8 @@ int initialise(const char* paramfile, float** av_vels_ptr)
     (cells)[i] = (float*)aligned_alloc(64, sizeof(float) * params.nx * params.ny);
     (tmp_cells)[i] = (float*)aligned_alloc(64, sizeof(float) * params.nx * params.ny);
   }
+
+  params.totCells = (params.nx -1) * (params.ny - 1);
 
 
   /* initialise densities */
