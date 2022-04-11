@@ -253,9 +253,8 @@ extern inline float innerCollider(int y_n, int y_s, int x_e, int x_w, int jj, in
   scratch[8] = cells[8][x_w + y_n*params.nx]; /* south-east */
 
   float u_sq = 0.0f;
-  bool o = IS_OBS(ii, jj);
-  float obsMul = o ? 1.f : 0.f;
-  float nonObsMul = o ? 0.f : 1.f;
+  float obsMul = IS_OBS(ii, jj);
+  float nonObsMul = 1.f - obsMul;
 
     /* compute local density total */
     float local_density = 0.f;
