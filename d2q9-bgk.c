@@ -72,6 +72,8 @@ typedef struct
 {
   int    nx;            /* no. of cells in x-direction */
   int    ny;            /* no. of cells in y-direction */
+  int nxm1;
+  int nym1;
   int nxBitMask;
   int nyBitMask;
   int    maxIters;      /* no. of iterations */
@@ -87,6 +89,8 @@ typedef struct
 float** cells;
 float** tmp_cells;
 t_param params;
+
+#define IS_OBSTACLE(x, y) ( (x == 0) || (y == 0) || (x == params.nxm1) || (y == params.nym1) )
 
 /* struct to hold the 'speed' values */
 
@@ -257,7 +261,7 @@ extern inline float innerCollider(int const*const restrict obstacles, int y_n, i
 
   float u_sq = 0.0f;
 
-  float obMark = obstacles[index];
+  float obMark = IS_OBSTACLE(ii, jj);
   float nonObMark = 1.f - obMark;
 
   // /* if the cell contains an obstacle */
@@ -574,6 +578,8 @@ int initialise(const char* paramfile, const char* obstaclefile,
   */
 
   params.totCells = (params.nx - 2) * (params.ny - 2);
+  params.nxm1 = params.nx - 1;
+  params.nym1 = params.ny - 1;
 
   /* main grid */
   cells = (float**)aligned_alloc(64, sizeof(float*) * (NSPEEDS));
