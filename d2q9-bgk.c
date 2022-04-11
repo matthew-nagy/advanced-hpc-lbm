@@ -80,7 +80,7 @@ typedef struct
   float accel;         /* density redistribution */
   float omega;         /* relaxation parameter */
 
-  int totCells;
+  float totCells;
   float totVel;
 } t_param;
 
@@ -238,7 +238,7 @@ int accelerate_flow(int const*const restrict obstacles)
   return EXIT_SUCCESS;
 }
 
-extern inline void innerCollider(int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii, float* dat){
+extern inline float innerCollider(int const*const restrict obstacles, int y_n, int y_s, int x_e, int x_w, int jj, int ii){
   float scratch[9];
   dat[0] = 0.0f;
   dat[1] = 0.0f;
@@ -272,6 +272,7 @@ extern inline void innerCollider(int const*const restrict obstacles, int y_n, in
     tmp_cells[6][index] = scratch[8];
     tmp_cells[7][index] = scratch[5];
     tmp_cells[8][index] = scratch[6];
+    return 0.f;
   }
   /* don't consider occupied cells */
   else
@@ -385,9 +386,7 @@ extern inline void innerCollider(int const*const restrict obstacles, int y_n, in
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
-    dat[0] += sqrtf(u_sq);
-    /* increase counter of inspected cells */
-    dat[1] += (1 - obstacles[jj*params.nx + ii]);
+    return sqrtf(u_sq);
   }
 }
 
@@ -399,27 +398,20 @@ extern inline void outerCollide(int const*const restrict obstacles, int y_n, int
   
 
   __assume((params.nx % 4) == 0);
-  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
+  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_vel)
   for (int ii = 0; ii < params.nx; ii+=1)
   {
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
-    float dat[2];
     int x_e = (ii + 1) & params.nxBitMask;
     int x_w = (ii - 1) & params.nxBitMask;
-    innerCollider(obstacles, y_n, y_s, x_e, x_w, jj, ii, dat);
-    tmp_vel += dat[0];
-    tmp_cell += dat[1];
+    tmp_vel += innerCollider(obstacles, y_n, y_s, x_e, x_w, jj, ii);
   }
-
-  params.totCells += tmp_cell;
   params.totVel += tmp_vel;
 }
 
 float collision(int const*const restrict obstacles)
 {
-
-  params.totCells = 0;
   params.totVel = 0.0f;
 
   const int iiLimit = params.nx - 1;
@@ -434,15 +426,11 @@ float collision(int const*const restrict obstacles)
   int y_s = jjLimit;
   outerCollide(obstacles, y_n, y_s, 0);
   y_s = -1;
-  for (int jj = 1; jj < params.ny - 1; jj+=2)
+  for (int jj = 1; jj < params.ny - 1; jj++)
   {
     y_n += 1;
     y_s += 1;
     outerCollide(obstacles, y_n, y_s, jj);
-    //manual unwrap bc of compiler
-    y_n += 1;
-    y_s += 1;
-    outerCollide(obstacles, y_n, y_s, jj+1);
   }
 
   y_n = 0;
@@ -576,6 +564,8 @@ int initialise(const char* paramfile, const char* obstaclefile,
   ** hold an array of 'speeds'.  We will allocate
   ** a 1D array of these structs.
   */
+
+  params.totCells = (params.nx - 2) * (params.ny - 2);
 
   /* main grid */
   cells = (float**)aligned_alloc(64, sizeof(float*) * (NSPEEDS));
