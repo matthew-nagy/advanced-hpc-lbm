@@ -187,7 +187,7 @@ int main(int argc, char* argv[])
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
-  MPI_COMM_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   upRank = rank + 1;
   downRank = rank - 1;
