@@ -261,7 +261,7 @@ extern inline float innerCollider(int const*const restrict obstacles, int y_n, i
 
   float u_sq = 0.0f;
 
-  float obMark = IS_OBSTACLE(ii, jj);
+  float obMark = IS_OBSTACLE(jj, ii);
   float nonObMark = 1.f - obMark;
 
   // /* if the cell contains an obstacle */
