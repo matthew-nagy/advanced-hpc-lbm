@@ -205,7 +205,7 @@ int main(int argc, char* argv[])
   
   for (int tt = 0; tt < params.maxIters; tt++)
   {
-    halo();
+    //halo();
     av_vels[tt] = timestep(obstacles);
     float** tmp = tmp_cells;
     tmp_cells = cells;
