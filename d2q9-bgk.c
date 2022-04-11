@@ -171,6 +171,9 @@ int main(int argc, char* argv[])
   double tot_tic, tot_toc, init_tic, init_toc, comp_tic, comp_toc, col_tic, col_toc; /* floating point numbers to calculate elapsed wallclock time */
 
   MPI_Init(&argc, &argv);
+  int nprocs, rank;
+  MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   /* parse the command line */
   if (argc != 3)
