@@ -209,7 +209,7 @@ int main(int argc, char* argv[])
     av_vels[tt] = timestep(obstacles);
     float** tmp = tmp_cells;
     tmp_cells = cells;
-    cells = tmp;
+    cells = tmp; 
 #ifdef DEBUG
     printf("==timestep: %d==\n", tt);
     printf("av velocity: %.12E\n", av_vels[tt]);
