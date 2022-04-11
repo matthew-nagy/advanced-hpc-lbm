@@ -234,10 +234,8 @@ int accelerate_flow()
   return EXIT_SUCCESS;
 }
 
-extern inline void innerCollider(int y_n, int y_s, int x_e, int x_w, int jj, int ii, float* dat){
+extern inline float innerCollider(int y_n, int y_s, int x_e, int x_w, int jj, int ii){
   float scratch[9];
-  dat[0] = 0.0f;
-  dat[1] = 0.0f;
   const int index = ii + jj * params.nx;
   
   /* propagate densities from neighbouring cells, following
@@ -381,31 +379,26 @@ extern inline void innerCollider(int y_n, int y_s, int x_e, int x_w, int jj, int
 
     //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
     /* accumulate the norm of x- and y- velocity components */
-    dat[0] += sqrtf(u_sq);
-    /* increase counter of inspected cells */
-    dat[1] += 1;
+    return sqrtf(u_sq);
   }
+
+  return 0.f
 }
 
 extern inline void outerCollide(int y_n, int y_s, int jj){
-
-  float tmp_cell = 0.0f;
   float tmp_vel = 0.0f;
 
   
 
   __assume((params.nx % 4) == 0);
-  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
+  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64),  reduction(+:tmp_vel)
   for (int ii = 0; ii < params.nx; ii+=1)
   {
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
-    float dat[2];
     int x_e = (ii + 1) & params.nxBitMask;
     int x_w = (ii - 1) & params.nxBitMask;
-    innerCollider(y_n, y_s, x_e, x_w, jj, ii, dat);
-    tmp_vel += dat[0];
-    tmp_cell += dat[1];
+    tmp_vel += innerCollider(y_n, y_s, x_e, x_w, jj, ii);
   }
 
   params.totVel += tmp_vel;
