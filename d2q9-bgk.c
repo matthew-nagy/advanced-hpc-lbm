@@ -154,6 +154,24 @@ void findSecondRowObs(const t_param params, int const*const restrict obstacles){
   free(nonObs);
 }
 
+//MPI_ANY_TAG
+void halo(int rank, int upRank, int downRank, float*** cells, float** cellBuffer, int width, int height){
+  float* temp = (*cellBuffer);
+  (*cellBuffer)= (*cells)[height - 1];
+  (*cells)[height - 1] = temp;
+
+  int rowSize = sizeof(float) * width;
+  MPI_SendRecv(
+    (*cells)[0], rowSize, MPI_CHAR, upRank, MPI_ANY_TAG,
+    (*cells)[height - 1], rowSize, MPI_CHAR, downRank, MPI_ANY_TAG
+  );
+
+  MPI_SendRecv(
+    (*cellBuffer), rowSize, MPI_CHAR, downRank, MPI_ANY_TAG,
+    (*cells)[0], rowSize, MPI_CHAR, upRank, MPI_ANY_TAG
+  );
+}
+
 /*
 ** main program:
 ** initialise, timestep loop, finalise
@@ -175,6 +193,13 @@ int main(int argc, char* argv[])
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+  int upRank = rank - 1;
+  int downRank = rank + 1;
+  if(downRank == nprocs)
+    downRank = 0;
+  if(upRank == -1)
+    upRank += nprocs;
+
   /* parse the command line */
   if (argc != 3)
   {
@@ -191,6 +216,7 @@ int main(int argc, char* argv[])
   tot_tic = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
   init_tic=tot_tic;
   initialise(paramfile, obstaclefile, &params, &cells, &tmp_cells, &obstacles, &av_vels);
+  float* cellBuffer = (float*)malloc(sizeof(float) * params.nx);
 
   /* Init time stops here, compute time starts*/
   gettimeofday(&timstr, NULL);
@@ -201,6 +227,7 @@ int main(int argc, char* argv[])
 
   for (int tt = 0; tt < params.maxIters; tt++)
   {
+    halo(rank, upRank, downRank, &cells, &cellBuffer, params.nx, params.ny);
     av_vels[tt] = timestep(&params, cells, tmp_cells, obstacles);
     float** tmp = tmp_cells;
     tmp_cells = cells;
