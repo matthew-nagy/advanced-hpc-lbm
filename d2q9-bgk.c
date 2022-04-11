@@ -80,7 +80,7 @@ typedef struct
   float accel;         /* density redistribution */
   float omega;         /* relaxation parameter */
 
-  int totCells;
+  float totCells;
   float totVel;
 } t_param;
 
@@ -412,14 +412,12 @@ extern inline void outerCollide(int const*const restrict obstacles, int y_n, int
     tmp_cell += dat[1];
   }
 
-  params.totCells += tmp_cell;
   params.totVel += tmp_vel;
 }
 
 float collision(int const*const restrict obstacles)
 {
 
-  params.totCells = 0;
   params.totVel = 0.0f;
 
   const int iiLimit = params.nx - 1;
@@ -449,7 +447,7 @@ float collision(int const*const restrict obstacles)
   y_s = jjLimit - 1;
   outerCollide(obstacles, y_n, y_s, jjLimit);
   
-  return params.totVel / (float)params.totCells;
+  return params.totVel / params.totCells;
 }
 
 float av_velocity(int* obstacles)
@@ -587,6 +585,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
     (tmp_cells)[i] = (float*)aligned_alloc(64, sizeof(float) * params.nx * params.ny);
   }
 
+  params.totCells = (params.nx - 2) * (params.ny - 2);
 
   /* the map of obstacles */
   *obstacles_ptr = malloc(sizeof(int) * (params.ny * params.nx));
