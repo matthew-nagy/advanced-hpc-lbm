@@ -2,11 +2,11 @@
 
 EXE=d2q9-bgk
 
+BasicFlags = -std=c11 -Wall -Ofast -xHOST -qopenmp -qopenmp-link=dynamic
+ReportFlags = -qopt-report=5 -g -shared-intel -D TBB_USE_THREADING_TOOLS -gline-tables-only -fdebug-info-for-profiling
+
 CC=icc
-//CFLAGS= -std=c11 -Wall -g -O0
-//CFLAGS= -std=c11 -Wall -Ofast -mtune=native -march=native -fopt-info-all=optRep.out -fopenmp -fopenmp-simd
-CFLAGS = -std=c11 -Wall -Ofast -xHOST -qopenmp -qopt-report=5 -g -qopenmp-link=dynamic -shared-intel -D TBB_USE_THREADING_TOOLS -gline-tables-only -fdebug-info-for-profiling
-//OtherIcc = -qopt-report=1 -qopt-report-phase=vec
+CFLAGS =  $(BasicFlags)
 LIBS = -lm
 
 FINAL_STATE_FILE=./final_state.dat
