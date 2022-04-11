@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
   gettimeofday(&timstr, NULL);
   tot_tic = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
   init_tic=tot_tic;
-  initialise(paramfile, obstaclefile, &params, &cells, &tmp_cells, &obstacles, &av_vels);
+  initialise(paramfile, &av_vels);
 
   /* Init time stops here, compute time starts*/
   gettimeofday(&timstr, NULL);
@@ -221,7 +221,7 @@ int accelerate_flow()
   {
     /* if the cell is not occupied and
     ** we don't send a negative density */
-    if (!obstacles[ii + jj*params.nx]
+    if (!IS_BORDER(ii, jj, params.nx, params.ny)
         && (cells[3][ii + jj*params.nx] - w1) > 0.f
         && (cells[6][ii + jj*params.nx] - w2) > 0.f
         && (cells[7][ii + jj*params.nx] - w2) > 0.f)
@@ -400,7 +400,7 @@ float av_velocity()
     for (int ii = 0; ii < params.nx; ii++)
     {
       /* ignore occupied cells */
-      if (!obstacles[ii + jj*params.nx])
+      if (!IS_BORDER(ii, jj, params.nx, params.ny))
       {
         /* local density total */
         float local_density = 0.f;
@@ -501,26 +501,26 @@ int initialise(const char* paramfile, float** av_vels_ptr)
   }
 
   /* initialise densities */
-  float w0 = params->density * 4.f / 9.f;
-  float w1 = params->density      / 9.f;
-  float w2 = params->density      / 36.f;
+  float w0 = params.density * 4.f / 9.f;
+  float w1 = params.density      / 9.f;
+  float w2 = params.density      / 36.f;
 
-  for (int jj = 0; jj < params->ny; jj++)
+  for (int jj = 0; jj < params.ny; jj++)
   {
-    for (int ii = 0; ii < params->nx; ii++)
+    for (int ii = 0; ii < params.nx; ii++)
     {
       /* centre */
-      cells[0][ii + jj*params->nx] = w0;
+      cells[0][ii + jj*params.nx] = w0;
       /* axis directions */
-      cells[1][ii + jj*params->nx] = w1;
-      cells[2][ii + jj*params->nx] = w1;
-      cells[3][ii + jj*params->nx] = w1;
-      cells[4][ii + jj*params->nx] = w1;
+      cells[1][ii + jj*params.nx] = w1;
+      cells[2][ii + jj*params.nx] = w1;
+      cells[3][ii + jj*params.nx] = w1;
+      cells[4][ii + jj*params.nx] = w1;
       /* diagonals */
-      cells[5][ii + jj*params->nx] = w2;
-      cells[6][ii + jj*params->nx] = w2;
-      cells[7][ii + jj*params->nx] = w2;
-      cells[8][ii + jj*params->nx] = w2;
+      cells[5][ii + jj*params.nx] = w2;
+      cells[6][ii + jj*params.nx] = w2;
+      cells[7][ii + jj*params.nx] = w2;
+      cells[8][ii + jj*params.nx] = w2;
     }
   }
 
@@ -528,7 +528,7 @@ int initialise(const char* paramfile, float** av_vels_ptr)
   ** allocate space to hold a record of the avarage velocities computed
   ** at each timestep
   */
-  *av_vels_ptr = (float*)malloc(sizeof(float) * params->maxIters);
+  *av_vels_ptr = (float*)malloc(sizeof(float) * params.maxIters);
 
   return EXIT_SUCCESS;
 }
@@ -543,7 +543,7 @@ int finalise(float** av_vels_ptr)
    free(tmp_cells[i]);
  }
   free(cells);
-  free(tmp_cells)
+  free(tmp_cells);
 
   free(*av_vels_ptr);
   *av_vels_ptr = NULL;
