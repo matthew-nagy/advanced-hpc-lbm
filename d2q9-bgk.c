@@ -402,7 +402,7 @@ extern inline float innerCollider(int isOb, int y_n, int y_s, int x_e, int x_w, 
 
 }
 
-extern inline void outerCollide(int const*const restrict obstacles, int y_n, int y_s, int jj){
+extern inline void outerCollide(int rowObs, int y_n, int y_s, int jj){
 
   float tmp_cell = 0.0f;
   float tmp_vel = 0.0f;
@@ -417,7 +417,7 @@ extern inline void outerCollide(int const*const restrict obstacles, int y_n, int
     ** respecting periodic boundary conditions (wrap around) */
     int x_e = (ii + 1) & params.nxBitMask;
     int x_w = (ii - 1) & params.nxBitMask;
-    tmp_vel += innerCollider(obstacles[ii + jj *params.nx], y_n, y_s, x_e, x_w, jj, ii);
+    tmp_vel += innerCollider(rowObs || (x_e != (ii + 1)) || (x_w != (ii - 1)), y_n, y_s, x_e, x_w, jj, ii);
   }
   params.totVel += tmp_vel;
 }
@@ -438,7 +438,7 @@ float collision(int const*const restrict obstacles)
   {
     const int y_n = (jj + 1) & params.nyBitMask;
     const int y_s = (jj - 1) & params.nyBitMask;
-    outerCollide(obstacles, y_n, y_s, jj);
+    outerCollide((y_n != (jj + 1)) || (y_s != (jj - 1)), y_n, y_s, jj);
   }
   
   return params.totVel / (float)params.totCells;
