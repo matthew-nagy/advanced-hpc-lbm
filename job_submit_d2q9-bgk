@@ -23,5 +23,5 @@ make check128
 make check128x256
 ./d2q9-bgk input_256x256.params obstacles_256x256.dat
 make check256
-./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-make check1024
+#./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#make check1024
