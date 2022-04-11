@@ -436,8 +436,8 @@ float collision(int const*const restrict obstacles)
   
   for (int jj = 0; jj < params.ny; jj++)
   {
-    y_n = (jj + 1) & params.nyBitMask;
-    y_s = (jj - 1) & params.nyBitMask;
+    const int y_n = (jj + 1) & params.nyBitMask;
+    const int y_s = (jj - 1) & params.nyBitMask;
     outerCollide(obstacles, y_n, y_s, jj);
   }
   
