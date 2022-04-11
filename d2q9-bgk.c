@@ -434,20 +434,12 @@ float collision(int const*const restrict obstacles)
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
   
-  int y_n = 1;
-  int y_s = jjLimit;
-  outerCollide(obstacles, y_n, y_s, 0);
-  y_s = -1;
-  for (int jj = 1; jj < params.ny - 1; jj++)
+  for (int jj = 0; jj < params.ny; jj++)
   {
-    y_n += 1;
-    y_s += 1;
+    y_n = (jj + 1) & params.nyBitMask;
+    y_s = (jj - 1) & params.nyBitMask;
     outerCollide(obstacles, y_n, y_s, jj);
   }
-
-  y_n = 0;
-  y_s = jjLimit - 1;
-  outerCollide(obstacles, y_n, y_s, jjLimit);
   
   return params.totVel / (float)params.totCells;
 }
