@@ -2,15 +2,17 @@
 
 EXE=d2q9-bgk
 
-CC=gcc
-CFLAGS_OLD= -std=c99 -Wall -O3
-CFLAGS= -std=c99 -Wall -Ofast -funsafe-math-optimizations -mtune=native -march=native
+CC=icc
+//CFLAGS= -std=c11 -Wall -g -O0
+//CFLAGS= -std=c11 -Wall -Ofast -mtune=native -march=native -fopt-info-all=optRep.out -fopenmp -fopenmp-simd
+CFLAGS = -std=c11 -Wall -Ofast -xHOST -qopenmp -qopt-report=5 -g -qopenmp-link=dynamic -shared-intel -D TBB_USE_THREADING_TOOLS -gline-tables-only -fdebug-info-for-profiling
+//OtherIcc = -qopt-report=1 -qopt-report-phase=vec
 LIBS = -lm
 
 FINAL_STATE_FILE=./final_state.dat
 AV_VELS_FILE=./av_vels.dat
-REF_FINAL_STATE_FILE=check/128x128.final_state.dat
-REF_AV_VELS_FILE=check/128x128.av_vels.dat
+REF_FINAL_STATE_FILE=check/256x256.final_state.dat
+REF_AV_VELS_FILE=check/256x256.av_vels.dat
 
 all: $(EXE)
 
