@@ -205,7 +205,8 @@ float timestep()
   accelerate_flow();
   //propagate(params, cells, tmp_cells);
   //rebound(params, cells, tmp_cells, obstacles);
-  return collision();
+  collision();
+  return av_velocity();
 }
 
 int accelerate_flow()
@@ -264,6 +265,7 @@ extern inline float innerCollider(int y_n, int y_s, int x_e, int x_w, int jj, in
     tmp_cells[6][index] = scratch[8];
     tmp_cells[7][index] = scratch[5];
     tmp_cells[8][index] = scratch[6];
+    return 0.f;
   }
   /* don't consider occupied cells */
   else
@@ -379,13 +381,10 @@ extern inline float innerCollider(int y_n, int y_s, int x_e, int x_w, int jj, in
     /* accumulate the norm of x- and y- velocity components */
     return sqrtf(u_sq);
   }
-  return 0.f;
 }
 
 extern inline void outerCollide(int y_n, int y_s, int jj){
-  float tmp_vel = 0.0f;
-
-  
+  float tmp_vel = 0.0f;  
 
   __assume((params.nx % 4) == 0);
   #pragma vector aligned
