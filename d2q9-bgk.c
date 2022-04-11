@@ -260,21 +260,21 @@ extern inline float innerCollider(int const*const restrict obstacles, int y_n, i
   float obMark = obstacles[index];
   float nonObMark = 1.f - obMark;
 
-  /* if the cell contains an obstacle */
-  if (obMark)
-  {
-    /* called after propagate, so taking values from scratch space
-    ** mirroring, and writing into main grid */
-    tmp_cells[1][index] = scratch[3];
-    tmp_cells[2][index] = scratch[4];
-    tmp_cells[3][index] = scratch[1];
-    tmp_cells[4][index] = scratch[2];
-    tmp_cells[5][index] = scratch[7];
-    tmp_cells[6][index] = scratch[8];
-    tmp_cells[7][index] = scratch[5];
-    tmp_cells[8][index] = scratch[6];
-    return 0.f;
-  }
+  // /* if the cell contains an obstacle */
+  // if (obMark)
+  // {
+  //   /* called after propagate, so taking values from scratch space
+  //   ** mirroring, and writing into main grid */
+  //   tmp_cells[1][index] = scratch[3];
+  //   tmp_cells[2][index] = scratch[4];
+  //   tmp_cells[3][index] = scratch[1];
+  //   tmp_cells[4][index] = scratch[2];
+  //   tmp_cells[5][index] = scratch[7];
+  //   tmp_cells[6][index] = scratch[8];
+  //   tmp_cells[7][index] = scratch[5];
+  //   tmp_cells[8][index] = scratch[6];
+  //   return 0.f;
+  // }
 
   /* compute local density total */
   float local_density = 0.f;
@@ -394,7 +394,7 @@ extern inline float innerCollider(int const*const restrict obstacles, int y_n, i
 
   //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
   /* accumulate the norm of x- and y- velocity components */
-  return sqrtf(u_sq);
+  return sqrtf(u_sq) * nonObMark;
 
 }
 
