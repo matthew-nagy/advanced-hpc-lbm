@@ -403,8 +403,6 @@ extern inline void outerCollide(int y_n, int y_s, int jj){
 
 float collision()
 {
-
-  params.totCells = 0;
   params.totVel = 0.0f;
 
   const int iiLimit = params.nx - 1;
