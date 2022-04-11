@@ -88,7 +88,7 @@ float** cells;
 float** tmp_cells;
 t_param params;
 
-/* struct to hold the 'speed' values */
+#define IS_OBS(x, y) (x == 0) || (y == 0) || (x == (params.nx - 1)) || (y == (params.ny - 1))
 
 /*
 ** function prototypes
@@ -164,7 +164,7 @@ int main(int argc, char* argv[])
   gettimeofday(&timstr, NULL);
   init_toc = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
   comp_tic=init_toc;
-  
+
   for (int tt = 0; tt < params.maxIters; tt++)
   {
     av_vels[tt] = timestep(obstacles);
@@ -260,7 +260,7 @@ extern inline void innerCollider(int const*const restrict obstacles, int y_n, in
   float u_sq = 0.0f;
 
   /* if the cell contains an obstacle */
-  if (obstacles[index])
+  if (IS_OBS(ii, jj))
   {
     /* called after propagate, so taking values from scratch space
     ** mirroring, and writing into main grid */
@@ -387,7 +387,7 @@ extern inline void innerCollider(int const*const restrict obstacles, int y_n, in
     /* accumulate the norm of x- and y- velocity components */
     dat[0] += sqrtf(u_sq);
     /* increase counter of inspected cells */
-    dat[1] += (1 - obstacles[jj*params.nx + ii]);
+    dat[1] += 1;
   }
 }
 
