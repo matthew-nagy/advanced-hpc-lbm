@@ -389,7 +389,7 @@ extern inline void outerCollide(int y_n, int y_s, int jj){
 
   __assume((params.nx % 4) == 0);
   #pragma vector aligned
-  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
+  #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_vel)
   for (int ii = 0; ii < params.nx; ii+=1)
   {
     /* determine indices of axis-direction neighbours
