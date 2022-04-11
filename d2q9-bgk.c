@@ -413,21 +413,15 @@ float collision()
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
   
-  int y_n = 1;
-  int y_s = jjLimit;
-  outerCollide(y_n, y_s, 0);
-  y_s = -1;
   #pragma vector aligned
-  for (int jj = 1; jj < params.ny - 1; jj++)
+  for (int jj = 0; jj < params.ny; jj++)
   {
-    y_n += 1;
-    y_s += 1;
+    int x_e = (ii + 1) & params.nxBitMask;
+    int x_w = (ii - 1) & params.nxBitMask;
+    int y_n = (jj + 1) & params.nyBitMask;
+    int y_s = (jj - 1) & params.nyBitMask;
     outerCollide(y_n, y_s, jj);
   }
-
-  y_n = 0;
-  y_s = jjLimit - 1;
-  outerCollide(y_n, y_s, jjLimit);
   
   return params.totVel / params.totCells;
 }
