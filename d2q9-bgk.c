@@ -242,18 +242,9 @@ int accelerate_flow(int const*const restrict obstacles)
   return EXIT_SUCCESS;
 }
 
-int const* dbObs;
-
 extern inline float innerCollider(int isOb, int y_n, int y_s, int x_e, int x_w, int jj, int ii){
   float scratch[9];
   const int index = ii + jj * params.nx;
-
-  if(isOb != dbObs[index])
-    printf("Error at %d %d, obstacle is %d but should be %d\n", ii, jj, isOb, dbObs[index]);
-  
-  int secObCheck = (y_n < y_s) || (x_e < x_w);
-  if(secObCheck != dbObs[index])
-    printf("Sec ob failed at %d %d, is %d should be %d", ii, jj, secObCheck, dbObs[index]);
   
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
@@ -272,22 +263,6 @@ extern inline float innerCollider(int isOb, int y_n, int y_s, int x_e, int x_w, 
 
   float obMark = isOb;
   float nonObMark = 1.f - obMark;
-
-  // /* if the cell contains an obstacle */
-  // if (obMark)
-  // {
-  //   /* called after propagate, so taking values from scratch space
-  //   ** mirroring, and writing into main grid */
-  //   tmp_cells[1][index] = scratch[3];
-  //   tmp_cells[2][index] = scratch[4];
-  //   tmp_cells[3][index] = scratch[1];
-  //   tmp_cells[4][index] = scratch[2];
-  //   tmp_cells[5][index] = scratch[7];
-  //   tmp_cells[6][index] = scratch[8];
-  //   tmp_cells[7][index] = scratch[5];
-  //   tmp_cells[8][index] = scratch[6];
-  //   return 0.f;
-  // }
 
   /* compute local density total */
   float local_density = 0.f;
@@ -411,9 +386,7 @@ extern inline float innerCollider(int isOb, int y_n, int y_s, int x_e, int x_w, 
 
 }
 
-extern inline void outerCollide(int rowObs, int y_n, int y_s, int jj){
-
-  float tmp_cell = 0.0f;
+extern inline void outerCollide(int const*const restrict obstacles, int y_n, int y_s, int jj){
   float tmp_vel = 0.0f;
 
   
@@ -426,14 +399,13 @@ extern inline void outerCollide(int rowObs, int y_n, int y_s, int jj){
     ** respecting periodic boundary conditions (wrap around) */
     int x_e = (ii + 1) & params.nxBitMask;
     int x_w = (ii - 1) & params.nxBitMask;
-    tmp_vel += innerCollider(rowObs || (x_e != (ii + 1)) || (x_w != (ii - 1)), y_n, y_s, x_e, x_w, jj, ii);
+    tmp_vel += innerCollider(obstacles[ii + jj *params.nx], y_n, y_s, x_e, x_w, jj, ii);
   }
   params.totVel += tmp_vel;
 }
 
 float collision(int const*const restrict obstacles)
 {
-  dbObs = obstacles;
   params.totVel = 0.0f;
 
   const int iiLimit = params.nx - 1;
@@ -448,7 +420,7 @@ float collision(int const*const restrict obstacles)
   {
     const int y_n = (jj + 1) & params.nyBitMask;
     const int y_s = (jj - 1) & params.nyBitMask;
-    outerCollide((y_n != (jj + 1)) || (y_s != (jj - 1)), y_n, y_s, jj);
+    outerCollide(obstacles, y_n, y_s, jj);
   }
   
   return params.totVel / (float)params.totCells;
