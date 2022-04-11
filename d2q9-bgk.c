@@ -430,6 +430,7 @@ float collision()
   y_s = jjLimit - 1;
   outerCollide(y_n, y_s, jjLimit);
   
+  printf("Testing %f / %f\n", params.totVel, params.totCells);
   return params.totVel / params.totCells;
 }
 
@@ -480,7 +481,6 @@ float av_velocity()
       }
     }
   }
-
   return tot_u / (float)tot_cells;
 }
 
