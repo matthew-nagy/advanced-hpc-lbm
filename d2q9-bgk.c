@@ -257,8 +257,11 @@ extern inline float innerCollider(int const*const restrict obstacles, int y_n, i
 
   float u_sq = 0.0f;
 
+  float obMark = obstacles[index];
+  float nonObMark = 1.f - obMark;
+
   /* if the cell contains an obstacle */
-  if (obstacles[index])
+  if (obMark)
   {
     /* called after propagate, so taking values from scratch space
     ** mirroring, and writing into main grid */
@@ -272,120 +275,127 @@ extern inline float innerCollider(int const*const restrict obstacles, int y_n, i
     tmp_cells[8][index] = scratch[6];
     return 0.f;
   }
-  /* don't consider occupied cells */
-  else
+
+  /* compute local density total */
+  float local_density = 0.f;
+
+  for (int kk = 0; kk < NSPEEDS; kk++)
   {
-    /* compute local density total */
-    float local_density = 0.f;
-
-    for (int kk = 0; kk < NSPEEDS; kk++)
-    {
-      local_density += scratch[kk];
-    }
-
-    /* compute x velocity component */
-    float u_x = (scratch[1]
-                  + scratch[5]
-                  + scratch[8]
-                  - (scratch[3]
-                      + scratch[6]
-                      + scratch[7]))
-                  / local_density;
-    /* compute y velocity component */
-    float u_y = (scratch[2]
-                  + scratch[5]
-                  + scratch[6]
-                  - (scratch[4]
-                      + scratch[7]
-                      + scratch[8]))
-                  / local_density;
-
-    /* velocity squared */
-    u_sq = u_x * u_x + u_y * u_y;
-
-    /* directional velocity components */
-    float u[NSPEEDS];
-    u[1] =   u_x;        /* east */
-    u[2] =         u_y;  /* north */
-    u[3] = - u_x;        /* west */
-    u[4] =       - u_y;  /* south */
-    u[5] =   u_x + u_y;  /* north-east */
-    u[6] = - u_x + u_y;  /* north-west */
-    u[7] = - u_x - u_y;  /* south-west */
-    u[8] =   u_x - u_y;  /* south-east */
-
-    /* equilibrium densities */
-    float d_equ[NSPEEDS];
-
-    const float over2c_sq = 1.0 / (2.0f * c_sq);
-    const float over2c_sq_squared = 1.0 / (2.f * c_sq * c_sq);
-    const float overC_sq = 1.0 / c_sq;
-
-    /* zero velocity density: weight w0 */
-    d_equ[0] = w0 * local_density
-                * (1.f - u_sq * over2c_sq);
-    /* axis speeds: weight w1 */
-    d_equ[1] = w1 * local_density * (1.f + u[1] * overC_sq
-                                      + (u[1] * u[1]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
-    d_equ[2] = w1 * local_density * (1.f + u[2] * overC_sq
-                                      + (u[2] * u[2]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
-    d_equ[3] = w1 * local_density * (1.f + u[3] * overC_sq
-                                      + (u[3] * u[3]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
-    d_equ[4] = w1 * local_density * (1.f + u[4] * overC_sq
-                                      + (u[4] * u[4]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
-    /* diagonal speeds: weight w2 */
-    d_equ[5] = w2 * local_density * (1.f + u[5] * overC_sq
-                                      + (u[5] * u[5]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
-    d_equ[6] = w2 * local_density * (1.f + u[6] * overC_sq
-                                      + (u[6] * u[6]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
-    d_equ[7] = w2 * local_density * (1.f + u[7] * overC_sq
-                                      + (u[7] * u[7]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
-    d_equ[8] = w2 * local_density * (1.f + u[8] * overC_sq
-                                      + (u[8] * u[8]) * over2c_sq_squared
-                                      - u_sq * over2c_sq);
-
-    local_density = 0.0f;
-    /* relaxation step */
-    for (int kk = 0; kk < NSPEEDS; kk++)
-    {
-      tmp_cells[kk][index] = scratch[kk]
-                                              + params.omega
-                                              * (d_equ[kk] - scratch[kk]);
-      local_density += tmp_cells[kk][index];
-    }
-
-    /* compute x velocity component */
-    u_x = (tmp_cells[1][index]
-          + tmp_cells[5][index]
-          + tmp_cells[8][index]
-          - (tmp_cells[3][index]
-              + tmp_cells[6][index]
-              + tmp_cells[7][index]))
-          / local_density;
-    /* compute y velocity component */
-    u_y = (tmp_cells[2][index]
-          + tmp_cells[5][index]
-          + tmp_cells[6][index]
-          - (tmp_cells[4][index]
-              + tmp_cells[7][index]
-              + tmp_cells[8][index]))
-          / local_density;
-
-
-    /* velocity squared */
-    u_sq = u_x * u_x + u_y * u_y;
-
-    //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
-    /* accumulate the norm of x- and y- velocity components */
-    return sqrtf(u_sq);
+    local_density += scratch[kk];
   }
+
+  /* compute x velocity component */
+  float u_x = (scratch[1]
+                + scratch[5]
+                + scratch[8]
+                - (scratch[3]
+                    + scratch[6]
+                    + scratch[7]))
+                / local_density;
+  /* compute y velocity component */
+  float u_y = (scratch[2]
+                + scratch[5]
+                + scratch[6]
+                - (scratch[4]
+                    + scratch[7]
+                    + scratch[8]))
+                / local_density;
+
+  /* velocity squared */
+  u_sq = u_x * u_x + u_y * u_y;
+
+  /* directional velocity components */
+  float u[NSPEEDS];
+  u[1] =   u_x;        /* east */
+  u[2] =         u_y;  /* north */
+  u[3] = - u_x;        /* west */
+  u[4] =       - u_y;  /* south */
+  u[5] =   u_x + u_y;  /* north-east */
+  u[6] = - u_x + u_y;  /* north-west */
+  u[7] = - u_x - u_y;  /* south-west */
+  u[8] =   u_x - u_y;  /* south-east */
+
+  /* equilibrium densities */
+  float d_equ[NSPEEDS];
+
+  const float over2c_sq = 1.0 / (2.0f * c_sq);
+  const float over2c_sq_squared = 1.0 / (2.f * c_sq * c_sq);
+  const float overC_sq = 1.0 / c_sq;
+
+  /* zero velocity density: weight w0 */
+  d_equ[0] = w0 * local_density
+              * (1.f - u_sq * over2c_sq);
+  /* axis speeds: weight w1 */
+  d_equ[1] = w1 * local_density * (1.f + u[1] * overC_sq
+                                    + (u[1] * u[1]) * over2c_sq_squared
+                                    - u_sq * over2c_sq);
+  d_equ[2] = w1 * local_density * (1.f + u[2] * overC_sq
+                                    + (u[2] * u[2]) * over2c_sq_squared
+                                    - u_sq * over2c_sq);
+  d_equ[3] = w1 * local_density * (1.f + u[3] * overC_sq
+                                    + (u[3] * u[3]) * over2c_sq_squared
+                                    - u_sq * over2c_sq);
+  d_equ[4] = w1 * local_density * (1.f + u[4] * overC_sq
+                                    + (u[4] * u[4]) * over2c_sq_squared
+                                    - u_sq * over2c_sq);
+  /* diagonal speeds: weight w2 */
+  d_equ[5] = w2 * local_density * (1.f + u[5] * overC_sq
+                                    + (u[5] * u[5]) * over2c_sq_squared
+                                    - u_sq * over2c_sq);
+  d_equ[6] = w2 * local_density * (1.f + u[6] * overC_sq
+                                    + (u[6] * u[6]) * over2c_sq_squared
+                                    - u_sq * over2c_sq);
+  d_equ[7] = w2 * local_density * (1.f + u[7] * overC_sq
+                                    + (u[7] * u[7]) * over2c_sq_squared
+                                    - u_sq * over2c_sq);
+  d_equ[8] = w2 * local_density * (1.f + u[8] * overC_sq
+                                    + (u[8] * u[8]) * over2c_sq_squared
+                                    - u_sq * over2c_sq);
+
+  local_density = 0.0f;
+  /* relaxation step */
+  
+  tmp_cells[0][index] = ((scratch[0] + params.omega * (d_equ[0] - scratch[0])) * nonObMark) + (scratch[0] * obMark);
+  tmp_cells[1][index] = ((scratch[1] + params.omega * (d_equ[1] - scratch[1])) * nonObMark) + (scratch[3] * obMark);
+  tmp_cells[2][index] = ((scratch[2] + params.omega * (d_equ[2] - scratch[2])) * nonObMark) + (scratch[4] * obMark);
+  tmp_cells[3][index] = ((scratch[3] + params.omega * (d_equ[3] - scratch[3])) * nonObMark) + (scratch[1] * obMark);
+  tmp_cells[4][index] = ((scratch[4] + params.omega * (d_equ[4] - scratch[4])) * nonObMark) + (scratch[2] * obMark);
+  tmp_cells[5][index] = ((scratch[5] + params.omega * (d_equ[5] - scratch[5])) * nonObMark) + (scratch[7] * obMark);
+  tmp_cells[6][index] = ((scratch[6] + params.omega * (d_equ[6] - scratch[6])) * nonObMark) + (scratch[8] * obMark);
+  tmp_cells[7][index] = ((scratch[7] + params.omega * (d_equ[7] - scratch[7])) * nonObMark) + (scratch[5] * obMark);
+  tmp_cells[8][index] = ((scratch[8] + params.omega * (d_equ[8] - scratch[8])) * nonObMark) + (scratch[6] * obMark);
+  
+                                                                                                                                                                                                                                                                                                            
+  for (int kk = 0; kk < NSPEEDS; kk++)
+  {
+    local_density += tmp_cells[kk][index];
+  }
+
+  /* compute x velocity component */
+  u_x = (tmp_cells[1][index]
+        + tmp_cells[5][index]
+        + tmp_cells[8][index]
+        - (tmp_cells[3][index]
+            + tmp_cells[6][index]
+            + tmp_cells[7][index]))
+        / local_density;
+  /* compute y velocity component */
+  u_y = (tmp_cells[2][index]
+        + tmp_cells[5][index]
+        + tmp_cells[6][index]
+        - (tmp_cells[4][index]
+            + tmp_cells[7][index]
+            + tmp_cells[8][index]))
+        / local_density;
+
+
+  /* velocity squared */
+  u_sq = u_x * u_x + u_y * u_y;
+
+  //tot_u and obs[ii jj] are both 0 if not neccessary, so it all works
+  /* accumulate the norm of x- and y- velocity components */
+  return sqrtf(u_sq);
+
 }
 
 extern inline void outerCollide(int const*const restrict obstacles, int y_n, int y_s, int jj){
