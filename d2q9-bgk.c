@@ -251,6 +251,10 @@ extern inline float innerCollider(int isOb, int y_n, int y_s, int x_e, int x_w, 
   if(isOb != dbObs[index])
     printf("Error at %d %d, obstacle is %d but should be %d\n", ii, jj, isOb, dbObs[index]);
   
+  int secObCheck = (y_n < y_s) || (x_e < x_w);
+  if(secObCheck != dbObs[index])
+    printf("Sec ob failed at %d %d, is %d should be %d", ii, jj, secObCheck, dbObs[index]);
+  
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
   ** scratch space grid */
