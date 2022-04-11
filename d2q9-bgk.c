@@ -60,7 +60,7 @@
 #define FINALSTATEFILE  "final_state.dat"
 #define AVVELSFILE      "av_vels.dat"
 
-#define IS_BORDER(x, y, width, height) x == 0 || y == 0 || x == (width - 1) || y == (height - 1)
+#define IS_BORDER(x, y, width, height) (x == 0) || (y == 0) || (x == (width - 1)) || (y == (height - 1))
 
 #define UX_UY_INIT(u_x, u_y, cells, local_density) u_x = (cells[1][ii + jj*params.nx]  \
                + cells[5][ii + jj*params.nx]           \
@@ -163,6 +163,8 @@ int main(int argc, char* argv[])
   init_toc = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
   comp_tic=init_toc;
 
+  params.maxIters = 10;
+  #define DEBUG
   for (int tt = 0; tt < params.maxIters; tt++)
   {
     timestep();
