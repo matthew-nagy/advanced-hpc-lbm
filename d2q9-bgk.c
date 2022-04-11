@@ -456,7 +456,7 @@ float av_velocity()
     for (int ii = 0; ii < params.nx; ii++)
     {
       /* ignore occupied cells */
-      if (!obstacles[ii + jj*params.nx])
+      if (!IS_OBSTACLE(ii, jj))
       {
         /* local density total */
         float local_density = 0.f;
@@ -493,8 +493,7 @@ float av_velocity()
   return tot_u / (float)tot_cells;
 }
 
-int initialise(const char* paramfile, const char* obstaclefile,
-               int** obstacles_ptr, float** av_vels_ptr)
+int initialise(const char* paramfile, float** av_vels_ptr)
 {
   char   message[1024];  /* message buffer */
   FILE*   fp;            /* file pointer */
@@ -578,11 +577,6 @@ int initialise(const char* paramfile, const char* obstaclefile,
   }
 
 
-  /* the map of obstacles */
-  *obstacles_ptr = malloc(sizeof(int) * (params.ny * params.nx));
-
-  if (*obstacles_ptr == NULL) die("cannot allocate column memory for obstacles", __LINE__, __FILE__);
-
   /* initialise densities */
   float w0 = params.density * 4.f / 9.f;
   float w1 = params.density      / 9.f;
@@ -608,43 +602,6 @@ int initialise(const char* paramfile, const char* obstaclefile,
     }
   }
 
-  /* first set all cells in obstacle array to zero */
-  for (int jj = 0; jj < params.ny; jj++)
-  {
-    for (int ii = 0; ii < params.nx; ii++)
-    {
-      (*obstacles_ptr)[ii + jj*params.nx] = 0;
-    }
-  }
-
-  /* open the obstacle data file */
-  fp = fopen(obstaclefile, "r");
-
-  if (fp == NULL)
-  {
-    sprintf(message, "could not open input obstacles file: %s", obstaclefile);
-    die(message, __LINE__, __FILE__);
-  }
-
-  /* read-in the blocked cells list */
-  while ((retval = fscanf(fp, "%d %d %d\n", &xx, &yy, &blocked)) != EOF)
-  {
-    /* some checks */
-    if (retval != 3) die("expected 3 values per line in obstacle file", __LINE__, __FILE__);
-
-    if (xx < 0 || xx > params.nx - 1) die("obstacle x-coord out of range", __LINE__, __FILE__);
-
-    if (yy < 0 || yy > params.ny - 1) die("obstacle y-coord out of range", __LINE__, __FILE__);
-
-    if (blocked != 1) die("obstacle blocked value should be 1", __LINE__, __FILE__);
-
-    /* assign to array */
-    (*obstacles_ptr)[xx + yy*params.nx] = blocked;
-  }
-
-  /* and close the file */
-  fclose(fp);
-
   /*
   ** allocate space to hold a record of the avarage velocities computed
   ** at each timestep
@@ -654,7 +611,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
   return EXIT_SUCCESS;
 }
 
-int finalise(int** obstacles_ptr, float** av_vels_ptr)
+int finalise(float** av_vels_ptr)
 {
   /*
   ** free up allocated memory
@@ -666,9 +623,6 @@ int finalise(int** obstacles_ptr, float** av_vels_ptr)
   free(cells);
   free(tmp_cells);
 
-  free(*obstacles_ptr);
-  *obstacles_ptr = NULL;
-
   free(*av_vels_ptr);
   *av_vels_ptr = NULL;
 
@@ -676,11 +630,11 @@ int finalise(int** obstacles_ptr, float** av_vels_ptr)
 }
 
 
-float calc_reynolds(int* obstacles)
+float calc_reynolds()
 {
   const float viscosity = 1.f / 6.f * (2.f / params.omega - 1.f);
 
-  return av_velocity(obstacles) * params.reynolds_dim / viscosity;
+  return av_velocity() * params.reynolds_dim / viscosity;
 }
 
 float total_density()
@@ -701,7 +655,7 @@ float total_density()
   return total;
 }
 
-int write_values(int* obstacles, float* av_vels)
+int write_values(float* av_vels)
 {
   FILE* fp;                     /* file pointer */
   const float c_sq = 1.f / 3.f; /* sq. of speed of sound */
@@ -723,7 +677,8 @@ int write_values(int* obstacles, float* av_vels)
     for (int ii = 0; ii < params.nx; ii++)
     {
       /* an occupied cell */
-      if (obstacles[ii + jj*params.nx])
+      int o = IS_OBSTACLE(ii, jj) ? 1 : 0;
+      if (o)
       {
         u_x = u_y = u = 0.f;
         pressure = params.density * c_sq;
@@ -761,7 +716,7 @@ int write_values(int* obstacles, float* av_vels)
       }
 
       /* write to file */
-      fprintf(fp, "%d %d %.12E %.12E %.12E %.12E %d\n", ii, jj, u_x, u_y, u, pressure, obstacles[ii * params.nx + jj]);
+      fprintf(fp, "%d %d %.12E %.12E %.12E %.12E %d\n", ii, jj, u_x, u_y, u, pressure, o);
     }
   }
 
