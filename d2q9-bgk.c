@@ -382,7 +382,7 @@ extern inline float innerCollider(int y_n, int y_s, int x_e, int x_w, int jj, in
     return sqrtf(u_sq);
   }
 
-  return 0.f
+  return 0.f;
 }
 
 extern inline void outerCollide(int y_n, int y_s, int jj){
