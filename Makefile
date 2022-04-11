@@ -5,7 +5,7 @@ EXE=d2q9-bgk
 BasicFlags = -std=c11 -Wall -Ofast -xHOST -qopenmp -qopenmp-link=dynamic
 ReportFlags = -qopt-report=5 -g -shared-intel -D TBB_USE_THREADING_TOOLS -gline-tables-only -fdebug-info-for-profiling
 
-CC=icc
+CC=mpicc
 CFLAGS =  $(BasicFlags)
 LIBS = -lm
 
