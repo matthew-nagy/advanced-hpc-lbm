@@ -289,8 +289,10 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
   ** scratch space grid */
+ #ifdef ASSUME
   __assume_aligned(cells, 64);
   __assume_aligned(tmp_cells, 64);
+  #endif
   scratch[0] = cells[0][index]; /* central cell, no movement */
   scratch[1] = cells[1][x_w + jj*params->nx]; /* east */
   scratch[2] = cells[2][ii + y_s*params->nx]; /* north */
@@ -304,7 +306,9 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
   /* compute local density total */
   float local_density = 0.f;
 
+ #ifdef ASSUME
   #pragma vector aligned
+#endif
   for (int kk = 0; kk < NSPEEDS; kk++)
   {
     local_density += scratch[kk];
@@ -382,8 +386,10 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
 
     local_density = 0.0f;
     /* relaxation step */
+ #ifdef ASSUME
   __assume_aligned(cells, 64);
   __assume_aligned(tmp_cells, 64);
+  #endif
 
   float obs = obstacles[index];
   float nonObs = 1.0f- obs;
@@ -403,8 +409,10 @@ extern inline void innerCollider(const t_param*const restrict params, const Cell
       local_density += tmp_cells[kk][index];
     }
 
+ #ifdef ASSUME
   __assume_aligned(cells, 64);
   __assume_aligned(tmp_cells, 64);
+  #endif
     /* compute x velocity component */
     u_x = (tmp_cells[1][index]
           + tmp_cells[5][index]
@@ -441,6 +449,7 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
   float tmp_vel = 0.0f;
 
   
+ #ifdef ASSUME
   __assume_aligned(cells, 64);
   __assume_aligned(tmp_cells, 64);
 
@@ -448,6 +457,7 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
   __assume((params->nx % 8) == 0);
   __assume((params->nx % 16) == 0);
   #pragma vector aligned
+  #endif
   #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_cell), reduction(+:tmp_vel)
   for (int ii = 0; ii < params->nx; ii+=1)
   {
@@ -457,8 +467,10 @@ extern inline void outerCollide(t_param*const restrict params, const CellList ce
     int x_e = (ii + 1) & params->nxBitMask;
     int x_w = (ii - 1) & params->nxBitMask;
 
+ #ifdef ASSUME
     __assume_aligned(cells, 64);
     __assume_aligned(tmp_cells, 64);
+    #endif
     innerCollider(params, cells, tmp_cells, obstacles, y_n, y_s, x_e, x_w, jj, ii, dat);
     tmp_vel += dat[0];
     tmp_cell += dat[1];
@@ -482,9 +494,11 @@ float collision(t_param*const restrict params, const CellList cells, CellList tm
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
   
+ #ifdef ASSUME
   __assume((params->ny % 4) == 0);
   __assume((params->ny % 8) == 0);
   __assume((params->ny % 16) == 0);
+  #endif
   for (int jj = 0; jj < params->ny; jj+=1)
   {
     int y_n = (jj + 1) & params->nyBitMask;
