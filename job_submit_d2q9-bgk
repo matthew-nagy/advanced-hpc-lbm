@@ -9,6 +9,8 @@
 #SBATCH --account=COSC026662
 #SBATCH --output d2q9-bgk.out
 
+export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi.so
+
 echo Running on host `hostname`
 echo Time is `date`
 echo Directory is `pwd`
