@@ -216,6 +216,7 @@ int accelerate_flow()
   int jj = params.ny - 2;
 
 
+  #pragma vector aligned
   for (int ii = 1; ii < params.nx - 1; ii++)
   {
     /* if the cell is not occupied and
@@ -273,6 +274,7 @@ extern inline float innerCollider(int y_n, int y_s, int x_e, int x_w, int jj, in
     /* compute local density total */
     float local_density = 0.f;
 
+    #pragma vector aligned
     for (int kk = 0; kk < NSPEEDS; kk++)
     {
       local_density += scratch[kk];
@@ -348,6 +350,7 @@ extern inline float innerCollider(int y_n, int y_s, int x_e, int x_w, int jj, in
 
     local_density = 0.0f;
     /* relaxation step */
+    #pragma vector aligned
     for (int kk = 0; kk < NSPEEDS; kk++)
     {
       tmp_cells[kk][index] = scratch[kk]
@@ -388,9 +391,8 @@ extern inline float innerCollider(int y_n, int y_s, int x_e, int x_w, int jj, in
 extern inline void outerCollide(int y_n, int y_s, int jj){
   float tmp_vel = 0.0f;
 
-  
-
   __assume((params.nx % 4) == 0);
+  #pragma vector aligned
   #pragma omp simd aligned(cells:64), aligned(tmp_cells:64),  reduction(+:tmp_vel)
   for (int ii = 0; ii < params.nx; ii+=1)
   {
@@ -421,15 +423,12 @@ float collision()
   int y_s = jjLimit;
   outerCollide(y_n, y_s, 0);
   y_s = -1;
-  for (int jj = 1; jj < params.ny - 1; jj+=2)
+  #pragma vector aligned
+  for (int jj = 1; jj < params.ny - 1; jj++)
   {
     y_n += 1;
     y_s += 1;
     outerCollide(y_n, y_s, jj);
-    //manual unwrap bc of compiler
-    y_n += 1;
-    y_s += 1;
-    outerCollide(y_n, y_s, jj+1);
   }
 
   y_n = 0;
@@ -448,6 +447,7 @@ float av_velocity()
   tot_u = 0.f;
 
   /* loop over all non-blocked cells */
+  #pragma vector aligned
   for (int jj = 0; jj < params.ny; jj++)
   {
     for (int ii = 0; ii < params.nx; ii++)
