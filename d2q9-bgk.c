@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
   else
   {
     paramfile = argv[1];
-    obstaclefile = argv[2];
+    obstaclefile = argv[2]; 
   }
 
   /* Total/init time starts here: initialise our data structures and load values from file */
