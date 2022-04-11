@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 #SBATCH --job-name d2q9-bgk
