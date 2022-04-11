@@ -139,7 +139,7 @@ void usage(const char* exe);
 
 void halo(){
   int bytesPerRow = sizeof(float) * params.nx;
-  for(int i = 0; i < NSPEEDSl; i++){
+  for(int i = 0; i < NSPEEDS; i++){
     //Send up
     MPI_Sendrecv(
       cells[i][(params.ny - 2) * params.nx], bytesPerRow, MPI_CHAR, upRank, 0,
