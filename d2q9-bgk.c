@@ -416,8 +416,6 @@ float collision()
   #pragma vector aligned
   for (int jj = 0; jj < params.ny; jj++)
   {
-    int x_e = (ii + 1) & params.nxBitMask;
-    int x_w = (ii - 1) & params.nxBitMask;
     int y_n = (jj + 1) & params.nyBitMask;
     int y_s = (jj - 1) & params.nyBitMask;
     outerCollide(y_n, y_s, jj);
