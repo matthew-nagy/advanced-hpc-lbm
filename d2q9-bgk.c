@@ -80,7 +80,7 @@ typedef struct
   float accel;         /* density redistribution */
   float omega;         /* relaxation parameter */
 
-  int totCells;
+  float totCells;
   float totVel;
 } t_param;
 
