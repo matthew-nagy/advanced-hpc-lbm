@@ -161,12 +161,12 @@ void halo(int rank, int upRank, int downRank, float*** cells, float** cellBuffer
   (*cells)[height - 1] = temp;
 
   int rowSize = sizeof(float) * width;
-  MPI_SendRecv(
+  MPI_Sendrecv(
     (*cells)[0], rowSize, MPI_CHAR, upRank, MPI_ANY_TAG,
     (*cells)[height - 1], rowSize, MPI_CHAR, downRank, MPI_ANY_TAG
   );
 
-  MPI_SendRecv(
+  MPI_Sendrecv(
     (*cellBuffer), rowSize, MPI_CHAR, downRank, MPI_ANY_TAG,
     (*cells)[0], rowSize, MPI_CHAR, upRank, MPI_ANY_TAG
   );
