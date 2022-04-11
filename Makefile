@@ -5,7 +5,7 @@ EXE=d2q9-bgk
 CC=mpiicc
 //CFLAGS= -std=c11 -Wall -g -O0
 //CFLAGS= -std=c11 -Wall -Ofast -mtune=native -march=native -fopt-info-all=optRep.out -fopenmp -fopenmp-simd
-CFLAGS = -std=c11 -Wall -fast -xHOST -fopenmp
+CFLAGS = -std=c11 -Wall -fast -xHOST -qopenmp
 //OtherIcc = -qopt-report=1 -qopt-report-phase=vec
 LIBS = -lm
 
