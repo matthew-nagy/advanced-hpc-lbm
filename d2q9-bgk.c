@@ -91,7 +91,18 @@ float** cells;
 float** tmp_cells;
 t_param params;
 
+int fullGridHeight;
+int fullGridWidth;
+float** collatedCells;
+
 int nprocs, rank, upRank, downRank;
+
+typedef struct
+{
+  int rowStartOn;
+  int numOfRows;
+} rankData;
+rankData myRank;
 
 #define IS_OBSTACLE(x, y) ( (x == 0) || (y == 0) || (x == params.nxm1) || (y == params.nym1) )
 
@@ -148,9 +159,70 @@ void halo(){
     );
     //Send down
     MPI_Sendrecv(
-      (const void*)&cells[i][1], bytesPerRow, MPI_CHAR, downRank, 0,
+      (const void*)&cells[i][params.nx], bytesPerRow, MPI_CHAR, downRank, 0,
       (void*)&cells[i][(params.ny - 1) * params.nx], bytesPerRow, MPI_CHAR, upRank, 0,
       MPI_COMM_WORLD, MPI_STATUS_IGNORE 
+    );
+  }
+}
+
+
+rankData getRankData(int rank){
+  rankData dat;
+  const int remainder = fullGridHeight % rank;
+
+  const int rowPerProc = fullGridHeight / nprocs;
+  dat.numOfRows = rowPerProc;
+  if(rank < remainder)
+    dat.numOfRows += 1;
+
+  dat.rowStartOn = rowPerProc * rank;
+  const int numOfPriorRanks = rank;
+  int remainderConsideration;
+  if(numOfPriorRanks > remainder)
+    remainderConsideration = remainder;
+  else
+    remainderConsideration = numOfPriorRanks;
+  
+  dat.rowStartOn += remainderConsideration;
+
+  return dat;
+}
+
+void collateOnZero(){
+  //Create the final grid
+  collatedCells = (float**)malloc(sizeof(float*) * NSPEEDS);
+  for(int i = 0; i < NSPEEDS; i++)
+    collatedCells[i] = (float*)malloc(sizeof(float) * fullGridHeight * fullGridWidth);
+
+
+  int* bytesPerRank = (int*)malloc(sizeof(int) * nprocs);
+  int* addressesPerRank = (int*)malloc(sizeof(int) * nprocs);
+
+  for(int i = 0; i < nprocs; i++){
+    rankData rd = getRankData(i);
+    bytesPerRank[i] = rd.numOfRows * sizeof(float) * params.nx;
+    addressesPerRank[i] = rd.rowStartOn * sizeof(float) * params.nx;
+  }
+
+
+  const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
+  for(int i = 0; i < NSPEEDS; i++){
+    MPI_Gatherv(
+      (void*)&cells[i][params.nx], speedsSize, MPI_CHAR,
+      (void*)collatedCells[i], bytesPerRank, addressesPerRank,
+      MPI_CHAR, 0, MPI_COMM_WORLD
+    );
+  }
+}
+void collate(){
+  const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
+  for(int i = 0; i < NSPEEDS; i++){
+    MPI_Gatherv(
+      (void*)&cells[i][params.nx], speedsSize, MPI_CHAR,
+      //These don't matter to non roots
+      NULL, NULL, NULL,
+      MPI_CHAR, 0, MPI_COMM_WORLD
     );
   }
 }
@@ -205,7 +277,7 @@ int main(int argc, char* argv[])
   
   for (int tt = 0; tt < params.maxIters; tt++)
   {
-    //halo();
+    halo();
     av_vels[tt] = timestep(obstacles);
     float** tmp = tmp_cells;
     tmp_cells = cells;
@@ -223,6 +295,16 @@ int main(int argc, char* argv[])
   col_tic=comp_toc;
 
   // Collate data from ranks here 
+
+  if(rank == 0)
+    collateOnZero();
+  else{
+    collate();
+    finalise(&obstacles, &av_vels);
+
+    MPI_Finalize();
+    return EXIT_SUCCESS;
+  }
 
   /* Total/collate time stops here.*/
   gettimeofday(&timstr, NULL);
