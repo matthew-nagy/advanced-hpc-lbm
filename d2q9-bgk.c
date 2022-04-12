@@ -211,7 +211,7 @@ void collateOnZero(float* av_vels){
   for(int i = 0; i < params.ny; i++){
     for(int j = 0; j < NSPEEDS; j++)
       printf("%f ", cells[j][i * params.nx]);
-    printf("\n");
+    printf("    %d\n", i);
   }
 
   int velBytes = sizeof(float) * params.maxIters;
