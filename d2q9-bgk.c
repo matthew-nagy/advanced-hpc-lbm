@@ -192,7 +192,7 @@ rankData getRankData(int rank){
   return dat;
 }
 
-void collateOnZero(float* av_vels){
+float* collateOnZero(float* av_vels){
   //Create the final grid
   collatedCells = (float**)malloc(sizeof(float*) * NSPEEDS);
   for(int i = 0; i < NSPEEDS; i++)
@@ -208,23 +208,11 @@ void collateOnZero(float* av_vels){
     addressesPerRank[i] = rd.rowStartOn * sizeof(float) * params.nx;
   }
 
-  int velBytes = sizeof(float) * params.maxIters;
-  float* velExtreme = malloc(sizeof(float*) * nprocs * velBytes);
-  MPI_Gather(
-    (void*)av_vels, sizeof(float) * params.maxIters, MPI_CHAR,
-    (void*)velExtreme, velBytes, MPI_CHAR,
-    0, MPI_COMM_WORLD
+  float* trueVel = malloc(sizeof(float) * params.maxIters);
+  MPI_Reduce(
+    (void*)av_vels, trueVel, sizeof(float) * params.maxIters,
+    MPI_CHAR, MPI_SUM, 0, MPI_COMM_WORLD
   );
-
-
-  for(int i = 0; i < params.maxIters; i++){
-    av_vels[i] = 0.f;
-    for(int j = 0; j < nprocs; j++){
-      av_vels[i] += velExtreme[(j * nprocs) + i];
-    }
-    av_vels[i] /= params.totCells;
-  }
-
 
   const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
   for(int i = 0; i < NSPEEDS; i++){
@@ -234,13 +222,13 @@ void collateOnZero(float* av_vels){
       MPI_CHAR, 0, MPI_COMM_WORLD
     );
   }
+  return trueVel;
 }
 void collate(float* av_vels){
 
-  MPI_Gather(
-    (void*)av_vels, sizeof(float) * params.maxIters, MPI_CHAR,
-    NULL, 0, MPI_CHAR,
-    0, MPI_COMM_WORLD
+  MPI_Reduce(
+    (void*)av_vels, NULL, sizeof(float) * params.maxIters,
+    MPI_CHAR, MPI_SUM, 0, MPI_COMM_WORLD
   );
 
   const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
@@ -253,6 +241,8 @@ void collate(float* av_vels){
     );
   }
 }
+
+float* velStorage;
 
 /*
 ** main program:
@@ -329,7 +319,8 @@ int main(int argc, char* argv[])
   // Collate data from ranks here 
 
   if(rank == 0){
-    collateOnZero(av_vels);
+    velStorage = av_vels;
+    av_vels = collateOnZero(av_vels);
   }
   else{
     collate(av_vels);
@@ -577,7 +568,7 @@ float collision(int const*const restrict obstacles)
     outerCollide(obstacles, y_n, y_s, jj);
   }
   
-  return params.totVel;
+  return params.totVel / params.totCells;
 }
 
 float av_velocity(int* obstacles)
@@ -788,8 +779,8 @@ int initialise(const char* paramfile, const char* obstaclefile,
     if(rank == 0){
       /* assign to array */
       fullObstacles[xx + yy*params.nx] = blocked;
-      params.totCells -= 1.f;
     }
+    params.totCells -= 1.f;
 
     int adjustedY = yy - myRank.rowStartOn;
     if(adjustedY >=0 && adjustedY < params.ny)
@@ -833,6 +824,8 @@ int finalise(int** obstacles_ptr, float** av_vels_ptr)
     free(collatedCells);
 
     free(fullObstacles);
+
+    free(velStorage);
   }
 
   return EXIT_SUCCESS;
