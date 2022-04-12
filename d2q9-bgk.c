@@ -365,11 +365,20 @@ float timestep(int const*const restrict obstacles)
   return collision(obstacles);
 }
 
+int printed = 0;
+
 int accelerate_flow(int const*const restrict obstacles)
 {
   //Onluy the bottom pls
   if(rank != (nprocs - 1))
     return EXIT_SUCCESS;
+
+  if(!printed){
+    printed = 1;
+
+    printf("accel %d\n",  myRank.rowStartOn + params.ny - 4);
+
+  }
 
   /* compute weighting factors */
   float w1 = params.density * params.accel * (1.0/9.f);
