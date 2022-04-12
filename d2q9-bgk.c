@@ -743,10 +743,6 @@ int initialise(const char* paramfile, const char* obstaclefile,
     /* some checks */
     if (retval != 3) die("expected 3 values per line in obstacle file", __LINE__, __FILE__);
 
-    if (xx < 0 || xx > params.nx - 1) die("obstacle x-coord out of range", __LINE__, __FILE__);
-
-    if (yy < 0 || yy > params.ny - 1) die("obstacle y-coord out of range", __LINE__, __FILE__);
-
     if (blocked != 1) die("obstacle blocked value should be 1", __LINE__, __FILE__);
 
     if(rank == 0){
