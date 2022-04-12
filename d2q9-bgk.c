@@ -171,7 +171,7 @@ rankData getRankData(int rank){
   rankData dat;
   const int remainder = fullGridHeight % nprocs;
 
-  printf("Rank %d after data\n\theight %d nprocs %d remainder %d\n", rank, fullGridHeight, nprocs, remainder);
+
 
   const int rowPerProc = fullGridHeight / nprocs;
   dat.numOfRows = rowPerProc;
@@ -181,7 +181,7 @@ rankData getRankData(int rank){
   dat.rowStartOn = rowPerProc * rank;
   const int numOfPriorRanks = rank;
   int remainderConsideration;
-  printf("Rank %d making the remainder consideration\n", rank);
+  
   if(numOfPriorRanks > remainder)
     remainderConsideration = remainder;
   else
@@ -272,9 +272,6 @@ int main(int argc, char* argv[])
     downRank += nprocs;
 
   initialise(paramfile, obstaclefile, &obstacles, &av_vels);
-
-  printf("Rank %d shutting down\n", rank);
-  return EXIT_FAILURE;
 
   /* Init time stops here, compute time starts*/
   gettimeofday(&timstr, NULL);
@@ -618,7 +615,6 @@ int initialise(const char* paramfile, const char* obstaclefile,
     die(message, __LINE__, __FILE__);
   }
 
-  printf("r%d\tOpened parameter file\n", rank);
 
   /* read in the parameter values */
   retval = fscanf(fp, "%d\n", &(params.nx));
@@ -632,7 +628,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
   fullGridWidth = params.nx;
   params.nxBitMask = params.nx - 1;
 
-  printf("r%d\tRead x and y\n", rank);
+
 
   retval = fscanf(fp, "%d\n", &(params.maxIters));
 
@@ -656,11 +652,9 @@ int initialise(const char* paramfile, const char* obstaclefile,
 
   /* and close up the file */
   fclose(fp);
-  printf("r%d\tfinished parameter file\n", rank);
 
   myRank = getRankData(rank);
   params.ny = myRank.numOfRows + 2;//Give room for the halos
-  printf("r%d\tGot my rank data\n", rank);
 
   /*
   ** Allocate memory.
@@ -703,7 +697,6 @@ int initialise(const char* paramfile, const char* obstaclefile,
     fullObstacles = malloc(sizeof(int) * fullGridHeight * fullGridWidth);
   }
 
-  printf("r%d\tAbout to init and obs crash\n", rank);
   if (*obstacles_ptr == NULL) die("cannot allocate column memory for obstacles", __LINE__, __FILE__);
 
   /* initialise densities */
@@ -743,14 +736,12 @@ int initialise(const char* paramfile, const char* obstaclefile,
   /* open the obstacle data file */
   fp = fopen(obstaclefile, "r");
 
-  printf("r%d\tOpening obs file\n", rank);
   if (fp == NULL)
   {
     sprintf(message, "could not open input obstacles file: %s", obstaclefile);
     die(message, __LINE__, __FILE__);
   }
 
-  printf("r%d\tChecking obs\n", rank);
   /* read-in the blocked cells list */
   while ((retval = fscanf(fp, "%d %d %d\n", &xx, &yy, &blocked)) != EOF)
   {
@@ -779,7 +770,6 @@ int initialise(const char* paramfile, const char* obstaclefile,
   */
   *av_vels_ptr = (float*)malloc(sizeof(float) * params.maxIters);
 
-  printf("r%d\tsetup\n", rank);
   return EXIT_SUCCESS;
 }
 
