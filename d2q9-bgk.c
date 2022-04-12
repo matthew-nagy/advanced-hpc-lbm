@@ -283,7 +283,6 @@ int main(int argc, char* argv[])
   
   for (int tt = 0; tt < params.maxIters; tt++)
   {
-    printf("Rank %d entering halo\n", rank);
     halo();
     av_vels[tt] = timestep(obstacles);
     float** tmp = tmp_cells;
