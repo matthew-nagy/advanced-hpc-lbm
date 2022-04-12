@@ -309,6 +309,7 @@ int main(int argc, char* argv[])
     }
     printf("\n");
   }
+  return 0;
 
   for (int tt = 0; tt < params.maxIters; tt++)
   {
@@ -800,14 +801,6 @@ int initialise(const char* paramfile, const char* obstaclefile,
     int adjustedY = yy - myRank.rowStartOn;
     if(adjustedY >=0 && adjustedY < params.ny)
       (*obstacles_ptr)[xx + adjustedY * params.nx] = blocked;
-    if(rank == (nprocs - 1) && yy == 0){
-      yy = params.ny - 1;
-      (*obstacles_ptr)[xx + yy * params.nx] = blocked;
-    }
-    if(rank == 0 && yy == (fullGridHeight - 1)){
-      yy = 0;
-      (*obstacles_ptr)[xx + yy * params.nx] = blocked;
-    }
 
   }
 
