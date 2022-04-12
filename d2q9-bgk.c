@@ -622,16 +622,6 @@ float av_velocity(int* obstacles)
   return tot_u / (float)tot_cells;
 }
 
-int isIsInBounds(int y,int topBound,int lowerBound){
-  int a = (y >= lowerBound && y <= topBound);
-  y += fullGridHeight;
-  int b = (y >= lowerBound && y <= topBound);
-  y -= 2 * fullGridHeight;
-  int c = (y >= lowerBound && y <= topBound);
-
-  return a || b ||c;
-}
-
 int initialise(const char* paramfile, const char* obstaclefile,
                int** obstacles_ptr, float** av_vels_ptr)
 {
@@ -789,19 +779,20 @@ int initialise(const char* paramfile, const char* obstaclefile,
       /* assign to array */
       fullObstacles[xx + yy*params.nx] = blocked;
     }
+    params.totCells -= 1.f;
 
-    int bottomRow = myRank.rowStartOn - 1;
-    int topRow = topRow + params.ny;
-
-    if(isIsInBounds(yy, topRow, bottomRow)){
-      int index = yy - bottomRow;
-      yy &= (params.nym1);
+    int adjustedY = yy - myRank.rowStartOn;
+    if(adjustedY >=0 && adjustedY < params.ny)
+      (*obstacles_ptr)[xx + adjustedY * params.nx] = blocked;
+    if(rank == (nprocs - 1) && yy == 0){
+      yy = params.ny - 1;
+      (*obstacles_ptr)[xx + yy * params.nx] = blocked;
+    }
+    if(rank == 0 && yy == (fullGridHeight - 1)){
+      yy = 0;
       (*obstacles_ptr)[xx + yy * params.nx] = blocked;
     }
 
-
-
-    params.totCells -= 1.f;
   }
 
   /* and close the file */
