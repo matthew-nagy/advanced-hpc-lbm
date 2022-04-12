@@ -313,6 +313,8 @@ int main(int argc, char* argv[])
 
   initialise(paramfile, obstaclefile, &obstacles, &av_vels);
 
+  printf("Rank %d has dimensions %d %d\n", rank, params.nx, params.ny);
+
   /* Init time stops here, compute time starts*/
   gettimeofday(&timstr, NULL);
   init_toc = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
