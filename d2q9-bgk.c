@@ -152,14 +152,12 @@ void halo(){
   int bytesPerRow = sizeof(float) * params.nx;
   for(int i = 0; i < NSPEEDS; i++){
     //Send up
-    printf("%d\tRank %d\t send %d, recieve %d\n", i, rank, upRank, downRank);
     MPI_Sendrecv(
       (const void*)&cells[i][(params.ny - 2) * params.nx], bytesPerRow, MPI_CHAR, upRank, 0,
       (void*)cells[i], bytesPerRow, MPI_CHAR, downRank, 0,
       MPI_COMM_WORLD, MPI_STATUS_IGNORE 
     );
     //Send down
-    printf("%d\tRank %d\t send %d, recieve %d\n", i, rank, downRank, upRank);
     MPI_Sendrecv(
       (const void*)&cells[i][params.nx], bytesPerRow, MPI_CHAR, downRank, 0,
       (void*)&cells[i][(params.ny - 1) * params.nx], bytesPerRow, MPI_CHAR, upRank, 0,
