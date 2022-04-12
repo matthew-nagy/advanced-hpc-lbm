@@ -208,6 +208,12 @@ void collateOnZero(float* av_vels){
     addressesPerRank[i] = rd.rowStartOn * sizeof(float) * params.nx;
   }
 
+  for(int i = 0; i < params.ny; i++){
+    for(int j = 0; j < NSPEEDS; j++)
+      printf("%f ", cells[j][i * params.nx]);
+    printf("\n");
+  }
+
   int velBytes = sizeof(float) * params.maxIters;
   float* velExtreme = malloc(sizeof(float*) * nprocs * velBytes);
   MPI_Gather(
@@ -242,6 +248,13 @@ void collate(float* av_vels){
     NULL, 0, MPI_CHAR,
     0, MPI_COMM_WORLD
   );
+
+  printf("\n\n\n");
+  for(int i = 0; i < params.ny; i++){
+    for(int j = 0; j < NSPEEDS; j++)
+      printf("%f ", cells[j][i * params.nx]);
+    printf("\n");
+  }
 
   const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
   for(int i = 0; i < NSPEEDS; i++){
