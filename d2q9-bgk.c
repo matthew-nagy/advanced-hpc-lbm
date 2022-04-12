@@ -307,6 +307,7 @@ int main(int argc, char* argv[])
         printf("\n");
       }
     }
+    printf("\n");
   }
 
   for (int tt = 0; tt < params.maxIters; tt++)
