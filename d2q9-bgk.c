@@ -268,6 +268,7 @@ int main(int argc, char* argv[])
 
   upRank = rank + 1;
   downRank = rank - 1;
+  printf("Rank %d precheck up to %d, down to %d\n", rank, upRank, downRank);
   if(upRank = nprocs)
     upRank = 0;
   if(downRank = -1)
