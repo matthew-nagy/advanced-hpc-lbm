@@ -3,7 +3,7 @@
 #SBATCH --job-name d2q9-bgk
 #SBATCH --nodes 1
 #SBATCH --ntasks-per-node 2
-#SBATCH --time 00:4:00
+#SBATCH --time 00:1:00
 #SBATCH --partition veryshort
 #SBATCH --reservation=COSC026662
 #SBATCH --account=COSC026662

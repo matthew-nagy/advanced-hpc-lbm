@@ -271,7 +271,9 @@ int main(int argc, char* argv[])
   if(upRank = nprocs)
     upRank = 0;
   if(downRank = -1)
-    downRank += nprocs;
+    downRank = nprocs - 1;
+  
+  printf("Rank %d sends up to %d, down to %d\n", rank, upRank, downRank);
 
   initialise(paramfile, obstaclefile, &obstacles, &av_vels);
 
