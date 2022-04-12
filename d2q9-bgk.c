@@ -171,6 +171,8 @@ rankData getRankData(int rank){
   rankData dat;
   const int remainder = fullGridHeight % rank;
 
+  printf("Rank %d after data\n\theight %d nprocs %d remainder %d\n", rank, fullGridHeight, nprocs, remainder);
+
   const int rowPerProc = fullGridHeight / nprocs;
   dat.numOfRows = rowPerProc;
   if(rank < remainder)
@@ -179,6 +181,7 @@ rankData getRankData(int rank){
   dat.rowStartOn = rowPerProc * rank;
   const int numOfPriorRanks = rank;
   int remainderConsideration;
+  printf("Rank %d making the remainder consideration\n");
   if(numOfPriorRanks > remainder)
     remainderConsideration = remainder;
   else
