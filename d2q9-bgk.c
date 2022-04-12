@@ -270,6 +270,9 @@ int main(int argc, char* argv[])
 
   initialise(paramfile, obstaclefile, &obstacles, &av_vels);
 
+  printf("Rank %d shutting down\n", rank);
+  return EXIT_FAILURE;
+
   /* Init time stops here, compute time starts*/
   gettimeofday(&timstr, NULL);
   init_toc = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
@@ -650,10 +653,11 @@ int initialise(const char* paramfile, const char* obstaclefile,
 
   /* and close up the file */
   fclose(fp);
-  printf("r%d\finished parameter file\n", rank);
+  printf("r%d\tfinished parameter file\n", rank);
 
   myRank = getRankData(rank);
   params.ny = myRank.numOfRows + 2;//Give room for the halos
+  printf("r%d\tGot my rank data\n", rank);
 
   /*
   ** Allocate memory.
