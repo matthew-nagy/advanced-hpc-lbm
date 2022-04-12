@@ -367,11 +367,15 @@ float timestep(int const*const restrict obstacles)
 
 int accelerate_flow(int const*const restrict obstacles)
 {
+  //Onluy the bottom pls
+  if(rank != (nprocs - 1))
+    return EXIT_SUCCESS;
+
   /* compute weighting factors */
   float w1 = params.density * params.accel * (1.0/9.f);
   float w2 = params.density * params.accel * (1.0f/36.f);
   
-  int jj = params.ny - 2;
+  int jj = params.ny - 3;
 
 
   for (int ii = 1; ii < params.nx - 1; ii++)
