@@ -169,7 +169,7 @@ void halo(){
 
 rankData getRankData(int rank){
   rankData dat;
-  const int remainder = fullGridHeight % rank;
+  const int remainder = fullGridHeight % nprocs;
 
   printf("Rank %d after data\n\theight %d nprocs %d remainder %d\n", rank, fullGridHeight, nprocs, remainder);
 
@@ -181,7 +181,7 @@ rankData getRankData(int rank){
   dat.rowStartOn = rowPerProc * rank;
   const int numOfPriorRanks = rank;
   int remainderConsideration;
-  printf("Rank %d making the remainder consideration\n");
+  printf("Rank %d making the remainder consideration\n", rank);
   if(numOfPriorRanks > remainder)
     remainderConsideration = remainder;
   else
