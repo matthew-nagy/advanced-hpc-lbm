@@ -571,7 +571,7 @@ float collision(int const*const restrict obstacles)
     outerCollide(obstacles, y_n, y_s, jj);
   }
   
-  return params.totVel / params.totCells;
+  return params.totVel;
 }
 
 float av_velocity(int* obstacles)
