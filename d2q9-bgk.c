@@ -330,6 +330,9 @@ int main(int argc, char* argv[])
     return EXIT_SUCCESS;
   }
 
+  for(int i = 0; i < 20; i++)
+    printf("%f\n", av_vels[i]);
+
   /* Total/collate time stops here.*/
   gettimeofday(&timstr, NULL);
   col_toc = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
