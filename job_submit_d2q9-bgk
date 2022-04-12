@@ -2,7 +2,7 @@
 
 #SBATCH --job-name d2q9-bgk
 #SBATCH --nodes 1
-#SBATCH --ntasks-per-node 14
+#SBATCH --ntasks-per-node 2
 #SBATCH --time 00:10:00
 #SBATCH --partition veryshort
 #SBATCH --reservation=COSC026662
@@ -17,7 +17,7 @@ echo This job runs on the following machines:
 echo `echo $SLURM_JOB_NODELIST | uniq`
 
 #! Run the executable
-./d2q9-bgk input_128x128.params obstacles_128x128.dat
+srun --mpi=pmi2 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
 make check128
 ./d2q9-bgk input_128x256.params obstacles_128x256.dat
 make check128x256
