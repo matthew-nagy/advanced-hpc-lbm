@@ -280,36 +280,31 @@ int main(int argc, char* argv[])
 
   upRank = rank + 1;
   downRank = rank - 1;
-  printf("Rank %d precheck up to %d, down to %d\n", rank, upRank, downRank);
   if(upRank == nprocs)
     upRank = 0;
   if(downRank == -1)
     downRank = nprocs - 1;
   
-  printf("Rank %d sends up to %d, down to %d\n", rank, upRank, downRank);
-
   initialise(paramfile, obstaclefile, &obstacles, &av_vels);
-
-  printf("Rank %d has dimensions %d %d\n", rank, params.nx, params.ny);
 
   /* Init time stops here, compute time starts*/
   gettimeofday(&timstr, NULL);
   init_toc = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
   comp_tic=init_toc;
   
-  for(int i = 0; i < nprocs; i++){
-    MPI_Barrier(MPI_COMM_WORLD);
-    if(i == rank){
-      for(int jj = 0; jj < params.ny; jj++){
-        for(int ii = 0; ii < params.nx; ii++){
-          printf("%d", obstacles[ii + jj * params.nx]);
-        }
-        printf("\n");
-      }
-    }
-    printf("\n");
-  }
-  return 0;
+  // for(int i = 0; i < nprocs; i++){
+  //   MPI_Barrier(MPI_COMM_WORLD);
+  //   if(i == rank){
+  //     for(int jj = 0; jj < params.ny; jj++){
+  //       for(int ii = 0; ii < params.nx; ii++){
+  //         printf("%d", obstacles[ii + jj * params.nx]);
+  //       }
+  //       printf("\n");
+  //     }
+  //   }
+  //   printf("\n");
+  // }
+  // return 0;
 
   for (int tt = 0; tt < params.maxIters; tt++)
   {
