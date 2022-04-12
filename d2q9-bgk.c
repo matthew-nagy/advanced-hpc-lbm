@@ -801,6 +801,13 @@ int initialise(const char* paramfile, const char* obstaclefile,
     int adjustedY = yy - (myRank.rowStartOn - 1);
     if(adjustedY >=0 && adjustedY < params.ny)
       (*obstacles_ptr)[xx + adjustedY * params.nx] = blocked;
+    if(rank == 0 && yy == (fullGridHeight - 1)){
+      (*obstacles_ptr)[xx] = blocked;
+    }
+
+    if(rank == (nprocs - 1) && yy == 0){
+      (*obstacles_ptr)[xx + (params.ny - 1) * params.nx] = blocked;
+    }
 
   }
 
