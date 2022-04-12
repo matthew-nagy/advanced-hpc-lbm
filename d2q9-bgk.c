@@ -782,7 +782,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
     }
     params.totCells -= 1.f;
 
-    int adjustedY = yy - (myRank.rowStartOn + 1);
+    int adjustedY = yy - myRank.rowStartOn;
     if(adjustedY >=0 && adjustedY < params.ny)
       (*obstacles_ptr)[xx + adjustedY * params.nx] = blocked;
 
