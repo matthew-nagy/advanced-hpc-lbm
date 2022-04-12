@@ -76,7 +76,6 @@ typedef struct
   int nxm1;
   int nym1;
   int nxBitMask;
-  int nyBitMask;
   int    maxIters;      /* no. of iterations */
   int    reynolds_dim;  /* dimension for Reynolds number */
   float density;       /* density per link */
@@ -103,6 +102,7 @@ typedef struct
   int numOfRows;
 } rankData;
 rankData myRank;
+int* fullObstacles;
 
 #define IS_OBSTACLE(x, y) ( (x == 0) || (y == 0) || (x == params.nxm1) || (y == params.nym1) )
 
@@ -189,7 +189,7 @@ rankData getRankData(int rank){
   return dat;
 }
 
-void collateOnZero(){
+void collateOnZero(float* av_vels){
   //Create the final grid
   collatedCells = (float**)malloc(sizeof(float*) * NSPEEDS);
   for(int i = 0; i < NSPEEDS; i++)
@@ -215,7 +215,7 @@ void collateOnZero(){
     );
   }
 }
-void collate(){
+void collate(float* av_vels){
   const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
   for(int i = 0; i < NSPEEDS; i++){
     MPI_Gatherv(
@@ -296,10 +296,11 @@ int main(int argc, char* argv[])
 
   // Collate data from ranks here 
 
-  if(rank == 0)
-    collateOnZero();
+  if(rank == 0){
+    collateOnZero(av_vels);
+  }
   else{
-    collate();
+    collate(av_vels);
     finalise(&obstacles, &av_vels);
 
     MPI_Finalize();
@@ -527,22 +528,19 @@ float collision(int const*const restrict obstacles)
 {
   params.totVel = 0.0f;
 
-  const int iiLimit = params.nx - 1;
-  const int jjLimit = params.ny - 1;
-
   /* loop over the cells in the grid
   ** NB the collision step is called after
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
   
-  for (int jj = 0; jj < params.ny; jj++)
+  for (int jj = 1; jj < params.ny - 1; jj++)
   {
-    const int y_n = (jj + 1) & params.nyBitMask;
-    const int y_s = (jj - 1) & params.nyBitMask;
+    const int y_n = (jj + 1);
+    const int y_s = (jj - 1);
     outerCollide(obstacles, y_n, y_s, jj);
   }
   
-  return params.totVel / params.totCells;
+  return params.totVel;
 }
 
 float av_velocity(int* obstacles)
@@ -619,13 +617,12 @@ int initialise(const char* paramfile, const char* obstaclefile,
 
   if (retval != 1) die("could not read param file: nx", __LINE__, __FILE__);
 
-  retval = fscanf(fp, "%d\n", &(params.ny));
+  retval = fscanf(fp, "%d\n", &fullGridHeight);
 
   if (retval != 1) die("could not read param file: ny", __LINE__, __FILE__);
 
-
+  fullGridWidth = params.nx;
   params.nxBitMask = params.nx - 1;
-  params.nyBitMask = params.ny - 1;
 
 
   retval = fscanf(fp, "%d\n", &(params.maxIters));
@@ -651,6 +648,9 @@ int initialise(const char* paramfile, const char* obstaclefile,
   /* and close up the file */
   fclose(fp);
 
+  myRank = getRankData(rank);
+  params.ny = myRank.numOfRows + 2;//Give room for the halos
+
   /*
   ** Allocate memory.
   **
@@ -670,9 +670,9 @@ int initialise(const char* paramfile, const char* obstaclefile,
   ** a 1D array of these structs.
   */
 
-  params.totCells = (params.nx - 2) * (params.ny - 2);
   params.nxm1 = params.nx - 1;
   params.nym1 = params.ny - 1;
+  params.totCells = fullGridHeight * fullGridWidth;
 
   /* main grid */
   cells = (float**)aligned_alloc(64, sizeof(float*) * (NSPEEDS));
@@ -687,6 +687,10 @@ int initialise(const char* paramfile, const char* obstaclefile,
 
   /* the map of obstacles */
   *obstacles_ptr = malloc(sizeof(int) * (params.ny * params.nx));
+
+  if(rank == 0){
+    fullObstacles = malloc(sizeof(int) * fullGridHeight * fullGridWidth);
+  }
 
   if (*obstacles_ptr == NULL) die("cannot allocate column memory for obstacles", __LINE__, __FILE__);
 
@@ -712,17 +716,17 @@ int initialise(const char* paramfile, const char* obstaclefile,
       (cells)[6][index] = w2;
       (cells)[7][index] = w2;
       (cells)[8][index] = w2;
+      (*obstacles_ptr)[index] = 0;
     }
   }
 
-  /* first set all cells in obstacle array to zero */
-  for (int jj = 0; jj < params.ny; jj++)
-  {
-    for (int ii = 0; ii < params.nx; ii++)
-    {
-      (*obstacles_ptr)[ii + jj*params.nx] = 0;
-    }
+  if(rank == 0){
+    const int indices = fullGridHeight * fullGridWidth;
+    for(int i = 0; i < indices; i++)
+      fullObstacles[i] = 0;
   }
+
+
 
   /* open the obstacle data file */
   fp = fopen(obstaclefile, "r");
@@ -745,8 +749,15 @@ int initialise(const char* paramfile, const char* obstaclefile,
 
     if (blocked != 1) die("obstacle blocked value should be 1", __LINE__, __FILE__);
 
-    /* assign to array */
-    (*obstacles_ptr)[xx + yy*params.nx] = blocked;
+    if(rank == 0){
+      /* assign to array */
+      fullObstacles[xx + yy*params.nx] = blocked;
+    }
+
+    int adjustedY = yy - myRank.rowStartOn;
+    if(adjustedY >=0 && adjustedY < params.ny)
+      (*obstacles_ptr)[xx + adjustedY * params.nx] = blocked;
+
   }
 
   /* and close the file */
@@ -778,6 +789,14 @@ int finalise(int** obstacles_ptr, float** av_vels_ptr)
 
   free(*av_vels_ptr);
   *av_vels_ptr = NULL;
+
+  if(rank == 0){
+    for(int i = 0; i < NSPEEDS; i++)
+      free(collatedCells[i]);
+    free(collatedCells);
+
+    free(fullObstacles);
+  }
 
   return EXIT_SUCCESS;
 }
@@ -825,12 +844,12 @@ int write_values(int* obstacles, float* av_vels)
     die("could not open file output file", __LINE__, __FILE__);
   }
 
-  for (int jj = 0; jj < params.ny; jj++)
+  for (int jj = 0; jj < fullGridHeight; jj++)
   {
-    for (int ii = 0; ii < params.nx; ii++)
+    for (int ii = 0; ii < fullGridWidth; ii++)
     {
       /* an occupied cell */
-      if (obstacles[ii + jj*params.nx])
+      if (fullObstacles[ii + jj*params.nx])
       {
         u_x = u_y = u = 0.f;
         pressure = params.density * c_sq;
@@ -842,7 +861,7 @@ int write_values(int* obstacles, float* av_vels)
 
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
-          local_density += cells[kk][ii + jj*params.nx];
+          local_density += collatedCells[kk][ii + jj*params.nx];
         }
 
         /* compute x velocity component */
@@ -868,7 +887,7 @@ int write_values(int* obstacles, float* av_vels)
       }
 
       /* write to file */
-      fprintf(fp, "%d %d %.12E %.12E %.12E %.12E %d\n", ii, jj, u_x, u_y, u, pressure, obstacles[ii * params.nx + jj]);
+      fprintf(fp, "%d %d %.12E %.12E %.12E %.12E %d\n", ii, jj, u_x, u_y, u, pressure, fullObstacles[ii * fullGridWidth + jj]);
     }
   }
 
