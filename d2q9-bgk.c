@@ -208,6 +208,23 @@ void collateOnZero(float* av_vels){
     addressesPerRank[i] = rd.rowStartOn * sizeof(float) * params.nx;
   }
 
+  int velBytes = sizeof(float) * params.maxIters;
+  float* velExtreme = malloc(sizeof(float*) * nprocs * velBytes);
+  MPI_Gather(
+    (void*)av_vels, sizeof(float) * params.maxIters, MPI_CHAR,
+    (void*)velExtreme, velBytes, MPI_CHAR,
+    0, MPI_COMM_WORLD
+  );
+
+
+  for(int i = 0; i < params.maxIters; i++){
+    av_vels[i] = 0.f;
+    for(int j = 0; j < nprocs; j++){
+      av_vels[i] += velExtreme[(j * nprocs) + i];
+    }
+    av_vels[i] /= params.totCells;
+  }
+
 
   const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
   for(int i = 0; i < NSPEEDS; i++){
@@ -219,6 +236,13 @@ void collateOnZero(float* av_vels){
   }
 }
 void collate(float* av_vels){
+
+  MPI_Gather(
+    (void*)av_vels, sizeof(float) * params.maxIters, MPI_CHAR,
+    NULL, 0, MPI_CHAR,
+    0, MPI_COMM_WORLD
+  );
+
   const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
   for(int i = 0; i < NSPEEDS; i++){
     MPI_Gatherv(
@@ -756,6 +780,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
     if(rank == 0){
       /* assign to array */
       fullObstacles[xx + yy*params.nx] = blocked;
+      params.totCells -= 1.f;
     }
 
     int adjustedY = yy - myRank.rowStartOn;
