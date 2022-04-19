@@ -583,11 +583,9 @@ float collision(int const*const restrict obstacles)
     outerCollide(obstacles, y_n, y_s, jj);
   }
   
-  if(hec < 240){
-    hec += 1;
-    if((hec % 30) == 0)
-      printf("%d Rank %d: tot vel is %f. Ran for %d (paramsy is %d) \n", hec, rank, params.totVel, params.ny -2, params.ny);
-  }
+  hec += 1;
+  if((hec % 1000) == 0)
+    printf("%d Rank %d: tot vel is %f. Ran for %d (paramsy is %d) \n", hec, rank, params.totVel, params.ny -2, params.ny);
 
   return params.totVel / params.totCells;
 }
