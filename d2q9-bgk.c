@@ -450,11 +450,9 @@ float collision(int const*const restrict obstacles)
   y_s = jjLimit - 1;
   outerCollide(obstacles, y_n, y_s, jjLimit);
   
-  if(itters < 240){
-    itters += 1;
-    if((itters % 30 ) == 0)
-      printf("%d Tot vels undivided after itter 1 is %f\n",itters, params.totVel);
-  }
+  itters += 1;
+  if((itters % 1000 ) == 0)
+    printf("%d Tot vels undivided after itter 1 is %f\n",itters, params.totVel);
 
   return params.totVel / (float)params.totCells;
 }
