@@ -312,6 +312,7 @@ int main(int argc, char* argv[])
   const int itters = params.maxIters;
   for (int tt = 0; tt < itters; tt++)
   {
+    accelerate_flow(obstacles);
     halo();
     av_vels[tt] = timestep(obstacles);
     float** tmp = tmp_cells;
@@ -371,7 +372,6 @@ int main(int argc, char* argv[])
 
 float timestep(int const*const restrict obstacles)
 {
-  accelerate_flow(obstacles);
   //propagate(params, cells, tmp_cells);
   //rebound(params, cells, tmp_cells, obstacles);
   return collision(obstacles);
