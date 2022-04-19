@@ -370,9 +370,12 @@ int main(int argc, char* argv[])
   printf("Elapsed Collate time:\t\t\t%.6lf (s)\n", col_toc  - col_tic);
   printf("Elapsed Total time:\t\t\t%.6lf (s)\n",   tot_toc  - tot_tic);
 
+  printf("Gonna write values I guess\n");
   write_values(obstacles, av_vels);
+  printf("Umm.. onto finalise?\n");
   finalise(&obstacles, &av_vels);
 
+  printf("MPI thinging\n");
   MPI_Finalize();
 
   return EXIT_SUCCESS;
