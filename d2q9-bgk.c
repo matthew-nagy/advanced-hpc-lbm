@@ -388,7 +388,7 @@ int accelerate_flow(int const*const restrict obstacles)
   float w1 = params.density * params.accel * (1.0/9.f);
   float w2 = params.density * params.accel * (1.0f/36.f);
   
-  const int target = fullGridHeight - 2;
+  const int target = fullGridHeight - 1;
   const int normalizedTarget = target - myRank.rowStartOn;
   const int jj = normalizedTarget + 1;//skip the halo
 
