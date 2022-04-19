@@ -394,6 +394,7 @@ int accelerate_flow(int const*const restrict obstacles)
 
     if(hec == 0){
     printf("Rows are index %d to %d\n", myRank.rowStartOn, myRank.rowStartOn + myRank.numOfRows);
+    printf("Rank is %d / %d (1 indexed)\n", rank + 1, nprocs);
     hec = 1;
   }
 
