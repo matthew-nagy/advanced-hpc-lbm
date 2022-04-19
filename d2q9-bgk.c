@@ -520,10 +520,15 @@ extern inline float innerCollider(int isOb, int y_n, int y_s, int x_e, int x_w, 
   tmp_cells[8][index] = ((scratch8 + params.omega * (d_equ8 - scratch8)) * nonObMark) + (scratch6 * obMark);
   
                                                                                                                                                                                                                                                                                                             
-  for (int kk = 0; kk < NSPEEDS; kk++)
-  {
-    local_density += tmp_cells[kk][index];
-  }
+  local_density += tmp_cells[0][index];
+  local_density += tmp_cells[1][index];
+  local_density += tmp_cells[2][index];
+  local_density += tmp_cells[3][index];
+  local_density += tmp_cells[4][index];
+  local_density += tmp_cells[5][index];
+  local_density += tmp_cells[6][index];
+  local_density += tmp_cells[7][index];
+  local_density += tmp_cells[8][index];
 
   /* compute x velocity component */
   u_x = (tmp_cells[1][index]
