@@ -392,13 +392,6 @@ int accelerate_flow(int const*const restrict obstacles)
   const int normalizedTarget = target - myRank.rowStartOn;
   const int jj = normalizedTarget + 1;//skip the halo
 
-  if(hec == 0){
-    printf("Rows are index %d to %d (%d rows)\n", myRank.rowStartOn, myRank.rowStartOn + myRank.numOfRows, params.ny - 2);
-    printf("Rank is %d / %d (1 indexed)\n", rank + 1, nprocs);
-    printf("The target row is %d, normalised to %d\n", target, normalizedTarget);
-    hec = 1;
-  }
-
 
   #pragma vector aligned
   for (int ii = 1; ii < params.nx - 1; ii++)
