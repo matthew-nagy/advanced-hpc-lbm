@@ -244,6 +244,8 @@ void collate(float* av_vels){
 
 float* velStorage;
 
+int hec = 0;
+
 /*
 ** main program:
 ** initialise, timestep loop, finalise
@@ -326,6 +328,7 @@ int main(int argc, char* argv[])
   col_tic=comp_toc;
 
   // Collate data from ranks here 
+  printf("Rank %d: the number of total cell is %f\n", rank, params.totCells);
 
   if(rank == 0){
     velStorage = av_vels;
@@ -580,6 +583,11 @@ float collision(int const*const restrict obstacles)
     outerCollide(obstacles, y_n, y_s, jj);
   }
   
+  if(hec == 0){
+    hec += 1;
+    printf("Rank %d: tot vel is %f\n", rank, params.totVel);
+  }
+
   return params.totVel / params.totCells;
 }
 
