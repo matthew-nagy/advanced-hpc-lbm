@@ -335,6 +335,7 @@ int main(int argc, char* argv[])
   if(rank == 0){
     velStorage = av_vels;
     av_vels = collateOnZero(av_vels);
+    av_vels = velStorage;
   }
   else{
     collate(av_vels);
