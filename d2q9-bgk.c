@@ -392,7 +392,7 @@ int accelerate_flow(int const*const restrict obstacles)
   float w1 = params.density * params.accel * (1.0/9.f);
   float w2 = params.density * params.accel * (1.0f/36.f);
   
-  int jj = (fullGridHeight - 2) - myRank.rowStartOn;
+  int jj = (fullGridHeight - 3) - myRank.rowStartOn;
 
 
   #pragma vector aligned
