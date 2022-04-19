@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #SBATCH --job-name d2q9-bgk
-#SBATCH --nodes 1
-#SBATCH --ntasks-per-node 2
-#SBATCH --time 00:5:00
+#SBATCH --nodes 4
+#SBATCH --ntasks-per-node 28
+#SBATCH --time 00:3:00
 #SBATCH --partition veryshort
 #SBATCH --reservation=COSC026662
 #SBATCH --account=COSC026662
