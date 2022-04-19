@@ -326,7 +326,7 @@ int main(int argc, char* argv[])
   }
 
   #pragma vector aligned
-  #pragma omp simd aligned(av_vels, 64)
+  #pragma omp simd aligned(av_vels: 64)
   for(int i = 0; i < itters; i++){
     av_vels[i] *= painTotalCells;
   }
