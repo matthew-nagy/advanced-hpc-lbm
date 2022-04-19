@@ -96,6 +96,8 @@ float** collatedCells;
 
 int nprocs, rank, upRank, downRank;
 
+float painTotalCells;
+
 typedef struct
 {
   int rowStartOn;
@@ -592,7 +594,7 @@ float collision(int const*const restrict obstacles)
   if((hec % 1000) == 0)
     printf("%d Rank %d: tot vel is %f. Ran for %d (paramsy is %d) \n", hec, rank, params.totVel, params.ny -2, params.ny);
 
-  return params.totVel / params.totCells;
+  return params.totVel;
 }
 
 float av_velocity(int* obstacles)
@@ -817,6 +819,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
     }
 
   }
+  painTotalCells = params.totCells;
 
   /* and close the file */
   fclose(fp);
