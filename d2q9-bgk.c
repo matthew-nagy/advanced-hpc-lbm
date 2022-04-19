@@ -383,16 +383,19 @@ int accelerate_flow(int const*const restrict obstacles)
   //Onluy the bottom pls
   if(myRank.rowStartOn > (fullGridHeight - 2) || (myRank.rowStartOn + myRank.numOfRows) <= (fullGridHeight - 2))
     return EXIT_SUCCESS;
-  if(hec == 0){
-    printf("Acclerating on rank %d / %d\n", rank, nprocs);
-    hec = 1;
-  }
 
   /* compute weighting factors */
   float w1 = params.density * params.accel * (1.0/9.f);
   float w2 = params.density * params.accel * (1.0f/36.f);
   
-  int jj = (fullGridHeight - 3) - myRank.rowStartOn;
+  const int target = fullGridHeight - 2;
+  const int normalizedTarget = target - myRank.rowStartOn;
+  const int jj = normalizedTarget - 1;//minus the halo
+
+    if(hec == 0){
+    printf("Acclerating on rank %d / %d. %d  %d  %d\n", rank, nprocs, target, normalizedTarget, jj);
+    hec = 1;
+  }
 
 
   #pragma vector aligned
