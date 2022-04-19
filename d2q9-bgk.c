@@ -633,20 +633,20 @@ float av_velocity(int* obstacles)
         }
 
         /* x-component of velocity */
-        float u_x = (cells[1][ii + jj*params.nx]
-                      + cells[5][ii + jj*params.nx]
-                      + cells[8][ii + jj*params.nx]
-                      - (cells[3][ii + jj*params.nx]
-                         + cells[6][ii + jj*params.nx]
-                         + cells[7][ii + jj*params.nx]))
+        float u_x = (collatedCells[1][ii + jj*params.nx]
+                      + collatedCells[5][ii + jj*params.nx]
+                      + collatedCells[8][ii + jj*params.nx]
+                      - (collatedCells[3][ii + jj*params.nx]
+                         + collatedCells[6][ii + jj*params.nx]
+                         + collatedCells[7][ii + jj*params.nx]))
                      / local_density;
         /* compute y velocity component */
-        float u_y = (cells[2][ii + jj*params.nx]
-                      + cells[5][ii + jj*params.nx]
-                      + cells[6][ii + jj*params.nx]
-                      - (cells[4][ii + jj*params.nx]
-                         + cells[7][ii + jj*params.nx]
-                         + cells[8][ii + jj*params.nx]))
+        float u_y = (collatedCells[2][ii + jj*params.nx]
+                      + collatedCells[5][ii + jj*params.nx]
+                      + collatedCells[6][ii + jj*params.nx]
+                      - (collatedCells[4][ii + jj*params.nx]
+                         + collatedCells[7][ii + jj*params.nx]
+                         + collatedCells[8][ii + jj*params.nx]))
                      / local_density;
         /* accumulate the norm of x- and y- velocity components */
         tot_u += sqrtf((u_x * u_x) + (u_y * u_y));
