@@ -217,7 +217,7 @@ float* collateOnZero(float* av_vels){
   );
 
   for(int i = 0; i < params.maxIters; i += 1000)
-    printf("Collated values %d is %f\n", i, trueVel[i]);
+    printf("Collated values %d is %f  (av vel %f)\n", i, trueVel[i], av_vels[i]);
 
   const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
   for(int i = 0; i < NSPEEDS; i++){
