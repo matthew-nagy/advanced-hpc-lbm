@@ -925,6 +925,7 @@ int write_values(int* obstacles, float* av_vels)
   {
     for (int ii = 0; ii < fullGridWidth; ii++)
     {
+      printf("%d %d\n", ii, jj);
       /* an occupied cell */
       if (fullObstacles[ii + jj*params.nx])
       {
