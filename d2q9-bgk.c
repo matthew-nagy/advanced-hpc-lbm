@@ -202,6 +202,10 @@ int main(int argc, char* argv[])
 
   printf("Total cells is %d\n", (int)params.totCells);
 
+  for(int i = 0; i < params.maxIters; i++)
+    if((i % 1000) == 0)
+      printf("At end %d vels are %f\n", i, av_vels[i]);
+
   write_values(obstacles, av_vels);
   finalise(&obstacles, &av_vels);
 
