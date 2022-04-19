@@ -452,7 +452,7 @@ float collision(int const*const restrict obstacles)
   
   if(itters < 240){
     itters += 1;
-    if((itters % 30 ) == 0
+    if((itters % 30 ) == 0)
       printf("%d Tot vels undivided after itter 1 is %f\n",itters, params.totVel);
   }
 
