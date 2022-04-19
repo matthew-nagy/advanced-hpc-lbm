@@ -213,7 +213,7 @@ float* collateOnZero(float* av_vels){
   float* trueVel = malloc(sizeof(float) * params.maxIters);
   MPI_Reduce(
     (void*)av_vels, trueVel, sizeof(float) * params.maxIters,
-    MPI_CHAR, MPI_MAX, 0, MPI_COMM_WORLD
+    MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD
   );
 
   for(int i = 0; i < params.maxIters; i += 1000)
@@ -233,7 +233,7 @@ void collate(float* av_vels){
 
   MPI_Reduce(
     (void*)av_vels, NULL, sizeof(float) * params.maxIters,
-    MPI_CHAR, MPI_MAX, 0, MPI_COMM_WORLD
+    MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD
   );
 
   const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
