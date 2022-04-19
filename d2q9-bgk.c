@@ -395,6 +395,10 @@ int accelerate_flow(int const*const restrict obstacles)
   //Onluy the bottom pls
   if(myRank.rowStartOn > (fullGridHeight - 2) || (myRank.rowStartOn + myRank.numOfRows) < (fullGridHeight - 2))
     return EXIT_SUCCESS;
+  if(hec == 0){
+    printf("Acclerating on rank %d\n", rank);
+    hec = 1;
+  }
 
   /* compute weighting factors */
   float w1 = params.density * params.accel * (1.0/9.f);
