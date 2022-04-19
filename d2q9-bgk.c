@@ -382,7 +382,7 @@ float timestep(int const*const restrict obstacles)
 int accelerate_flow(int const*const restrict obstacles)
 {
   //Onluy the bottom pls
-  if(rank != (nprocs - 1))
+  if(myRank.rowStartOn > (fullGridHeight - 2) || (myRank.rowStartOn + myRank.numOfRows) < (fullGridHeight - 2))
     return EXIT_SUCCESS;
 
   /* compute weighting factors */
