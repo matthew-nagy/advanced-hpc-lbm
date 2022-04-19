@@ -381,7 +381,7 @@ float timestep(int const*const restrict obstacles)
 int accelerate_flow(int const*const restrict obstacles)
 {
   //Onluy the bottom pls
-  if(myRank.rowStartOn > (fullGridHeight - 1) || (myRank.rowStartOn + myRank.numOfRows) <= (fullGridHeight - 1))
+  if(myRank.rowStartOn > (fullGridHeight - 2) || (myRank.rowStartOn + myRank.numOfRows) <= (fullGridHeight - 2))
     return EXIT_SUCCESS;
 
   /* compute weighting factors */
@@ -393,7 +393,7 @@ int accelerate_flow(int const*const restrict obstacles)
   const int jj = normalizedTarget + 1;//skip the halo
 
   if(hec == 0){
-    printf("Rows are index %d to %d (%d rows)\n", myRank.rowStartOn, myRank.rowStartOn + myRank.numOfRows, params.ny);
+    printf("Rows are index %d to %d (%d rows)\n", myRank.rowStartOn, myRank.rowStartOn + myRank.numOfRows, params.ny - 2);
     printf("Rank is %d / %d (1 indexed)\n", rank + 1, nprocs);
     printf("The target row is %d, normalised to %d\n", target, normalizedTarget);
     hec = 1;
