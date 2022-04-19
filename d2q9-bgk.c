@@ -594,7 +594,7 @@ float collision(int const*const restrict obstacles)
   if((hec % 1000) == 0)
     printf("%d Rank %d: tot vel is %f. Ran for %d (paramsy is %d) \n", hec, rank, params.totVel, params.ny -2, params.ny);
 
-  return params.totVel;
+  return params.totVel / painTotalCells;
 }
 
 float av_velocity(int* obstacles)
