@@ -357,6 +357,11 @@ int main(int argc, char* argv[])
   printf("Elapsed Compute time:\t\t\t%.6lf (s)\n", comp_toc - comp_tic);
   printf("Elapsed Collate time:\t\t\t%.6lf (s)\n", col_toc  - col_tic);
   printf("Elapsed Total time:\t\t\t%.6lf (s)\n",   tot_toc  - tot_tic);
+
+  for(int i = 0; i < params.maxIters; i++)
+    if((i % 2000) == 0)
+      printf("At end %d, av vels is %f\n", i, av_vels[i]);
+
   write_values(obstacles, av_vels);
   finalise(&obstacles, &av_vels);
 
