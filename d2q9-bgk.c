@@ -200,7 +200,7 @@ int main(int argc, char* argv[])
   printf("Elapsed Collate time:\t\t\t%.6lf (s)\n", col_toc  - col_tic);
   printf("Elapsed Total time:\t\t\t%.6lf (s)\n",   tot_toc  - tot_tic);
 
-  printf("Total cells is %d\n", int(params.totCells));
+  printf("Total cells is %d\n", (int)params.totCells);
 
   write_values(obstacles, av_vels);
   finalise(&obstacles, &av_vels);
