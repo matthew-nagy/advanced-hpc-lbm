@@ -925,22 +925,25 @@ int write_values(int* obstacles, float* av_vels)
   {
     for (int ii = 0; ii < fullGridWidth; ii++)
     {
-      printf("%d %d\n", ii, jj);
+      printf("ObCheck\n");
       /* an occupied cell */
       if (fullObstacles[ii + jj*params.nx])
       {
+        printf("Ob\n");
         u_x = u_y = u = 0.f;
         pressure = params.density * c_sq;
       }
       /* no obstacle */
       else
       {
+        printf("Nob\n");
         local_density = 0.f;
 
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
           local_density += collatedCells[kk][ii + jj*params.nx];
         }
+        printf("Past collate\n");
 
         /* compute x velocity component */
         u_x = (cells[1][ii + jj*params.nx]
