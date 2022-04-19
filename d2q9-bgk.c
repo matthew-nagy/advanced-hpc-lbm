@@ -212,7 +212,7 @@ float* collateOnZero(float* av_vels){
 
   float* trueVel = malloc(sizeof(float) * params.maxIters);
   MPI_Reduce(
-    (void*)av_vels, trueVel, sizeof(float) * params.maxIters,
+    (void*)av_vels, trueVel, params.maxIters,
     MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD
   );
 
@@ -232,7 +232,7 @@ float* collateOnZero(float* av_vels){
 void collate(float* av_vels){
 
   MPI_Reduce(
-    (void*)av_vels, NULL, sizeof(float) * params.maxIters,
+    (void*)av_vels, NULL, params.maxIters,
     MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD
   );
 
