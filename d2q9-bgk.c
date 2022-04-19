@@ -216,7 +216,7 @@ float* collateOnZero(float* av_vels){
     MPI_CHAR, MPI_SUM, 0, MPI_COMM_WORLD
   );
 
-  for(int i = 0; i < params.maxIters; i += 1000)
+  for(int i = 0; i < 200; i += 10)
     printf("Collated values %d is %f  (av vel %f)\n", i, trueVel[i], av_vels[i]);
 
   const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
