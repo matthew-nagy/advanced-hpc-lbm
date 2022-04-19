@@ -925,41 +925,37 @@ int write_values(int* obstacles, float* av_vels)
   {
     for (int ii = 0; ii < fullGridWidth; ii++)
     {
-      printf("ObCheck\n");
       /* an occupied cell */
       if (fullObstacles[ii + jj*params.nx])
       {
-        printf("Ob\n");
         u_x = u_y = u = 0.f;
         pressure = params.density * c_sq;
       }
       /* no obstacle */
       else
       {
-        printf("Nob\n");
         local_density = 0.f;
 
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
           local_density += collatedCells[kk][ii + jj*params.nx];
         }
-        printf("Past collate\n");
 
         /* compute x velocity component */
-        u_x = (cells[1][ii + jj*params.nx]
-               + cells[5][ii + jj*params.nx]
-               + cells[8][ii + jj*params.nx]
-               - (cells[3][ii + jj*params.nx]
-                  + cells[6][ii + jj*params.nx]
-                  + cells[7][ii + jj*params.nx]))
+        u_x = (collatedCells[1][ii + jj*params.nx]
+               + collatedCells[5][ii + jj*params.nx]
+               + collatedCells[8][ii + jj*params.nx]
+               - (collatedCells[3][ii + jj*params.nx]
+                  + collatedCells[6][ii + jj*params.nx]
+                  + collatedCells[7][ii + jj*params.nx]))
               / local_density;
         /* compute y velocity component */
-        u_y = (cells[2][ii + jj*params.nx]
-               + cells[5][ii + jj*params.nx]
-               + cells[6][ii + jj*params.nx]
-               - (cells[4][ii + jj*params.nx]
-                  + cells[7][ii + jj*params.nx]
-                  + cells[8][ii + jj*params.nx]))
+        u_y = (collatedCells[2][ii + jj*params.nx]
+               + collatedCells[5][ii + jj*params.nx]
+               + collatedCells[6][ii + jj*params.nx]
+               - (collatedCells[4][ii + jj*params.nx]
+                  + collatedCells[7][ii + jj*params.nx]
+                  + collatedCells[8][ii + jj*params.nx]))
               / local_density;
         /* compute norm of velocity */
         u = sqrtf((u_x * u_x) + (u_y * u_y));
