@@ -196,34 +196,41 @@ rankData getRankData(int rank){
 
 float* collateOnZero(float* av_vels){
   //Create the final grid
+  printf("Creating collated cells mem\n");
   collatedCells = (float**)malloc(sizeof(float*) * NSPEEDS);
   for(int i = 0; i < NSPEEDS; i++)
     collatedCells[i] = (float*)malloc(sizeof(float) * fullGridHeight * fullGridWidth);
 
-
+  printf("Making the bytes and addresses per rank\n");
   int* bytesPerRank = (int*)malloc(sizeof(int) * nprocs);
   int* addressesPerRank = (int*)malloc(sizeof(int) * nprocs);
 
+  printf("Making the rank data\n");
   for(int i = 0; i < nprocs; i++){
     rankData rd = getRankData(i);
     bytesPerRank[i] = rd.numOfRows * sizeof(float) * params.nx;
     addressesPerRank[i] = rd.rowStartOn * sizeof(float) * params.nx;
   }
 
+  printf("Making the truevel\n");
   float* trueVel = malloc(sizeof(float) * params.maxIters);
+  printf("About to reduce\n");
   MPI_Reduce(
     (void*)av_vels, trueVel, params.maxIters,
     MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD
   );
 
+  printf("ABout to gather\n");
   const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
   for(int i = 0; i < NSPEEDS; i++){
+    printf("Gathering %d\n", i);
     MPI_Gatherv(
       (void*)&cells[i][params.nx], speedsSize, MPI_CHAR,
       (void*)collatedCells[i], bytesPerRank, addressesPerRank,
       MPI_CHAR, 0, MPI_COMM_WORLD
     );
   }
+  printf("Finishing\n");
   return trueVel;
 }
 void collate(float* av_vels){
@@ -339,6 +346,7 @@ int main(int argc, char* argv[])
   // Collate data from ranks here 
   if(rank == 0){
     velStorage = av_vels;
+    printf("Collating 0\n");
     av_vels = collateOnZero(av_vels);
   }
   else{
