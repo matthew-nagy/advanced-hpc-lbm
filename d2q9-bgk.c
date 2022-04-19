@@ -388,11 +388,11 @@ int accelerate_flow(int const*const restrict obstacles)
   float w1 = params.density * params.accel * (1.0/9.f);
   float w2 = params.density * params.accel * (1.0f/36.f);
   
-  const int target = fullGridHeight - 1;
+  const int target = fullGridHeight - 2;
   const int normalizedTarget = target - myRank.rowStartOn;
   const int jj = normalizedTarget + 1;//skip the halo
 
-    if(hec == 0){
+  if(hec == 0){
     printf("Rows are index %d to %d\n", myRank.rowStartOn, myRank.rowStartOn + myRank.numOfRows);
     printf("Rank is %d / %d (1 indexed)\n", rank + 1, nprocs);
     hec = 1;
