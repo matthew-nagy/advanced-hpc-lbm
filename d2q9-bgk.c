@@ -310,7 +310,8 @@ int main(int argc, char* argv[])
   // }
   // return 0;
 
-  for (int tt = 0; tt < params.maxIters; tt++)
+  const int itters = params.maxIters;
+  for (int tt = 0; tt < itters; tt++)
   {
     halo();
     av_vels[tt] = timestep(obstacles);
@@ -322,6 +323,12 @@ int main(int argc, char* argv[])
     printf("av velocity: %.12E\n", av_vels[tt]);
     printf("tot density: %.12E\n", total_density(params, cells));
 #endif
+  }
+
+  #pragma vector aligned
+  #pragma omp simd aligned(av_vels, 64)
+  for(int i = 0; i < itters; i++){
+    av_vels[i] *= painTotalCells;
   }
   
   /* Compute time stops here, collate time starts*/
@@ -581,7 +588,7 @@ float collision(int const*const restrict obstacles)
     outerCollide(obstacles, y_n, y_s, jj);
   }
   
-  return params.totVel / painTotalCells;
+  return params.totVel;
 }
 
 float av_velocity(int* obstacles)
@@ -806,7 +813,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
     }
 
   }
-  painTotalCells = params.totCells;
+  painTotalCells = 1.0 / params.totCells;
 
   /* and close the file */
   fclose(fp);
@@ -815,7 +822,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
   ** allocate space to hold a record of the avarage velocities computed
   ** at each timestep
   */
-  *av_vels_ptr = (float*)malloc(sizeof(float) * params.maxIters);
+  *av_vels_ptr = (float*)aligned_alloc(64, sizeof(float) * params.maxIters);
 
   return EXIT_SUCCESS;
 }
