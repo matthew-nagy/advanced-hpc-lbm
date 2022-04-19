@@ -381,7 +381,7 @@ float timestep(int const*const restrict obstacles)
 int accelerate_flow(int const*const restrict obstacles)
 {
   //Onluy the bottom pls
-  if(myRank.rowStartOn >= (fullGridHeight - 2) || (myRank.rowStartOn + myRank.numOfRows) < (fullGridHeight - 2))
+  if(myRank.rowStartOn > (fullGridHeight - 2) || (myRank.rowStartOn + myRank.numOfRows) <= (fullGridHeight - 2))
     return EXIT_SUCCESS;
   if(hec == 0){
     printf("Acclerating on rank %d / %d\n", rank, nprocs);
@@ -392,7 +392,7 @@ int accelerate_flow(int const*const restrict obstacles)
   float w1 = params.density * params.accel * (1.0/9.f);
   float w2 = params.density * params.accel * (1.0f/36.f);
   
-  int jj = params.ny - 3;
+  int jj = (fullGridHeight - 2) - myRank.rowStartOn;
 
 
   #pragma vector aligned
