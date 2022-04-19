@@ -216,6 +216,9 @@ float* collateOnZero(float* av_vels){
     MPI_CHAR, MPI_SUM, 0, MPI_COMM_WORLD
   );
 
+  for(int i = 0; i < params.maxIters; i += 1000)
+    printf("Collated values %d is %f\n", i, trueVel[i]);
+
   const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
   for(int i = 0; i < NSPEEDS; i++){
     MPI_Gatherv(
@@ -335,7 +338,6 @@ int main(int argc, char* argv[])
   if(rank == 0){
     velStorage = av_vels;
     av_vels = collateOnZero(av_vels);
-    av_vels = velStorage;
   }
   else{
     collate(av_vels);
@@ -344,9 +346,6 @@ int main(int argc, char* argv[])
     MPI_Finalize();
     return EXIT_SUCCESS;
   }
-
-  for(int i = 0; i < 20; i++)
-    printf("%f\n", av_vels[i]);
 
   /* Total/collate time stops here.*/
   gettimeofday(&timstr, NULL);
@@ -591,7 +590,7 @@ float collision(int const*const restrict obstacles)
   if((hec % 1000) == 0)
     printf("%d Rank %d: tot vel is %f. Ran for %d (paramsy is %d) \n", hec, rank, params.totVel, params.ny -2, params.ny);
 
-  return params.totVel / painTotalCells;
+  return params.totVel;
 }
 
 float av_velocity(int* obstacles)
