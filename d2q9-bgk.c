@@ -390,7 +390,7 @@ int accelerate_flow(int const*const restrict obstacles)
   
   const int target = fullGridHeight - 2;
   const int normalizedTarget = target - myRank.rowStartOn;
-  const int jj = normalizedTarget - 1;//minus the halo
+  const int jj = normalizedTarget + 1;//skip the halo
 
     if(hec == 0){
     printf("Acclerating on rank %d / %d. %d  %d  %d\n", rank, nprocs, target, normalizedTarget, jj);
