@@ -435,10 +435,15 @@ extern inline float innerCollider(int isOb, int y_n, int y_s, int x_e, int x_w, 
   /* compute local density total */
   float local_density = 0.f;
 
-  for (int kk = 0; kk < NSPEEDS; kk++)
-  {
-    local_density += scratch[kk];
-  }
+  local_density += scratch[0];
+  local_density += scratch[1];
+  local_density += scratch[2];
+  local_density += scratch[3];
+  local_density += scratch[4];
+  local_density += scratch[5];
+  local_density += scratch[6];
+  local_density += scratch[7];
+  local_density += scratch[8];
 
   /* compute x velocity component */
   float u_x = (scratch1
