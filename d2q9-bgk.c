@@ -585,7 +585,7 @@ float collision(int const*const restrict obstacles)
   
   if(hec == 0){
     hec += 1;
-    printf("Rank %d: tot vel is %f\n", rank, params.totVel);
+    printf("Rank %d: tot vel is %f. Ran for %d (paramsy is %d) \n", rank, params.totVel, params.ny -2, params.ny);
   }
 
   return params.totVel / params.totCells;
