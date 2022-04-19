@@ -88,6 +88,8 @@ float** cells;
 float** tmp_cells;
 t_param params;
 
+int itters = 0;
+
 /* struct to hold the 'speed' values */
 
 /*
@@ -197,6 +199,9 @@ int main(int argc, char* argv[])
   printf("Elapsed Compute time:\t\t\t%.6lf (s)\n", comp_toc - comp_tic);
   printf("Elapsed Collate time:\t\t\t%.6lf (s)\n", col_toc  - col_tic);
   printf("Elapsed Total time:\t\t\t%.6lf (s)\n",   tot_toc  - tot_tic);
+
+  printf("Total cells is %d\n", int(params.totCells));
+
   write_values(obstacles, av_vels);
   finalise(&obstacles, &av_vels);
 
@@ -445,6 +450,11 @@ float collision(int const*const restrict obstacles)
   y_s = jjLimit - 1;
   outerCollide(obstacles, y_n, y_s, jjLimit);
   
+  if(itters == 0){
+    itters += 1;
+    printf("Tot vels undivided after itter 1 is %f\n", params.totVel);
+  }
+
   return params.totVel / (float)params.totCells;
 }
 
