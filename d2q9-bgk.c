@@ -956,7 +956,7 @@ int write_values(char* obstacles, float* av_vels)
       }
 
       /* write to file */
-      fprintf(fp, "%d %d %.12E %.12E %.12E %.12E %d\n", ii, jj, u_x, u_y, u, pressure, int(fullObstacles[ii * fullGridWidth + jj]));
+      fprintf(fp, "%d %d %.12E %.12E %.12E %.12E %d\n", ii, jj, u_x, u_y, u, pressure, (int)fullObstacles[ii * fullGridWidth + jj]);
     }
   }
 
