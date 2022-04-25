@@ -750,7 +750,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
   *obstacles_ptr = malloc(sizeof(char) * (params.ny * params.nx));
 
   if(rank == 0){
-    fullObstacles = malloc(sizeof(int) * fullGridHeight * fullGridWidth);
+    fullObstacles = malloc(sizeof(char) * fullGridHeight * fullGridWidth);
   }
 
   if (*obstacles_ptr == NULL) die("cannot allocate column memory for obstacles", __LINE__, __FILE__);
