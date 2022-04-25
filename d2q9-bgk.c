@@ -747,10 +747,10 @@ int initialise(const char* paramfile, const char* obstaclefile,
 
 
   /* the map of obstacles */
-  *obstacles_ptr = aligned_alloc(8, (sizeof(char) * (params.ny * params.nx));
+  *obstacles_ptr = aligned_alloc(8, sizeof(char) * (params.ny * params.nx));
 
   if(rank == 0){
-    fullObstacles = aligned_alloc(8, (sizeof(char) * fullGridHeight * fullGridWidth);
+    fullObstacles = aligned_alloc(8, sizeof(char) * fullGridHeight * fullGridWidth);
   }
 
   if (*obstacles_ptr == NULL) die("cannot allocate column memory for obstacles", __LINE__, __FILE__);
