@@ -104,7 +104,7 @@ typedef struct
   int numOfRows;
 } rankData;
 rankData myRank;
-int* fullObstacles;
+char* fullObstacles;
 
 #define IS_OBSTACLE(x, y) ( (x == 0) || (y == 0) || (x == params.nxm1) || (y == params.nym1) )
 
@@ -116,7 +116,7 @@ int* fullObstacles;
 
 /* load params, allocate memory, load obstacles & initialise fluid particle densities */
 int initialise(const char* paramfile, const char* obstaclefile,
-               int** obstacles_ptr, float** av_vels_ptr);
+               char** obstacles_ptr, float** av_vels_ptr);
 
 
 
@@ -125,25 +125,25 @@ int initialise(const char* paramfile, const char* obstaclefile,
 ** timestep calls, in order, the functions:
 ** accelerate_flow(), propagate(), rebound() & collision()
 */
-float timestep(int const*const restrict obstacles);
-int accelerate_flow(int const*const restrict obstacles);
+float timestep(char const*const restrict obstacles);
+int accelerate_flow(char const*const restrict obstacles);
 int propagate();
-int rebound(int* obstacles);
-float collision(int const*const restrict obstacles);
-int write_values(int* obstacles, float* av_vels);
+int rebound(char* obstacles);
+float collision(char const*const restrict obstacles);
+int write_values(char* obstacles, float* av_vels);
 
 /* finalise, including freeing up allocated memory */
-int finalise(int** obstacles_ptr, float** av_vels_ptr);
+int finalise(char** obstacles_ptr, float** av_vels_ptr);
 
 /* Sum all the densities in the grid.
 ** The total should remain constant from one timestep to the next. */
 float total_density();
 
 /* compute average velocity */
-float av_velocity(int* obstacles);
+float av_velocity(char* obstacles);
 
 /* calculate Reynolds number */
-float calc_reynolds(int* obstacles);
+float calc_reynolds(char* obstacles);
 
 /* utility functions */
 void die(const char* message, const int line, const char* file);
@@ -256,7 +256,7 @@ int main(int argc, char* argv[])
 
   char*    paramfile = NULL;    /* name of the input parameter file */
   char*    obstaclefile = NULL; /* name of a the input obstacle file */
-  int*     obstacles = NULL;    /* grid indicating which cells are blocked */
+  char*     obstacles = NULL;    /* grid indicating which cells are blocked */
   float* av_vels   = NULL;     /* a record of the av. velocity computed for each timestep */
   struct timeval timstr;                                                             /* structure to hold elapsed time */
   double tot_tic, tot_toc, init_tic, init_toc, comp_tic, comp_toc, col_tic, col_toc; /* floating point numbers to calculate elapsed wallclock time */
@@ -310,7 +310,8 @@ int main(int argc, char* argv[])
   // return 0;
 
   const int itters = params.maxIters;
-  for (int tt = 0; tt < itters; tt++)
+  #pragma vector aligned
+  for (short tt = 0; tt < itters; tt++)
   {
     accelerate_flow(obstacles);
     halo();
@@ -370,7 +371,7 @@ int main(int argc, char* argv[])
   return EXIT_SUCCESS;
 }
 
-float timestep(int const*const restrict obstacles)
+float timestep(char const*const restrict obstacles)
 {
   //propagate(params, cells, tmp_cells);
   //rebound(params, cells, tmp_cells, obstacles);
@@ -378,7 +379,7 @@ float timestep(int const*const restrict obstacles)
 }
 
 
-int accelerate_flow(int const*const restrict obstacles)
+int accelerate_flow(char const*const restrict obstacles)
 {
   //Onluy the bottom pls
   if(myRank.rowStartOn > (fullGridHeight - 2) || (myRank.rowStartOn + myRank.numOfRows) <= (fullGridHeight - 2))
@@ -390,11 +391,11 @@ int accelerate_flow(int const*const restrict obstacles)
   
   const int target = fullGridHeight - 2;
   const int normalizedTarget = target - myRank.rowStartOn;
-  const int jj = normalizedTarget + 1;//skip the halo
+  const short jj = normalizedTarget + 1;//skip the halo
 
 
   #pragma vector aligned
-  for (int ii = 1; ii < params.nx - 1; ii++)
+  for (short ii = 1; ii < params.nx - 1; ii++)
   {
     /* if the cell is not occupied and
     ** we don't send a negative density */
@@ -412,7 +413,7 @@ int accelerate_flow(int const*const restrict obstacles)
   return EXIT_SUCCESS;
 }
 
-extern inline float innerCollider(int isOb, int y_n, int y_s, int x_e, int x_w, int jj, int ii){
+extern inline float innerCollider(char isOb, short y_n, short y_s, short x_e, short x_w, short jj, short ii){
   const int index = ii + jj * params.nx;
   
   /* propagate densities from neighbouring cells, following
@@ -563,7 +564,7 @@ extern inline float innerCollider(int isOb, int y_n, int y_s, int x_e, int x_w, 
 
 }
 
-extern inline void outerCollide(int const*const restrict obstacles, int y_n, int y_s, int jj){
+extern inline void outerCollide(char const*const restrict obstacles, short y_n, short y_s, short jj){
   float tmp_vel = 0.0f;
 
   
@@ -571,18 +572,18 @@ extern inline void outerCollide(int const*const restrict obstacles, int y_n, int
   __assume((params.nx % 4) == 0);
   #pragma vector aligned
   #pragma omp simd aligned(cells:64), aligned(tmp_cells:64), reduction(+:tmp_vel)
-  for (int ii = 0; ii < params.nx; ii+=1)
+  for (short ii = 0; ii < params.nx; ii+=1)
   {
     /* determine indices of axis-direction neighbours
     ** respecting periodic boundary conditions (wrap around) */
-    int x_e = (ii + 1) & params.nxBitMask;
-    int x_w = (ii - 1) & params.nxBitMask;
+    short x_e = (ii + 1) & params.nxBitMask;
+    short x_w = (ii - 1) & params.nxBitMask;
     tmp_vel += innerCollider(obstacles[ii + jj *params.nx], y_n, y_s, x_e, x_w, jj, ii);
   }
   params.totVel += tmp_vel;
 }
 
-float collision(int const*const restrict obstacles)
+float collision(char const*const restrict obstacles)
 {
   params.totVel = 0.0f;
 
@@ -591,17 +592,18 @@ float collision(int const*const restrict obstacles)
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
   
-  for (int jj = 1; jj < params.ny - 1; jj++)
+  #pragma vector aligned
+  for (short jj = 1; jj < params.ny - 1; jj++)
   {
-    const int y_n = (jj + 1);
-    const int y_s = (jj - 1);
+    const short y_n = (jj + 1);
+    const short y_s = (jj - 1);
     outerCollide(obstacles, y_n, y_s, jj);
   }
   
   return params.totVel;
 }
 
-float av_velocity(int* obstacles)
+float av_velocity(char* obstacles)
 {
   int    tot_cells = 0;  /* no. of cells used in calculation */
   float tot_u;          /* accumulated magnitudes of velocity for each cell */
@@ -653,7 +655,7 @@ float av_velocity(int* obstacles)
 }
 
 int initialise(const char* paramfile, const char* obstaclefile,
-               int** obstacles_ptr, float** av_vels_ptr)
+               char** obstacles_ptr, float** av_vels_ptr)
 {
   char   message[1024];  /* message buffer */
   FILE*   fp;            /* file pointer */
@@ -745,7 +747,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
 
 
   /* the map of obstacles */
-  *obstacles_ptr = malloc(sizeof(int) * (params.ny * params.nx));
+  *obstacles_ptr = malloc(sizeof(char) * (params.ny * params.nx));
 
   if(rank == 0){
     fullObstacles = malloc(sizeof(int) * fullGridHeight * fullGridWidth);
@@ -837,7 +839,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
   return EXIT_SUCCESS;
 }
 
-int finalise(int** obstacles_ptr, float** av_vels_ptr)
+int finalise(char** obstacles_ptr, float** av_vels_ptr)
 {
   /*
   ** free up allocated memory
@@ -869,7 +871,7 @@ int finalise(int** obstacles_ptr, float** av_vels_ptr)
 }
 
 
-float calc_reynolds(int* obstacles)
+float calc_reynolds(char* obstacles)
 {
   const float viscosity = 1.f / 6.f * (2.f / params.omega - 1.f);
 
@@ -894,7 +896,7 @@ float total_density()
   return total;
 }
 
-int write_values(int* obstacles, float* av_vels)
+int write_values(char* obstacles, float* av_vels)
 {
   FILE* fp;                     /* file pointer */
   const float c_sq = 1.f / 3.f; /* sq. of speed of sound */
@@ -954,7 +956,7 @@ int write_values(int* obstacles, float* av_vels)
       }
 
       /* write to file */
-      fprintf(fp, "%d %d %.12E %.12E %.12E %.12E %d\n", ii, jj, u_x, u_y, u, pressure, fullObstacles[ii * fullGridWidth + jj]);
+      fprintf(fp, "%d %d %.12E %.12E %.12E %.12E %d\n", ii, jj, u_x, u_y, u, pressure, int(fullObstacles[ii * fullGridWidth + jj]));
     }
   }
 
