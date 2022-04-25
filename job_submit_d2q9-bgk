@@ -24,3 +24,8 @@ make check128
 #make check256
 #srun --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 #make check1024
+
+#srun --mpi=pmi2 -n 86 -c 1 advixe-cl -v -collect survey -project-dir=./IntelStuff -data-limit=0 ./d2q9-bgk input_256x256.params obstacles_256x256.dat
+#srun --mpi=pmi2 -n 86 -c 1 advixe-cl -v -collect tripcounts --flop -project-dir=./IntelStuff -data-limit=0 ./d2q9-bgk input_256x256.params obstacles_256x256.dat
+
+#srun -mpi=pmi2 -n 29 ./d2q9-bgk input etc etc
