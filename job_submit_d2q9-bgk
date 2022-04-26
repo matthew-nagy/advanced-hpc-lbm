@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH --job-name d2q9-bgk
-#SBATCH --nodes 4
-#SBATCH --ntasks-per-node 28
+#SBATCH --nodes 2
+#SBATCH --ntasks-per-node 1
 #SBATCH --exclude compute[101,107,117,300]
 #SBATCH --time 00:20:00
 #SBATCH --partition veryshort
@@ -17,62 +17,64 @@ echo Slurm job ID is $SLURM_JOB_ID
 echo This job runs on the following machines:
 echo `echo $SLURM_JOB_NODELIST | uniq`
 
-mpirun -np 2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 3 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 4 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 5 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 6 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 7 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 8 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 9 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 10 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 11 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 12 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 13 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 14 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 15 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 16 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 17 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 18 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 19 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 20 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 21 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 22 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 23 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 24 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 25 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 26 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 27 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 28 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 29 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 30 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 31 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 32 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 33 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 34 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 35 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 36 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 37 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 38 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 39 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 40 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 41 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 42 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 43 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 44 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 45 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 46 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 47 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 48 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 49 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 50 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 51 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 52 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 53 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 54 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 55 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 56 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-mpirun -np 56 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+srun --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+
+#mpirun -np 2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 3 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 4 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 5 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 6 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 7 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 8 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 9 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 10 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 11 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 12 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 13 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 14 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 15 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 16 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 17 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 18 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 19 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 20 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 21 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 22 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 23 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 24 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 25 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 26 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 27 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 28 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 29 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 30 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 31 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 32 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 33 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 34 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 35 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 36 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 37 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 38 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 39 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 40 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 41 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 42 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 43 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 44 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 45 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 46 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 47 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 48 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 49 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 50 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 51 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 52 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 53 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 54 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 55 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 56 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#mpirun -np 56 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 #mpirun -np 57 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 #mpirun -np 58 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 #mpirun -np 59 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
@@ -135,7 +137,6 @@ mpirun -np 56 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 #make check128
 #srun --mpi=pmi2 ./d2q9-bgk input_256x256.params obstacles_256x256.dat
 #make check256
-#srun --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 #make check1024
 
 #srun --mpi=pmi2 -n 2 -c 1 advixe-cl -v -collect survey -project-dir=./IntelStuff -data-limit=0 ./d2q9-bgk input_256x256.params obstacles_256x256.dat

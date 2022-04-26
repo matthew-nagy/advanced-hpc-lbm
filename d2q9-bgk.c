@@ -565,7 +565,7 @@ extern inline float innerCollider(char isOb, int y_n, int y_s, int x_e, int x_w,
 
 }
 
-extern inline void outerCollide(char const*const restrict obstacles, int y_n, int y_s, int jj){
+extern inline float outerCollide(char const*const restrict obstacles, int y_n, int y_s, int jj){
   float tmp_vel = 0.0f;
 
   
@@ -581,7 +581,7 @@ extern inline void outerCollide(char const*const restrict obstacles, int y_n, in
     int x_w = (ii - 1) & params.nxBitMask;
     tmp_vel += innerCollider(obstacles[ii + jj *params.nx], y_n, y_s, x_e, x_w, jj, ii);
   }
-  params.totVel += tmp_vel;
+  return tmp_vel;
 }
 
 float collision(char const*const restrict obstacles)
@@ -593,13 +593,16 @@ float collision(char const*const restrict obstacles)
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
   
+  float tu = 0.0f;
   #pragma vector aligned
+  #pragma omp parallel for reduction(+:tu) 
   for (int jj = 1; jj < params.ny - 1; jj++)
   {
     const int y_n = (jj + 1);
     const int y_s = (jj - 1);
-    outerCollide(obstacles, y_n, y_s, jj);
+    tu += outerCollide(obstacles, y_n, y_s, jj);
   }
+  params.totVel += tu;
   
   return params.totVel;
 }
