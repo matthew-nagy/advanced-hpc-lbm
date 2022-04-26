@@ -17,8 +17,33 @@ echo Slurm job ID is $SLURM_JOB_ID
 echo This job runs on the following machines:
 echo `echo $SLURM_JOB_NODELIST | uniq`
 
-mpirun -mpi=pmi2 -np 2 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
 mpirun -np 2 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 3 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 4 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 5 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 6 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 7 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 8 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 9 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 10 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 11 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 12 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 13 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 14 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 15 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 16 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 17 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 18 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 19 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 20 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 21 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 22 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 23 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 24 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 25 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 26 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 27 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+mpirun -np 28 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
 
 #! Run the executable
 #srun --mpi=pmi2 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
