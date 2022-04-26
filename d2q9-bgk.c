@@ -322,7 +322,7 @@ int main(int argc, char* argv[])
     accelerate_flow(obstacles);
     halo();
     av_vels[tt] = timestep(obstacles);
-    float** tmp = tmp_cells;
+    float16** tmp = tmp_cells;
     tmp_cells = cells;
     cells = tmp; 
 #ifdef DEBUG
@@ -896,7 +896,7 @@ int write_values(char* obstacles, float* av_vels)
       {
         local_density = 0.f;
 
-        const float colCells[NSPEEDS];
+        float colCells[NSPEEDS];
 
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
