@@ -17,6 +17,45 @@ echo Slurm job ID is $SLURM_JOB_ID
 echo This job runs on the following machines:
 echo `echo $SLURM_JOB_NODELIST | uniq`
 
+mpirun -np 2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 3 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 4 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 5 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 6 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 7 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 8 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 9 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 10 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 11 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 12 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 13 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 14 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 15 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 16 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 17 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 18 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 19 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 20 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 21 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 22 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 23 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 24 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 25 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 26 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 27 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 28 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 29 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 30 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 31 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 32 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 33 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 34 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 35 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 36 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 37 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+mpirun -np 38 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+
+
 #! Run the executable
 #srun --mpi=pmi2 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
 #make check128
@@ -27,31 +66,3 @@ echo `echo $SLURM_JOB_NODELIST | uniq`
 
 #srun --mpi=pmi2 -n 2 -c 1 advixe-cl -v -collect survey -project-dir=./IntelStuff -data-limit=0 ./d2q9-bgk input_256x256.params obstacles_256x256.dat
 #srun --mpi=pmi2 -n 2 -c 1 advixe-cl -v -collect tripcounts --flop -project-dir=./IntelStuff -data-limit=0 ./d2q9-bgk input_256x256.params obstacles_256x256.dat
-
-srun -mpi=pmi2 -n 2 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 3 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 4 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 5 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 6 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 7 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 8 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 9 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 10 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 11 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 12 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 13 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 14 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 15 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 16 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 17 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 18 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 19 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 20 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 21 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 22 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 23 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 24 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 25 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 26 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 27 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-srun -mpi=pmi2 -n 28 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
