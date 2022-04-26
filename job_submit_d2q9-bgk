@@ -10,6 +10,10 @@
 #SBATCH --account=COSC026662
 #SBATCH --output d2q9-bgk.out
 
+export OMP_PROC_BIND=true
+export OMP_PLACES=cores
+export OMP_NUM_THREADS=28
+
 echo Running on host `hostname`
 echo Time is `date`
 echo Directory is `pwd`
