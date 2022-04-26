@@ -4,7 +4,7 @@
 #SBATCH --nodes 4
 #SBATCH --ntasks-per-node 28
 #SBATCH --exclude compute[101,107,117,300]
-#SBATCH --time 00:3:00
+#SBATCH --time 00:10:00
 #SBATCH --partition veryshort
 #SBATCH --reservation=COSC026662
 #SBATCH --account=COSC026662

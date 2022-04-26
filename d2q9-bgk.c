@@ -811,7 +811,7 @@ int initialise(const char* paramfile, const char* obstaclefile,
 
 int finalise(char** obstacles_ptr, float** av_vels_ptr)
 {
-  return;
+  return EXIT_SUCCESS;
   /*
   ** free up allocated memory
   */
