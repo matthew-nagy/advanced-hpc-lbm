@@ -245,7 +245,6 @@ void collate(float* av_vels){
 
   const int speedsSize = sizeof(float16) * params.nx * (params.ny - 2);//Don't include the halo regions
   for(int i = 0; i < NSPEEDS; i++){
-    printf("R%di%d\n", rank, i);
     MPI_Gatherv(
       (void*)&cells[i][params.nx], speedsSize, MPI_CHAR,
       //These don't matter to non roots
@@ -358,6 +357,7 @@ int main(int argc, char* argv[])
     return EXIT_SUCCESS;
   }
 
+  printf("Finished collating zero\n");
   /* Total/collate time stops here.*/
   gettimeofday(&timstr, NULL);
   col_toc = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
