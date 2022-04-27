@@ -3,7 +3,7 @@
 #SBATCH --job-name d2q9-bgk
 #SBATCH --nodes 4
 #SBATCH --distribution block
-#SBATCH --exclude compute102,compute105,compute109,compute111
+#SBATCH --nodelist compute[105,106,107,109]
 #SBATCH --time 00:50:00
 #SBATCH --partition veryshort
 #SBATCH --reservation=COSC026662
