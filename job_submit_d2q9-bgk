@@ -18,16 +18,4 @@ echo This job runs on the following machines:
 echo `echo $SLURM_JOB_NODELIST | uniq`
 #! Run the executable
 
-srun -N 4 -n 18 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./IntelHalf/halfPrecMidtime -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 18 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./IntelHalf/halfPrecMidtime -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-
-
-srun -N 4 -n 112 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./IntelHalf/halfPrecEnd -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 112 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./IntelHalf/halfPrecEnd -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-
-srun --mpi=pmi2 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
-make check128
-srun --mpi=pmi2 ./d2q9-bgk input_256x256.params obstacles_256x256.dat
-make check256
-srun --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-make check1024
+srun -N 4 -n 112 --mpi=pmi2 vtune -collect hotspots -result-dir halfFullTune ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
