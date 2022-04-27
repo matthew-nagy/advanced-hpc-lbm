@@ -3,12 +3,12 @@
 #SBATCH --job-name d2q9-bgk
 #SBATCH --nodes 4
 #SBATCH --distribution block
-#SBATCH --exclude compute102,compute105,compute109,compute111
 #SBATCH --time 00:50:00
 #SBATCH --partition veryshort
 #SBATCH --reservation=COSC026662
 #SBATCH --account=COSC026662
 #SBATCH --output block1024_3.out
+#SBATCH --nodelist compute[105, 106, 107, 109]
 #SBATCH --exclusive
 echo Running on host `hostname`
 echo Time is `date`
@@ -18,7 +18,16 @@ echo This job runs on the following machines:
 echo `echo $SLURM_JOB_NODELIST | uniq`
 #! Run the executable
 
-srun -N 4 -n 18 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./IntelStuff -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 18 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./IntelStuff -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 18 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./IntelStuff -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+srun -N 4 -n 34 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/predip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+srun -N 4 -n 34 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/predip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+srun -N 4 -n 35 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/dip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+srun -N 4 -n 35 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/dip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+srun -N 4 -n 36 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/postdip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+srun -N 4 -n 36 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/postdip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 
+srun -N 4 -n 18 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/singlePrecMidtime -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+srun -N 4 -n 18 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/singlePrecMidtime -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+
+
+srun -N 4 -n 112 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/singlePrecEnd -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+srun -N 4 -n 112 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/singlePrecEnd -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
