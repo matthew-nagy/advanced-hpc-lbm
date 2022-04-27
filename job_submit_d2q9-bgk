@@ -18,16 +18,19 @@ echo This job runs on the following machines:
 echo `echo $SLURM_JOB_NODELIST | uniq`
 #! Run the executable
 
-srun -N 4 -n 34 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/predip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 34 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/predip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 35 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/dip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 35 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/dip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 36 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/postdip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 36 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/postdip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 
-srun -N 4 -n 18 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/singlePrecMidtime -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 18 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/singlePrecMidtime -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+srun -N 4 -n 112 --mpi=pmi2 vtune -collect hotspots -result-dir singleFullTune ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+
+#srun -N 4 -n 34 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/predip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#srun -N 4 -n 34 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/predip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#srun -N 4 -n 35 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/dip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#srun -N 4 -n 35 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/dip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#srun -N 4 -n 36 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/postdip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#srun -N 4 -n 36 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/postdip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+
+#srun -N 4 -n 18 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/singlePrecMidtime -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#srun -N 4 -n 18 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/singlePrecMidtime -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 
 
-srun -N 4 -n 112 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/singlePrecEnd -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 112 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/singlePrecEnd -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#srun -N 4 -n 112 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/singlePrecEnd -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+#srun -N 4 -n 112 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/singlePrecEnd -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
