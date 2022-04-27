@@ -50,12 +50,15 @@
 */
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <mpi.h>
+#include <emmintrin.h>
+#include <immintrin.h>
 
 #define NSPEEDS         9
 #define FINALSTATEFILE  "final_state.dat"
@@ -150,21 +153,33 @@ void die(const char* message, const int line, const char* file);
 void usage(const char* exe);
 
 
+typedef float haloType;
+haloType* upHalo;
+haloType* downHalo;
+haloType* upHaloStore;
+haloType* downHaloStore;
+int bytesPerRow;
 void halo(){
-  int bytesPerRow = sizeof(float) * params.nx;
   for(int i = 0; i < NSPEEDS; i++){
-    //Send up
-    MPI_Sendrecv(
-      (const void*)&cells[i][(params.ny - 2) * params.nx], bytesPerRow, MPI_CHAR, upRank, 0,
-      (void*)cells[i], bytesPerRow, MPI_CHAR, downRank, 0,
-      MPI_COMM_WORLD, MPI_STATUS_IGNORE 
-    );
-    //Send down
-    MPI_Sendrecv(
-      (const void*)&cells[i][params.nx], bytesPerRow, MPI_CHAR, downRank, 0,
-      (void*)&cells[i][(params.ny - 1) * params.nx], bytesPerRow, MPI_CHAR, upRank, 0,
-      MPI_COMM_WORLD, MPI_STATUS_IGNORE 
-    );
+    memcpy((void*)&upHalo[i], (const void*)&cells[i][(params.ny - 2) * params.nx], bytesPerRow);
+    memcpy((void*)&downHalo[i], (const void*)&cells[i][params.nx], bytesPerRow);
+  }
+  //Send up
+  MPI_Sendrecv(
+    (const void*)upHalo, bytesPerRow, MPI_CHAR, upRank, 0,
+    (void*)downHaloStore, bytesPerRow, MPI_CHAR, downRank, 0,
+    MPI_COMM_WORLD, MPI_STATUS_IGNORE 
+  );
+  //Send down
+  MPI_Sendrecv(
+    (const void*)downHalo, bytesPerRow, MPI_CHAR, downRank, 0,
+    (void*)upHaloStore, bytesPerRow, MPI_CHAR, upRank, 0,
+    MPI_COMM_WORLD, MPI_STATUS_IGNORE 
+  );
+
+  for(int i = 0; i < NSPEEDS; i++){
+    memcpy((void*)&cells[i], (const void*)&upHaloStore[bytesPerRow * i], bytesPerRow);
+    memcpy((void*)&cells[params.nx * (params.ny - 1)], (const void*)&downHaloStore[bytesPerRow * i], bytesPerRow);
   }
 }
 
@@ -289,6 +304,12 @@ int main(int argc, char* argv[])
     downRank = nprocs - 1;
   
   initialise(paramfile, obstaclefile, &obstacles, &av_vels);
+  
+  bytesPerRow = sizeof(haloType) * params.nx;
+  upHalo = (haloType*)malloc(bytesPerRow * NSPEEDS);
+  downHalo = (haloType*)malloc(bytesPerRow * NSPEEDS);
+  upHaloStore = (haloType*)malloc(bytesPerRow * NSPEEDS);
+  downHaloStore = (haloType*)malloc(bytesPerRow * NSPEEDS);
 
   /* Init time stops here, compute time starts*/
   gettimeofday(&timstr, NULL);
@@ -365,6 +386,10 @@ int main(int argc, char* argv[])
 //  printf("Elapsed Total time:\t\t\t%.6lf (s)\n",   tot_toc  - tot_tic);
 
   write_values(obstacles, av_vels);
+  free(upHalo);
+  free(downHalo);
+  free(upHaloStore);
+  free(downHaloStore);
   finalise(&obstacles, &av_vels);
 
   MPI_Finalize();
