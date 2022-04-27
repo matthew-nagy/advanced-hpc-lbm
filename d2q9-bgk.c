@@ -295,9 +295,11 @@ int main(int argc, char* argv[])
   if(downRank == -1)
     downRank = nprocs - 1;
   
+  printf("ABout to init %d\n", rank);
+
   initialise(paramfile, obstaclefile, &obstacles, &av_vels);
 
-  //printf("Ran init %d\n", rank);
+  printf("Ran init %d\n", rank);
 
   /* Init time stops here, compute time starts*/
   gettimeofday(&timstr, NULL);
@@ -309,11 +311,11 @@ int main(int argc, char* argv[])
   #pragma vector aligned
   for (int tt = 0; tt < itters; tt++)
   {
-    //printf("About to accelerat %d\n", rank);
+    printf("About to accelerat %d\n", rank);
     accelerate_flow(obstacles);
-    //printf("ABout to halo\n");
+    printf("ABout to halo\n");
     halo();
-    //printf("About to timestep\n");
+    printf("About to timestep\n");
     av_vels[tt] = timestep(obstacles);
     float16** tmp = tmp_cells;
     tmp_cells = cells;
@@ -324,7 +326,7 @@ int main(int argc, char* argv[])
     printf("tot density: %.12E\n", total_density(params, cells));
 #endif
   }
-
+  printf("Finishing up %d\n", rank);
   #pragma vector aligned
   #pragma omp simd aligned(av_vels: 64)
   for(int i = 0; i < itters; i++){

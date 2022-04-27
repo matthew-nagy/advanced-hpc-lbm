@@ -18,22 +18,6 @@ echo This job runs on the following machines:
 echo `echo $SLURM_JOB_NODELIST | uniq`
 #! Run the executable
 
-srun -N 2 -n 2 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 3 -n 3 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 4 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 5 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 6 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 7 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 8 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 9 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 10 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 11 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 12 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 13 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 14 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 15 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 16 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 17 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 srun -N 4 -n 18 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 srun -N 4 -n 19 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 srun -N 4 -n 20 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
