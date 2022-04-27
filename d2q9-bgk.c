@@ -409,13 +409,13 @@ int accelerate_flow(char const*const restrict obstacles)
     ** we don't send a negative density */
       /* increase 'east-side' densities */
       const int index = ii + jj * params.nx;
-      cells[1][index] = PACK_FLOAT(UNPACK_FLOAT(cells[i][index]) + w1);
-      cells[5][index] = PACK_FLOAT(UNPACK_FLOAT(cells[i][index]) + w2);
-      cells[8][index] = PACK_FLOAT(UNPACK_FLOAT(cells[i][index]) + w2);
+      cells[1][index] = PACK_FLOAT(UNPACK_FLOAT(cells[ii][index]) + w1);
+      cells[5][index] = PACK_FLOAT(UNPACK_FLOAT(cells[ii][index]) + w2);
+      cells[8][index] = PACK_FLOAT(UNPACK_FLOAT(cells[ii][index]) + w2);
       /* decrease 'west-side' densities */
-      cells[3][index] = PACK_FLOAT(UNPACK_FLOAT(cells[i][index]) - w1);
-      cells[6][index] = PACK_FLOAT(UNPACK_FLOAT(cells[i][index]) - w2);
-      cells[7][index] = PACK_FLOAT(UNPACK_FLOAT(cells[i][index]) - w2);
+      cells[3][index] = PACK_FLOAT(UNPACK_FLOAT(cells[ii][index]) - w1);
+      cells[6][index] = PACK_FLOAT(UNPACK_FLOAT(cells[ii][index]) - w2);
+      cells[7][index] = PACK_FLOAT(UNPACK_FLOAT(cells[ii][index]) - w2);
   }
 
   return EXIT_SUCCESS;
