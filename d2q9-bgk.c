@@ -297,6 +297,8 @@ int main(int argc, char* argv[])
   
   initialise(paramfile, obstaclefile, &obstacles, &av_vels);
 
+  printf("Ran init %d\n", rank);
+
   /* Init time stops here, compute time starts*/
   gettimeofday(&timstr, NULL);
   init_toc = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
@@ -320,8 +322,11 @@ int main(int argc, char* argv[])
   #pragma vector aligned
   for (int tt = 0; tt < itters; tt++)
   {
+    printf("About to accelerat %d\n", rank);
     accelerate_flow(obstacles);
+    printf("ABout to halo\n");
     halo();
+    printf("About to timestep\n");
     av_vels[tt] = timestep(obstacles);
     float16** tmp = tmp_cells;
     tmp_cells = cells;
