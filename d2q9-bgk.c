@@ -216,14 +216,17 @@ float* collateOnZero(float* av_vels){
     addressesPerRank[i] = rd.rowStartOn * sizeof(float16) * params.nx;
   }
 
+  printf("Rank 0 is about to reduce velocities\n");
   float* trueVel = malloc(sizeof(float) * params.maxIters);
   MPI_Reduce(
     (void*)av_vels, trueVel, params.maxIters,
     MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD
   );
 
+  printf("Rank 0 is about to reduce grid speeds\n");
   const int speedsSize = sizeof(float16) * params.nx * (params.ny - 2);//Don't include the halo regions
   for(int i = 0; i < NSPEEDS; i++){
+    printf("Calling gather index %d on 0\n", i);
     MPI_Gatherv(
       (void*)&cells[i][params.nx], speedsSize, MPI_CHAR,
       (void*)collatedCells[i], bytesPerRank, addressesPerRank,
@@ -234,6 +237,7 @@ float* collateOnZero(float* av_vels){
 }
 void collate(float* av_vels){
 
+  printf("Rank %d raducing\n", rank);
   MPI_Reduce(
     (void*)av_vels, NULL, params.maxIters,
     MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD
@@ -241,6 +245,7 @@ void collate(float* av_vels){
 
   const int speedsSize = sizeof(float16) * params.nx * (params.ny - 2);//Don't include the halo regions
   for(int i = 0; i < NSPEEDS; i++){
+    printf("R%di%d\n", rank, i);
     MPI_Gatherv(
       (void*)&cells[i][params.nx], speedsSize, MPI_CHAR,
       //These don't matter to non roots
@@ -295,11 +300,11 @@ int main(int argc, char* argv[])
   if(downRank == -1)
     downRank = nprocs - 1;
   
-  printf("ABout to init %d\n", rank);
+  //printf("ABout to init %d\n", rank);
 
   initialise(paramfile, obstaclefile, &obstacles, &av_vels);
 
-  printf("Ran init %d\n", rank);
+  //printf("Ran init %d\n", rank);
 
   /* Init time stops here, compute time starts*/
   gettimeofday(&timstr, NULL);
@@ -311,11 +316,11 @@ int main(int argc, char* argv[])
   #pragma vector aligned
   for (int tt = 0; tt < itters; tt++)
   {
-    printf("About to accelerat %d\n", rank);
+    //printf("About to accelerat %d\n", rank);
     accelerate_flow(obstacles);
-    printf("ABout to halo\n");
+    //printf("ABout to halo\n");
     halo();
-    printf("About to timestep\n");
+   // printf("About to timestep\n");
     av_vels[tt] = timestep(obstacles);
     float16** tmp = tmp_cells;
     tmp_cells = cells;
@@ -341,9 +346,11 @@ int main(int argc, char* argv[])
   // Collate data from ranks here 
   if(rank == 0){
     velStorage = av_vels;
+    printf("Collating on zero\n");
     av_vels = collateOnZero(av_vels);
   }
   else{
+    printf("Collating on %d\n", rank);
     collate(av_vels);
     finalise(&obstacles, &av_vels);
 
