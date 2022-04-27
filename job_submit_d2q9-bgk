@@ -4,7 +4,7 @@
 #SBATCH --nodes 4
 #SBATCH --distribution block
 #SBATCH --exclude compute102,compute105,compute109,compute111
-#SBATCH --time 00:10:00
+#SBATCH --time 00:50:00
 #SBATCH --partition veryshort
 #SBATCH --reservation=COSC026662
 #SBATCH --account=COSC026662
