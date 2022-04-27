@@ -56,10 +56,17 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <mpi.h>
+#include <emmintrin.h>
+#include <immintrin.h>
 
 #define NSPEEDS         9
 #define FINALSTATEFILE  "final_state.dat"
 #define AVVELSFILE      "av_vels.dat"
+
+#define PACK_FLOAT(toPack) _cvtss_sh(toPack, 1)
+#define UNPACK_FLOAT(packed) _cvtsh_ss(packed)
+
+typedef unsigned short float16;
 
 const float c_sq = 1.f / 3.f; /* square of speed of sound */
 const float w0 = 4.f / 9.f;  /* weighting factor */
@@ -86,13 +93,13 @@ typedef struct
   float totVel;
 } t_param;
 
-float** cells;
-float** tmp_cells;
+float16** cells;
+float16** tmp_cells;
 t_param params;
 
 int fullGridHeight;
 int fullGridWidth;
-float** collatedCells;
+float16** collatedCells;
 
 int nprocs, rank, upRank, downRank;
 
@@ -151,7 +158,7 @@ void usage(const char* exe);
 
 
 void halo(){
-  int bytesPerRow = sizeof(float) * params.nx;
+  int bytesPerRow = sizeof(float16) * params.nx;
   for(int i = 0; i < NSPEEDS; i++){
     //Send up
     MPI_Sendrecv(
@@ -196,17 +203,17 @@ rankData getRankData(int rank){
 
 float* collateOnZero(float* av_vels){
   //Create the final grid
-  collatedCells = (float**)malloc(sizeof(float*) * NSPEEDS);
+  collatedCells = (float16**)malloc(sizeof(float16*) * NSPEEDS);
   for(int i = 0; i < NSPEEDS; i++)
-    collatedCells[i] = (float*)malloc(sizeof(float) * fullGridHeight * fullGridWidth);
+    collatedCells[i] = (float16*)malloc(sizeof(float16) * fullGridHeight * fullGridWidth);
 
   int* bytesPerRank = (int*)malloc(sizeof(int) * nprocs);
   int* addressesPerRank = (int*)malloc(sizeof(int) * nprocs);
 
   for(int i = 0; i < nprocs; i++){
     rankData rd = getRankData(i);
-    bytesPerRank[i] = rd.numOfRows * sizeof(float) * params.nx;
-    addressesPerRank[i] = rd.rowStartOn * sizeof(float) * params.nx;
+    bytesPerRank[i] = rd.numOfRows * sizeof(float16) * params.nx;
+    addressesPerRank[i] = rd.rowStartOn * sizeof(float16) * params.nx;
   }
 
   float* trueVel = malloc(sizeof(float) * params.maxIters);
@@ -215,7 +222,7 @@ float* collateOnZero(float* av_vels){
     MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD
   );
 
-  const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
+  const int speedsSize = sizeof(float16) * params.nx * (params.ny - 2);//Don't include the halo regions
   for(int i = 0; i < NSPEEDS; i++){
     MPI_Gatherv(
       (void*)&cells[i][params.nx], speedsSize, MPI_CHAR,
@@ -232,7 +239,7 @@ void collate(float* av_vels){
     MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD
   );
 
-  const int speedsSize = sizeof(float) * params.nx * (params.ny - 2);//Don't include the halo regions
+  const int speedsSize = sizeof(float16) * params.nx * (params.ny - 2);//Don't include the halo regions
   for(int i = 0; i < NSPEEDS; i++){
     MPI_Gatherv(
       (void*)&cells[i][params.nx], speedsSize, MPI_CHAR,
@@ -316,7 +323,7 @@ int main(int argc, char* argv[])
     accelerate_flow(obstacles);
     halo();
     av_vels[tt] = timestep(obstacles);
-    float** tmp = tmp_cells;
+    float16** tmp = tmp_cells;
     tmp_cells = cells;
     cells = tmp; 
 #ifdef DEBUG
@@ -402,13 +409,13 @@ int accelerate_flow(char const*const restrict obstacles)
     ** we don't send a negative density */
       /* increase 'east-side' densities */
       const int index = ii + jj * params.nx;
-      cells[1][index] += w1;
-      cells[5][index] += w2;
-      cells[8][index] += w2;
+      cells[1][index] = PACK_FLOAT(UNPACK_FLOAT(cells[i][index]) + w1);
+      cells[5][index] = PACK_FLOAT(UNPACK_FLOAT(cells[i][index]) + w2);
+      cells[8][index] = PACK_FLOAT(UNPACK_FLOAT(cells[i][index]) + w2);
       /* decrease 'west-side' densities */
-      cells[3][index] -= w1;
-      cells[6][index] -= w2;
-      cells[7][index] -= w2;
+      cells[3][index] = PACK_FLOAT(UNPACK_FLOAT(cells[i][index]) - w1);
+      cells[6][index] = PACK_FLOAT(UNPACK_FLOAT(cells[i][index]) - w2);
+      cells[7][index] = PACK_FLOAT(UNPACK_FLOAT(cells[i][index]) - w2);
   }
 
   return EXIT_SUCCESS;
@@ -420,15 +427,15 @@ extern inline float innerCollider(char isOb, int y_n, int y_s, int x_e, int x_w,
   /* propagate densities from neighbouring cells, following
   ** appropriate directions of travel and writing into
   ** scratch space grid */
-  const float scratch0 = cells[0][index]; /* central cell, no movement */
-  const float scratch1 = cells[1][x_w + jj*params.nx]; /* east */
-  const float scratch2 = cells[2][ii + y_s*params.nx]; /* north */
-  const float scratch3 = cells[3][x_e + jj*params.nx]; /* west */
-  const float scratch4 = cells[4][ii + y_n*params.nx]; /* south */
-  const float scratch5 = cells[5][x_w + y_s*params.nx]; /* north-east */
-  const float scratch6 = cells[6][x_e + y_s*params.nx]; /* north-west */
-  const float scratch7 = cells[7][x_e + y_n*params.nx]; /* south-west */
-  const float scratch8 = cells[8][x_w + y_n*params.nx]; /* south-east */
+  const float scratch0 = UNPACK_FLOAT(cells[0][index]); /* central cell, no movement */
+  const float scratch1 = UNPACK_FLOAT(cells[1][x_w + jj*params.nx]); /* east */
+  const float scratch2 = UNPACK_FLOAT(cells[2][ii + y_s*params.nx]); /* north */
+  const float scratch3 = UNPACK_FLOAT(cells[3][x_e + jj*params.nx]); /* west */
+  const float scratch4 = UNPACK_FLOAT(cells[4][ii + y_n*params.nx]); /* south */
+  const float scratch5 = UNPACK_FLOAT(cells[5][x_w + y_s*params.nx]); /* north-east */
+  const float scratch6 = UNPACK_FLOAT(cells[6][x_e + y_s*params.nx]); /* north-west */
+  const float scratch7 = UNPACK_FLOAT(cells[7][x_e + y_n*params.nx]); /* south-west */
+  const float scratch8 = UNPACK_FLOAT(cells[8][x_w + y_n*params.nx]); /* south-east */
 
   float u_sq = 0.0f;
 
@@ -517,42 +524,51 @@ extern inline float innerCollider(char isOb, int y_n, int y_s, int x_e, int x_w,
   local_density = 0.0f;
   /* relaxation step */
   
-  tmp_cells[0][index] = ((scratch0 + params.omega * (d_equ0 - scratch0)) * nonObMark) + (scratch0 * obMark);
-  tmp_cells[1][index] = ((scratch1 + params.omega * (d_equ1 - scratch1)) * nonObMark) + (scratch3 * obMark);
-  tmp_cells[2][index] = ((scratch2 + params.omega * (d_equ2 - scratch2)) * nonObMark) + (scratch4 * obMark);
-  tmp_cells[3][index] = ((scratch3 + params.omega * (d_equ3 - scratch3)) * nonObMark) + (scratch1 * obMark);
-  tmp_cells[4][index] = ((scratch4 + params.omega * (d_equ4 - scratch4)) * nonObMark) + (scratch2 * obMark);
-  tmp_cells[5][index] = ((scratch5 + params.omega * (d_equ5 - scratch5)) * nonObMark) + (scratch7 * obMark);
-  tmp_cells[6][index] = ((scratch6 + params.omega * (d_equ6 - scratch6)) * nonObMark) + (scratch8 * obMark);
-  tmp_cells[7][index] = ((scratch7 + params.omega * (d_equ7 - scratch7)) * nonObMark) + (scratch5 * obMark);
-  tmp_cells[8][index] = ((scratch8 + params.omega * (d_equ8 - scratch8)) * nonObMark) + (scratch6 * obMark);
+  const float tmp0 = ((scratch0 + params.omega * (d_equ0 - scratch0)) * nonObMark) + (scratch0 * obMark);
+  const float tmp1 = ((scratch1 + params.omega * (d_equ1 - scratch1)) * nonObMark) + (scratch3 * obMark);
+  const float tmp2 = ((scratch2 + params.omega * (d_equ2 - scratch2)) * nonObMark) + (scratch4 * obMark);
+  const float tmp3 = ((scratch3 + params.omega * (d_equ3 - scratch3)) * nonObMark) + (scratch1 * obMark);
+  const float tmp4 = ((scratch4 + params.omega * (d_equ4 - scratch4)) * nonObMark) + (scratch2 * obMark);
+  const float tmp5 = ((scratch5 + params.omega * (d_equ5 - scratch5)) * nonObMark) + (scratch7 * obMark);
+  const float tmp6 = ((scratch6 + params.omega * (d_equ6 - scratch6)) * nonObMark) + (scratch8 * obMark);
+  const float tmp7 = ((scratch7 + params.omega * (d_equ7 - scratch7)) * nonObMark) + (scratch5 * obMark);
+  const float tmp8 = ((scratch8 + params.omega * (d_equ8 - scratch8)) * nonObMark) + (scratch6 * obMark);
   
+  tmp_cells[0][index] = PACK_FLOAT(tmp0);
+  tmp_cells[1][index] = PACK_FLOAT(tmp1);
+  tmp_cells[2][index] = PACK_FLOAT(tmp2);
+  tmp_cells[3][index] = PACK_FLOAT(tmp3);
+  tmp_cells[4][index] = PACK_FLOAT(tmp4);
+  tmp_cells[5][index] = PACK_FLOAT(tmp5);
+  tmp_cells[6][index] = PACK_FLOAT(tmp6);
+  tmp_cells[7][index] = PACK_FLOAT(tmp7);
+  tmp_cells[8][index] = PACK_FLOAT(tmp8);
                                                                                                                                                                                                                                                                                                             
-  local_density += tmp_cells[0][index];
-  local_density += tmp_cells[1][index];
-  local_density += tmp_cells[2][index];
-  local_density += tmp_cells[3][index];
-  local_density += tmp_cells[4][index];
-  local_density += tmp_cells[5][index];
-  local_density += tmp_cells[6][index];
-  local_density += tmp_cells[7][index];
-  local_density += tmp_cells[8][index];
+  local_density += tmp0;
+  local_density += tmp1;
+  local_density += tmp2;
+  local_density += tmp3;
+  local_density += tmp4;
+  local_density += tmp5;
+  local_density += tmp6;
+  local_density += tmp7;
+  local_density += tmp8;
 
   /* compute x velocity component */
-  u_x = (tmp_cells[1][index]
-        + tmp_cells[5][index]
-        + tmp_cells[8][index]
-        - (tmp_cells[3][index]
-            + tmp_cells[6][index]
-            + tmp_cells[7][index]))
+  u_x = (tmp1
+        + tmp5
+        + tmp8
+        - (tmp3
+            + tmp6
+            + tmp7))
         / local_density;
   /* compute y velocity component */
-  u_y = (tmp_cells[2][index]
-        + tmp_cells[5][index]
-        + tmp_cells[6][index]
-        - (tmp_cells[4][index]
-            + tmp_cells[7][index]
-            + tmp_cells[8][index]))
+  u_y = (tmp2
+        + tmp5
+        + tmp6
+        - (tmp4
+            + tmp7
+            + tmp8))
         / local_density;
 
 
@@ -613,36 +629,38 @@ float av_velocity(char* obstacles)
   tot_u = 0.f;
 
   /* loop over all non-blocked cells */
-  for (int jj = 0; jj < params.ny; jj++)
+  for (int jj = 0; jj < fullGridHeight; jj++)
   {
-    for (int ii = 0; ii < params.nx; ii++)
+    for (int ii = 0; ii < fullGridWidth; ii++)
     {
       /* ignore occupied cells */
-      if (!obstacles[ii + jj*params.nx])
+      if (!obstacles[ii + jj*fullGridWidth])
       {
         /* local density total */
         float local_density = 0.f;
 
+        float collatedFloat[NSPEEDS];
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
-          local_density += cells[kk][ii + jj*params.nx];
+          collatedFloat[kk] = UNPACK_FLOAT(cells[kk][ii + jj*params.nx]);
+          local_density += collatedFloat[kk];
         }
 
         /* x-component of velocity */
-        float u_x = (collatedCells[1][ii + jj*params.nx]
-                      + collatedCells[5][ii + jj*params.nx]
-                      + collatedCells[8][ii + jj*params.nx]
-                      - (collatedCells[3][ii + jj*params.nx]
-                         + collatedCells[6][ii + jj*params.nx]
-                         + collatedCells[7][ii + jj*params.nx]))
+        float u_x = (collatedFloat[1]
+                      + collatedFloat[5]
+                      + collatedFloat[8]
+                      - (collatedFloat[3]
+                         + collatedFloat[6]
+                         + collatedFloat[7]))
                      / local_density;
         /* compute y velocity component */
-        float u_y = (collatedCells[2][ii + jj*params.nx]
-                      + collatedCells[5][ii + jj*params.nx]
-                      + collatedCells[6][ii + jj*params.nx]
-                      - (collatedCells[4][ii + jj*params.nx]
-                         + collatedCells[7][ii + jj*params.nx]
-                         + collatedCells[8][ii + jj*params.nx]))
+        float u_y = (collatedFloat[2]
+                      + collatedFloat[5]
+                      + collatedFloat[6]
+                      - (collatedFloat[4]
+                         + collatedFloat[7]
+                         + collatedFloat[8]))
                      / local_density;
         /* accumulate the norm of x- and y- velocity components */
         tot_u += sqrtf((u_x * u_x) + (u_y * u_y));
@@ -737,13 +755,13 @@ int initialise(const char* paramfile, const char* obstaclefile,
   params.nym1 = params.ny - 1;
 
   /* main grid */
-  cells = (float**)aligned_alloc(64, sizeof(float*) * (NSPEEDS));
-  tmp_cells = (float**)aligned_alloc(64, sizeof(float*) * (NSPEEDS));
+  cells = (float16**)aligned_alloc(64, sizeof(float16*) * (NSPEEDS));
+  tmp_cells = (float16**)aligned_alloc(64, sizeof(float16*) * (NSPEEDS));
   for(int i = 0; i < NSPEEDS; i++){
     // (cells)[i] = (float*)malloc(sizeof(float) * params.nx * params.ny);
     // (tmp_cells)[i] = (float*)malloc(sizeof(float) * params.nx * params.ny);
-    (cells)[i] = (float*)aligned_alloc(64, sizeof(float) * params.nx * params.ny);
-    (tmp_cells)[i] = (float*)aligned_alloc(64, sizeof(float) * params.nx * params.ny);
+    (cells)[i] = (float16*)aligned_alloc(64, sizeof(float16) * params.nx * params.ny);
+    (tmp_cells)[i] = (float16*)aligned_alloc(64, sizeof(float16) * params.nx * params.ny);
   }
 
 
@@ -757,9 +775,9 @@ int initialise(const char* paramfile, const char* obstaclefile,
   if (*obstacles_ptr == NULL) die("cannot allocate column memory for obstacles", __LINE__, __FILE__);
 
   /* initialise densities */
-  float w0 = params.density * 4.f / 9.f;
-  float w1 = params.density      / 9.f;
-  float w2 = params.density      / 36.f;
+  float16 w0 = PACK_FLOAT(params.density * 4.f / 9.f);
+  float16 w1 = PACK_FLOAT(params.density      / 9.f);
+  float16 w2 = PACK_FLOAT(params.density      / 36.f);
 
   for (int jj = 0; jj < params.ny; jj++)
   {
@@ -889,7 +907,7 @@ float total_density()
     {
       for (int kk = 0; kk < NSPEEDS; kk++)
       {
-        total += cells[kk][ii + jj*params.nx];
+        total += UNPACK_FLOAT(cells[kk][ii + jj*params.nx]);
       }
     }
   }
@@ -929,27 +947,29 @@ int write_values(char* obstacles, float* av_vels)
       {
         local_density = 0.f;
 
+        float collatedFloat[NSPEEDS];
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
-          local_density += collatedCells[kk][ii + jj*params.nx];
+          collatedFloat[kk] = UNPACK_FLOAT(cells[kk][ii + jj*params.nx]);
+          local_density += collatedFloat[kk];
         }
 
-        /* compute x velocity component */
-        u_x = (collatedCells[1][ii + jj*params.nx]
-               + collatedCells[5][ii + jj*params.nx]
-               + collatedCells[8][ii + jj*params.nx]
-               - (collatedCells[3][ii + jj*params.nx]
-                  + collatedCells[6][ii + jj*params.nx]
-                  + collatedCells[7][ii + jj*params.nx]))
-              / local_density;
+        /* x-component of velocity */
+        float u_x = (collatedFloat[1]
+                      + collatedFloat[5]
+                      + collatedFloat[8]
+                      - (collatedFloat[3]
+                         + collatedFloat[6]
+                         + collatedFloat[7]))
+                     / local_density;
         /* compute y velocity component */
-        u_y = (collatedCells[2][ii + jj*params.nx]
-               + collatedCells[5][ii + jj*params.nx]
-               + collatedCells[6][ii + jj*params.nx]
-               - (collatedCells[4][ii + jj*params.nx]
-                  + collatedCells[7][ii + jj*params.nx]
-                  + collatedCells[8][ii + jj*params.nx]))
-              / local_density;
+        float u_y = (collatedFloat[2]
+                      + collatedFloat[5]
+                      + collatedFloat[6]
+                      - (collatedFloat[4]
+                         + collatedFloat[7]
+                         + collatedFloat[8]))
+                     / local_density;
         /* compute norm of velocity */
         u = sqrtf((u_x * u_x) + (u_y * u_y));
         /* compute pressure */
