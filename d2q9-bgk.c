@@ -216,17 +216,17 @@ float* collateOnZero(float* av_vels){
     addressesPerRank[i] = rd.rowStartOn * sizeof(float16) * params.nx;
   }
 
-  printf("Rank 0 is about to reduce velocities\n");
+  //printf("Rank 0 is about to reduce velocities\n");
   float* trueVel = malloc(sizeof(float) * params.maxIters);
   MPI_Reduce(
     (void*)av_vels, trueVel, params.maxIters,
     MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD
   );
 
-  printf("Rank 0 is about to reduce grid speeds\n");
+  //printf("Rank 0 is about to reduce grid speeds\n");
   const int speedsSize = sizeof(float16) * params.nx * (params.ny - 2);//Don't include the halo regions
   for(int i = 0; i < NSPEEDS; i++){
-    printf("Calling gather index %d on 0\n", i);
+    //printf("Calling gather index %d on 0\n", i);
     MPI_Gatherv(
       (void*)&cells[i][params.nx], speedsSize, MPI_CHAR,
       (void*)collatedCells[i], bytesPerRank, addressesPerRank,
@@ -236,8 +236,6 @@ float* collateOnZero(float* av_vels){
   return trueVel;
 }
 void collate(float* av_vels){
-
-  printf("Rank %d raducing\n", rank);
   MPI_Reduce(
     (void*)av_vels, NULL, params.maxIters,
     MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD
@@ -330,7 +328,7 @@ int main(int argc, char* argv[])
     printf("tot density: %.12E\n", total_density(params, cells));
 #endif
   }
-  printf("Finishing up %d\n", rank);
+  //printf("Finishing up %d\n", rank);
   #pragma vector aligned
   #pragma omp simd aligned(av_vels: 64)
   for(int i = 0; i < itters; i++){
@@ -345,11 +343,11 @@ int main(int argc, char* argv[])
   // Collate data from ranks here 
   if(rank == 0){
     velStorage = av_vels;
-    printf("Collating on zero\n");
+    //printf("Collating on zero\n");
     av_vels = collateOnZero(av_vels);
   }
   else{
-    printf("Collating on %d\n", rank);
+    //printf("Collating on %d\n", rank);
     collate(av_vels);
     finalise(&obstacles, &av_vels);
 
@@ -357,7 +355,7 @@ int main(int argc, char* argv[])
     return EXIT_SUCCESS;
   }
 
-  printf("Finished collating zero\n");
+  //printf("Finished collating zero\n");
   /* Total/collate time stops here.*/
   gettimeofday(&timstr, NULL);
   col_toc = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
@@ -368,11 +366,13 @@ int main(int argc, char* argv[])
   //printf("Reynolds number:\t\t%.12E\n", calc_reynolds(obstacles));
   //printf("Elapsed Init time:\t\t\t%.6lf (s)\n",    init_toc - init_tic);
   //printf("Elapsed Compute time:\t\t\t%.6lf (s)\n", comp_toc - comp_tic);
-  printf("%.6lf\n", comp_toc - comp_tic);
+  //printf("%.6lf\n", comp_toc - comp_tic);
   //printf("Elapsed Collate time:\t\t\t%.6lf (s)\n", col_toc  - col_tic);
 //  printf("Elapsed Total time:\t\t\t%.6lf (s)\n",   tot_toc  - tot_tic);
 
+  //printf("Writing values\n");
   write_values(obstacles, av_vels);
+  //printf("FInalizing\n");
   finalise(&obstacles, &av_vels);
 
   MPI_Finalize();
@@ -643,7 +643,7 @@ float av_velocity(char* obstacles)
         float collatedFloat[NSPEEDS];
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
-          collatedFloat[kk] = UNPACK_FLOAT(cells[kk][ii + jj*params.nx]);
+          collatedFloat[kk] = UNPACK_FLOAT(collatedCells[kk][ii + jj*params.nx]);
           local_density += collatedFloat[kk];
         }
 
@@ -951,7 +951,7 @@ int write_values(char* obstacles, float* av_vels)
         float collatedFloat[NSPEEDS];
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
-          collatedFloat[kk] = UNPACK_FLOAT(cells[kk][ii + jj*params.nx]);
+          collatedFloat[kk] = UNPACK_FLOAT(collatedCells[kk][ii + jj*params.nx]);
           local_density += collatedFloat[kk];
         }
 
