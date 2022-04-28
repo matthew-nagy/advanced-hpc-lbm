@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name d2q9-bgk
-#SBATCH --nodes 4
+#SBATCH --nodes 1
 #SBATCH --distribution block
 #SBATCH --time 00:50:00
 #SBATCH --partition veryshort
@@ -17,7 +17,7 @@ echo This job runs on the following machines:
 echo `echo $SLURM_JOB_NODELIST | uniq`
 #! Run the executable
 
-srun -N 4 -n 112 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+srun -N 1 -n 2 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 make check1024
 
 
