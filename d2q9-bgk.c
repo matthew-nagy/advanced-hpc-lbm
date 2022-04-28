@@ -159,6 +159,7 @@ haloType* downHalo;
 haloType* upHaloStore;
 haloType* downHaloStore;
 int bytesPerRow;
+
 void halo(){
   if(rank == 0)
     printf("rank 0 gonna speeds\n");
@@ -191,7 +192,7 @@ void halo(){
     memcpy((void*)&cells[i], (const void*)&upHaloStore[bytesPerRow * i], bytesPerRow);
     if(rank == 0)
     printf("down\n");
-    memcpy((void*)&cells[i][params.nx * (params.ny - 1)], (const void*)&downHaloStore[bytesPerRow * i], bytesPerRow);
+    memcpy((void*)&cells[i][(params.ny - 1) * params.nx], (const void*)&downHaloStore[bytesPerRow * i], bytesPerRow);
     if(rank == 0)
       printf("rank 0 unpack speeds %d\n", i);
   }
