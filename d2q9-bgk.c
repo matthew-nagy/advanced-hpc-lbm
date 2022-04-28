@@ -192,7 +192,7 @@ void halo(){
     memcpy((void*)&cells[i], (const void*)&upHaloStore[bytesPerRow * i], bytesPerRow);
     if(rank == 0)
     printf("down, downhalo check\n");
-    for(int j = 0; j < bytesPerRow){
+    for(int j = 0; j < bytesPerRow; j++){
       printf("Going %d\n", j);
       printf("val was %f\n", cells[i][j + params.nx * (params.ny - 1)] );
       printf("Val will %f\n", downHalo[j + bytesPerRow*i]);
