@@ -664,7 +664,7 @@ float av_velocity(char* obstacles)
 
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
-          local_density += cells[kk][ii + jj*params.nx];
+          local_density += collatedCells[kk][ii + jj*params.nx];
         }
 
         /* x-component of velocity */
