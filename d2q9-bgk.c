@@ -187,9 +187,15 @@ void halo(){
     (void*)upHaloStore, bytesPerRow, MPI_CHAR, upRank, 0,
     MPI_COMM_WORLD, MPI_STATUS_IGNORE 
   );
+  if(rank == 0)
+    printf("Time to read the cells!\n");
 
   for(int i = 0; i < NSPEEDS; i++){
+  if(rank == 0)
+    printf("upper halo...\n");
     memcpy((void*)&cells[i][0], (const void*)&upHaloStore[bytesPerRow * i], bytesPerRow);
+  if(rank == 0)
+    printf("lower halo...\n");
     memcpy((void*)&cells[i][params.nx * (params.ny - 1)], (const void*)&downHalo[bytesPerRow * i], bytesPerRow);
   }
   /*
