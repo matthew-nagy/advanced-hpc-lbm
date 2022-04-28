@@ -191,8 +191,12 @@ void halo(){
     printf("up\n");
     memcpy((void*)&cells[i], (const void*)&upHaloStore[bytesPerRow * i], bytesPerRow);
     if(rank == 0)
-    printf("down\n");
-    memcpy((void*)&cells[i][(params.ny - 1) * params.nx], (const void*)&downHaloStore[bytesPerRow * i], bytesPerRow);
+    printf("down, downhalo check\n");
+    for(int j = 0; j < bytesPerRow){
+      printf("Going %d\n", d);
+      cells[i][j + params.nx * (params.ny - 1)] = downHalo[j + bytesPerRow*i];
+    }
+    //memcpy((void*)&cells[i][(params.ny - 1) * params.nx], (const void*)&downHaloStore[bytesPerRow * i], bytesPerRow);
     if(rank == 0)
       printf("rank 0 unpack speeds %d\n", i);
   }
