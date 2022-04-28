@@ -195,10 +195,10 @@ void halo(){
     for(int j = 0; j < bytesPerRow; j++){
       if(rank == 0){
       printf("Going %d\n", j);
-      printf("val was %f\n", cells[i][j + params.nx * (params.ny - 1)] );
+      printf("val was %f\n", cells[i][j + params.nx * (params.ny - 2)] );
       printf("Val will %f\n", downHalo[j + bytesPerRow*i]);
       }
-      cells[i][j + params.nx * (params.ny - 1)] = downHalo[j + bytesPerRow*i];
+      cells[i][j + params.nx * (params.ny - 2)] = downHalo[j + bytesPerRow*i];
     }
     //memcpy((void*)&cells[i][(params.ny - 1) * params.nx], (const void*)&downHaloStore[bytesPerRow * i], bytesPerRow);
     if(rank == 0)
