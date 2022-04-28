@@ -14,8 +14,6 @@
 
 90.281381
 57.061971
-srun: Job 10271378 step creation temporarily disabled, retrying (Requested nodes are busy)
-srun: Step created for job 10271378
 43.052642
 37.453752
 29.080161
@@ -357,7 +355,7 @@ int main(int argc, char* argv[])
   // return 0;
 
   const int itters = params.maxIters;
-  printf("Starting the flow (%f)\n", nprocs);
+  printf("Starting the flow (%d)\n", nprocs);
   #pragma vector aligned
   for (int tt = 0; tt < itters; tt++)
   {
@@ -373,7 +371,7 @@ int main(int argc, char* argv[])
     printf("tot density: %.12E\n", total_density(params, cells));
 #endif
   }
-  printf("Ending the flow (%f)\n", nprocs);
+  printf("Ending the flow (%d)\n", nprocs);
 
   #pragma vector aligned
   #pragma omp simd aligned(av_vels: 64)
@@ -389,7 +387,7 @@ int main(int argc, char* argv[])
   // Collate data from ranks here 
   if(rank == 0){
     velStorage = av_vels;
-  printf("collating the flow (%f)\n", nprocs);
+  printf("collating the flow (%d)\n", nprocs);
     av_vels = collateOnZero(av_vels);
   }
   else{
@@ -403,7 +401,7 @@ int main(int argc, char* argv[])
     MPI_Finalize();
     return EXIT_SUCCESS;
   }
-  printf("finalizing the flow (%f)\n", nprocs);
+  printf("finalizing the flow (%d)\n", nprocs);
 
   /* Total/collate time stops here.*/
   gettimeofday(&timstr, NULL);
