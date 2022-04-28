@@ -195,6 +195,19 @@ void halo(){
     if(rank == 0)
       printf("rank 0 unpack speeds %d\n", i);
   }
+  /*
+    MPI_Sendrecv(
+      (const void*)&cells[i][(params.ny - 2) * params.nx], bytesPerRow, MPI_CHAR, upRank, 0,
+      (void*)cells[i], bytesPerRow, MPI_CHAR, downRank, 0,
+      MPI_COMM_WORLD, MPI_STATUS_IGNORE 
+    );
+    //Send down
+    MPI_Sendrecv(
+      (const void*)&cells[i][params.nx], bytesPerRow, MPI_CHAR, downRank, 0,
+      (void*)&cells[i][(params.ny - 1) * params.nx], bytesPerRow, MPI_CHAR, upRank, 0,
+      MPI_COMM_WORLD, MPI_STATUS_IGNORE 
+    );
+  */
 }
 
 
