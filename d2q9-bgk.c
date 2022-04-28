@@ -11,6 +11,18 @@
 ** 3-0-1
 **  /|\
 ** 7 4 8
+
+90.281381
+57.061971
+srun: Job 10271378 step creation temporarily disabled, retrying (Requested nodes are busy)
+srun: Step created for job 10271378
+43.052642
+37.453752
+29.080161
+25.450367
+22.344163
+
+
 **
 ** A 2D grid:
 **
