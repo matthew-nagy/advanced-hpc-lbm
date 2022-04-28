@@ -187,15 +187,9 @@ void halo(){
     (void*)upHaloStore, bytesPerRow, MPI_CHAR, upRank, 0,
     MPI_COMM_WORLD, MPI_STATUS_IGNORE 
   );
-  if(rank == 0)
-    printf("Time to read the cells!\n");
 
   for(int i = 0; i < NSPEEDS; i++){
-  if(rank == 0)
-    printf("upper halo...\n");
     memcpy((void*)&cells[i][0], (const void*)&upHaloStore[bytesPerRow * i], bytesPerRow);
-  if(rank == 0)
-    printf("lower halo...\n");
     memcpy((void*)&cells[i][params.nx * (params.ny - 1)], (const void*)&downHalo[bytesPerRow * i], bytesPerRow);
   }
   /*
@@ -361,7 +355,6 @@ int main(int argc, char* argv[])
   // return 0;
 
   const int itters = params.maxIters;
-  printf("Starting the flow (%d)\n", nprocs);
   #pragma vector aligned
   for (int tt = 0; tt < itters; tt++)
   {
@@ -377,7 +370,6 @@ int main(int argc, char* argv[])
     printf("tot density: %.12E\n", total_density(params, cells));
 #endif
   }
-  printf("Ending the flow (%d)\n", nprocs);
 
   #pragma vector aligned
   #pragma omp simd aligned(av_vels: 64)
@@ -393,7 +385,6 @@ int main(int argc, char* argv[])
   // Collate data from ranks here 
   if(rank == 0){
     velStorage = av_vels;
-  printf("collating the flow (%d)\n", nprocs);
     av_vels = collateOnZero(av_vels);
   }
   else{
@@ -407,7 +398,6 @@ int main(int argc, char* argv[])
     MPI_Finalize();
     return EXIT_SUCCESS;
   }
-  printf("finalizing the flow (%d)\n", nprocs);
 
   /* Total/collate time stops here.*/
   gettimeofday(&timstr, NULL);
