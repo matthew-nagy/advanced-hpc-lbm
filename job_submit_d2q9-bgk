@@ -17,8 +17,8 @@ echo This job runs on the following machines:
 echo `echo $SLURM_JOB_NODELIST | uniq`
 #! Run the executable
 
-srun -N 4 -n 112 --mpi=pmi2 advixe-cl -v -collect survey --enable-cache-simulation -project-dir=./FinalSmash/single -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
-srun -N 4 -n 112 --mpi=pmi2 advixe-cl -v -collect tripcounts --enable-cache-simulation --flop -project-dir=./FinalSmash/single -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+srun -N 4 -n 112 --mpi=pmi2 advixe-cl -v -collect survey --enable-cache-simulation -project-dir=./FinalSmash/single -data-limit=0 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
+srun -N 4 -n 112 --mpi=pmi2 advixe-cl -v -collect tripcounts --enable-cache-simulation --flop -project-dir=./FinalSmash/single -data-limit=0 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
 
 #srun -N 4 -n 34 --mpi=pmi2 advixe-cl -v -collect survey -project-dir=./Intel/predip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 #srun -N 4 -n 34 --mpi=pmi2 advixe-cl -v -collect tripcounts --flop -project-dir=./Intel/predip -data-limit=0 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat

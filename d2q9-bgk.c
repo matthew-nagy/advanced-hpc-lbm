@@ -56,10 +56,15 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <mpi.h>
+#include <emmintrin.h>
+#include <immintrin.h>
 
 #define NSPEEDS         9
 #define FINALSTATEFILE  "final_state.dat"
 #define AVVELSFILE      "av_vels.dat"
+
+#define PACK_FLOAT(toPack) _cvtss_sh(toPack, 1)
+#define UNPACK_FLOAT(packed) _cvtsh_ss(packed)
 
 const float c_sq = 1.f / 3.f; /* square of speed of sound */
 const float w0 = 4.f / 9.f;  /* weighting factor */
