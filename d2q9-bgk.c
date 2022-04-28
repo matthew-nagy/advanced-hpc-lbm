@@ -161,13 +161,9 @@ haloType* downHaloStore;
 int bytesPerRow;
 
 void halo(){
-  if(rank == 0)
-    printf("rank 0 gonna speeds\n");
   for(int i = 0; i < NSPEEDS; i++){
     memcpy((void*)&upHalo[i], (const void*)&cells[i][(params.ny - 2) * params.nx], bytesPerRow);
     memcpy((void*)&downHalo[i], (const void*)&cells[i][params.nx], bytesPerRow);
-    if(rank == 0)
-      printf("rank 0 speeds %d\n", i);
   }
   //Send up
   MPI_Sendrecv(
@@ -175,16 +171,12 @@ void halo(){
     (void*)downHaloStore, bytesPerRow, MPI_CHAR, downRank, 0,
     MPI_COMM_WORLD, MPI_STATUS_IGNORE 
   );
-    if(rank == 0)
-      printf("rank 0 send up\n");
   //Send down
   MPI_Sendrecv(
     (const void*)downHalo, bytesPerRow, MPI_CHAR, downRank, 0,
     (void*)upHaloStore, bytesPerRow, MPI_CHAR, upRank, 0,
     MPI_COMM_WORLD, MPI_STATUS_IGNORE 
   );
-    if(rank == 0)
-      printf("rank 0 send down\n");
 
   for(int i = 0; i < NSPEEDS; i++){
     memcpy((void*)&cells[i][0], (const void*)&upHaloStore[bytesPerRow * i], bytesPerRow);
