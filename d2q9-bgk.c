@@ -345,6 +345,7 @@ int main(int argc, char* argv[])
   // return 0;
 
   const int itters = params.maxIters;
+  printf("Starting the flow (%f)\n", nprocs);
   #pragma vector aligned
   for (int tt = 0; tt < itters; tt++)
   {
@@ -360,6 +361,7 @@ int main(int argc, char* argv[])
     printf("tot density: %.12E\n", total_density(params, cells));
 #endif
   }
+  printf("Ending the flow (%f)\n", nprocs);
 
   #pragma vector aligned
   #pragma omp simd aligned(av_vels: 64)
@@ -375,15 +377,21 @@ int main(int argc, char* argv[])
   // Collate data from ranks here 
   if(rank == 0){
     velStorage = av_vels;
+  printf("collating the flow (%f)\n", nprocs);
     av_vels = collateOnZero(av_vels);
   }
   else{
     collate(av_vels);
-    finalise(&obstacles, &av_vels);
+      finalise(&obstacles, &av_vels);
+    free(upHalo);
+    free(downHalo);
+    free(upHaloStore);
+    free(downHaloStore);
 
     MPI_Finalize();
     return EXIT_SUCCESS;
   }
+  printf("finalizing the flow (%f)\n", nprocs);
 
   /* Total/collate time stops here.*/
   gettimeofday(&timstr, NULL);
