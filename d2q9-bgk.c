@@ -187,22 +187,8 @@ void halo(){
       printf("rank 0 send down\n");
 
   for(int i = 0; i < NSPEEDS; i++){
-    if(rank == 0)
-    printf("up\n");
-    memcpy((void*)&cells[i], (const void*)&upHaloStore[bytesPerRow * i], bytesPerRow);
-    if(rank == 0)
-    printf("down, downhalo check\n");
-    for(int j = 0; j < bytesPerRow; j++){
-      if(rank == 0){
-      printf("Going %d\n", j);
-      printf("val was %f\n", cells[i][j + params.nx * (params.ny - 2)] );
-      printf("Val will %f\n", downHalo[j + bytesPerRow*i]);
-      }
-      cells[i][j + params.nx * (params.ny - 2)] = downHalo[j + bytesPerRow*i];
-    }
-    //memcpy((void*)&cells[i][(params.ny - 1) * params.nx], (const void*)&downHaloStore[bytesPerRow * i], bytesPerRow);
-    if(rank == 0)
-      printf("rank 0 unpack speeds %d\n", i);
+    memcpy((void*)&cells[i][0], (const void*)&upHaloStore[bytesPerRow * i], bytesPerRow);
+    memcpy((void*)&cells[i][params.nx * (params.ny - 1)], (const void*)&downHalo[bytesPerRow * i], bytesPerRow);
   }
   /*
     MPI_Sendrecv(
