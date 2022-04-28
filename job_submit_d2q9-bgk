@@ -8,7 +8,6 @@
 #SBATCH --reservation=COSC026662
 #SBATCH --account=COSC026662
 #SBATCH --output block1024_3.out
-#SBATCH --nodelist compute[105,106,107,109]
 #SBATCH --exclusive
 echo Running on host `hostname`
 echo Time is `date`
