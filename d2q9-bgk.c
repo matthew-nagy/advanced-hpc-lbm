@@ -362,13 +362,13 @@ int main(int argc, char* argv[])
   tot_toc = col_toc;
   
   /* write final values and free memory */
-  //printf("==done==\n");
-  //printf("Reynolds number:\t\t%.12E\n", calc_reynolds(obstacles));
-  //printf("Elapsed Init time:\t\t\t%.6lf (s)\n",    init_toc - init_tic);
-  //printf("Elapsed Compute time:\t\t\t%.6lf (s)\n", comp_toc - comp_tic);
-  printf("%.6lf\n", comp_toc - comp_tic);
-  //printf("Elapsed Collate time:\t\t\t%.6lf (s)\n", col_toc  - col_tic);
-//  printf("Elapsed Total time:\t\t\t%.6lf (s)\n",   tot_toc  - tot_tic);
+  printf("==done==\n");
+  printf("Reynolds number:\t\t%.12E\n", calc_reynolds(obstacles));
+  printf("Elapsed Init time:\t\t\t%.6lf (s)\n",    init_toc - init_tic);
+  printf("Elapsed Compute time:\t\t\t%.6lf (s)\n", comp_toc - comp_tic);
+  //printf("%.6lf\n", comp_toc - comp_tic);
+  printf("Elapsed Collate time:\t\t\t%.6lf (s)\n", col_toc  - col_tic);
+  printf("Elapsed Total time:\t\t\t%.6lf (s)\n",   tot_toc  - tot_tic);
 
   //printf("Writing values\n");
   write_values(obstacles, av_vels);
