@@ -3,7 +3,6 @@
 #SBATCH --job-name d2q9-bgk
 #SBATCH --nodes 4
 #SBATCH --distribution block
-#SBATCH --nodelist compute[105,106,107,109]
 #SBATCH --time 00:50:00
 #SBATCH --partition veryshort
 #SBATCH --reservation=COSC026662
@@ -18,4 +17,4 @@ echo This job runs on the following machines:
 echo `echo $SLURM_JOB_NODELIST | uniq`
 #! Run the executable
 
-srun -N 4 -n 112 --mpi=pmi2 vtune -collect hotspots -result-dir halfFullTune ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
+srun -N 4 -n 112 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
