@@ -6,7 +6,7 @@ CC=mpiicc
 //CFLAGS= -std=c11 -Wall -g -O0
 //CFLAGS= -std=c11 -Wall -Ofast -mtune=native -march=native -fopt-info-all=optRep.out -fopenmp -fopenmp-simd
 DEBUG_FLAGS = -fopt-info-all=optRep.out -shared-intel -D TBB_USE_THREADING_TOOLS -qopt-report=5 -g
-CFLAGS = -std=c11 -Wall -Ofast -xHOST -qopenmp $(DEBUG_FLAGS)
+CFLAGS = -std=c11 -Wall -Ofast -xHOST -qopenmp
 //OtherIcc = -qopt-report=1 -qopt-report-phase=vec
 LIBS = -lm
 
