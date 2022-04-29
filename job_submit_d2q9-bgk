@@ -21,6 +21,6 @@ echo `echo $SLURM_JOB_NODELIST | uniq`
 srun -N 4 -n 112 --mpi=pmi2 ./d2q9-bgk input_128x128.params obstacles_128x128.dat
 make check128
 srun -N 4 -n 112 --mpi=pmi2 ./d2q9-bgk input_256x256.params obstacles_256x256.dat
-make chec256
+make check256
 srun -N 4 -n 112 --mpi=pmi2 ./d2q9-bgk input_1024x1024.params obstacles_1024x1024.dat
 make check1024
