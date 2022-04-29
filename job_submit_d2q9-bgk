@@ -7,7 +7,7 @@
 #SBATCH --partition veryshort
 #SBATCH --reservation=COSC026662
 #SBATCH --account=COSC026662
-#SBATCH --exclude compute[100,102,103,104,105,106,108,109,110,111,127]
+#SBATCH --exclude compute[100,101,102,103]
 #SBATCH --output block1024_3.out
 #SBATCH --exclusive
 echo Running on host `hostname`
