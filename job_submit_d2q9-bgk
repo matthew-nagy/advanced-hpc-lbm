@@ -7,6 +7,7 @@
 #SBATCH --partition veryshort
 #SBATCH --reservation=COSC026662
 #SBATCH --account=COSC026662
+#SBATCH --nodelist[105,106,107,109]
 #SBATCH --output block1024_3.out
 #SBATCH --exclusive
 echo Running on host `hostname`
